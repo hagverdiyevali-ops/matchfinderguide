@@ -1,46 +1,16 @@
 import React, { useMemo, useState, useEffect, useRef } from "react";
 import OFFERS from "./offers.js";
+import CookieConsent from "./CookieConsent.jsx";
 
-/* ----------------- tiny helpers ----------------- */
+/* ----------------- small utils ----------------- */
 const cn = (...c) => c.filter(Boolean).join(" ");
 
-/** prefers-reduced-motion */
-function usePrefersReducedMotion() {
-  const [reduced, setReduced] = useState(false);
-  useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const onChange = () => setReduced(mq.matches);
-    onChange();
-    mq.addEventListener?.("change", onChange);
-    return () => mq.removeEventListener?.("change", onChange);
-  }, []);
-  return reduced;
-}
-
-/** simple mobile check (sm breakpoint) */
-function useIsMobile() {
-  const [mobile, setMobile] = useState(false);
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 640px)");
-    const onChange = () => setMobile(mq.matches);
-    onChange();
-    mq.addEventListener?.("change", onChange);
-    return () => mq.removeEventListener?.("change", onChange);
-  }, []);
-  return mobile;
-}
-
-/** Parallax with auto-disable for mobile / reduced-motion */
-function useParallax(targetRef, speed = 0.15, enabled = true) {
+function useParallax(ref, speed = 0.15) {
   const [offset, setOffset] = useState(0);
   useEffect(() => {
-    if (!enabled) {
-      setOffset(0);
-      return;
-    }
     let raf = 0;
     const update = () => {
-      const el = targetRef?.current;
+      const el = ref?.current;
       if (!el) return;
       const rect = el.getBoundingClientRect();
       const elemTop = rect.top + window.scrollY;
@@ -48,20 +18,21 @@ function useParallax(targetRef, speed = 0.15, enabled = true) {
       const delta = (scrollY - elemTop) * speed;
       setOffset(delta);
     };
-    const onScrollOrResize = () => {
+    const onScroll = () => {
       cancelAnimationFrame(raf);
       raf = requestAnimationFrame(update);
     };
     update();
-    window.addEventListener("scroll", onScrollOrResize, { passive: true });
-    window.addEventListener("resize", onScrollOrResize);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
     return () => {
-      window.removeEventListener("scroll", onScrollOrResize);
-      window.removeEventListener("resize", onScrollOrResize);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
       cancelAnimationFrame(raf);
     };
-  }, [targetRef, speed, enabled]);
-  return enabled ? { transform: `translate3d(0, ${offset}px, 0)` } : {};
+  }, [ref, speed]);
+
+  return { transform: `translate3d(0, ${offset}px, 0)` };
 }
 
 function withUTM(url) {
@@ -79,7 +50,6 @@ function withUTM(url) {
   }
 }
 
-/* ----------------- Rating Badge: TRUST SCORE BLOCK ----------------- */
 function RatingBadge({ rating }) {
   const score = Number(rating)?.toFixed(1) || "0.0";
   return (
@@ -87,41 +57,31 @@ function RatingBadge({ rating }) {
       className="px-3 py-1 rounded-md bg-white/15 
                  backdrop-blur-md border border-white/25
                  text-[11px] font-bold tracking-wide text-white/90"
-      aria-label={`Trust score ${score} out of 5`}
     >
       {score} TRUST SCORE
     </span>
   );
 }
 
-/* ----------------- Top Choice helper ----------------- */
-const isTopChoice = (i) => i === 0 || i === 1 || i === 2;
+function isTopChoice(index) {
+  return index === 0 || index === 1 || index === 2;
+}
 
-/* ----------------- Offer Card (no images; centered CTA; short copy) ----------------- */
-function OfferCard({ o, index, isMobile }) {
+/* ----------------- Offer Card ----------------- */
+function OfferCard({ o, index }) {
   const cleanName = (o.name || "").replace(/\.com$/i, "");
   const shortFeatures = Array.isArray(o.features) ? o.features.slice(0, 2) : [];
-
-  // On mobile, reduce hover scale to avoid jumpiness
-  const hoverScale = isMobile ? "" : "hover:scale-[1.02]";
 
   return (
     <div
       className={cn(
         "group relative rounded-3xl p-[1px] bg-gradient-to-br",
         o.color || "from-white/25 to-white/8",
-        "transition-transform duration-300",
-        hoverScale
+        "transition-transform duration-300 hover:scale-[1.02]"
       )}
     >
-      {/* Top Choice ribbon (Option A). On mobile it's centered; on desktop left-aligned */}
       {isTopChoice(index) && (
-        <div
-          className={cn(
-            "absolute -top-3 z-30",
-            isMobile ? "left-1/2 -translate-x-1/2" : "left-5"
-          )}
-        >
+        <div className="absolute -top-3 left-5 z-30">
           <span className="px-3 py-1 rounded-md bg-gradient-to-r from-rose-500 to-pink-600
                            text-[11px] font-bold text-white shadow-lg tracking-wide">
             TOP CHOICE
@@ -137,13 +97,11 @@ function OfferCard({ o, index, isMobile }) {
           "group-hover:shadow-[0_24px_60px_-16px_rgba(0,0,0,0.65)] group-hover:border-white/30"
         )}
       >
-        {/* Header */}
         <div className="px-6 pt-6 flex items-center justify-between">
           <h3 className="text-xl font-extrabold text-white">{cleanName}</h3>
           <RatingBadge rating={o.rating} />
         </div>
 
-        {/* Content */}
         <div className="px-6 pb-6 pt-4 flex flex-col grow">
           {o.usp && <p className="text-white/90">{o.usp}</p>}
 
@@ -169,15 +127,13 @@ function OfferCard({ o, index, isMobile }) {
 
           <div className="mt-6 flex-1" />
 
-          {/* CTA centered */}
           <div className="flex justify-center">
             <a
               href={withUTM(o.affiliateUrl)}
               rel="nofollow sponsored noopener"
               className="inline-flex items-center justify-center rounded-2xl px-6 py-3 text-sm font-bold
                          text-rose-700 bg-white shadow-[0_8px_20px_-4px_rgba(255,255,255,0.5)]
-                         hover:opacity-95 active:scale-95 transition
-                         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+                         hover:opacity-95 active:scale-95 transition"
             >
               Visit Site
             </a>
@@ -196,30 +152,28 @@ const FILTERS = [
   { key: "international", label: "International" },
 ];
 
-/* ----------------- Page ----------------- */
+/* ----------------- PAGE ----------------- */
 export default function App() {
   const [filter, setFilter] = useState("all");
+  const [cookieBannerVisible, setCookieBannerVisible] = useState(false);
 
   const heroRef = useRef(null);
   const offersRef = useRef(null);
   const footerRef = useRef(null);
 
-  const isMobile = useIsMobile();
-  const reduceMotion = usePrefersReducedMotion();
-  const parallaxEnabled = !(isMobile || reduceMotion);
-
-  const heroParallax = useParallax(heroRef, 0.32, parallaxEnabled);
-  const gridParallax = useParallax(offersRef, 0.22, parallaxEnabled);
-  const footSmall = useParallax(footerRef, 0.1, parallaxEnabled);
-  const footWide = useParallax(footerRef, 0.08, parallaxEnabled);
+  const heroParallax = useParallax(heroRef, 0.32);
+  const gridParallax = useParallax(offersRef, 0.22);
+  const footSmall = useParallax(footerRef, 0.1);
+  const footWide = useParallax(footerRef, 0.08);
 
   const filtered = useMemo(() => {
     let list = Array.isArray(OFFERS) ? OFFERS.slice(0) : [];
-    // default: high → low
     list.sort((a, b) => (Number(b.rating) || 0) - (Number(a.rating) || 0));
+
     if (filter === "serious") return list.filter((o) => /serious/i.test(o.bestFor));
     if (filter === "casual") return list.filter((o) => /casual/i.test(o.bestFor));
     if (filter === "international") return list.filter((o) => /international/i.test(o.bestFor));
+
     return list;
   }, [filter]);
 
@@ -228,21 +182,20 @@ export default function App() {
       className="min-h-screen text-white relative overflow-hidden
                  bg-gradient-to-br from-[#251730] via-[#2a183d] to-[#150a20]"
     >
-      {/* subtle grain */}
       <div className="pointer-events-none absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.14]" />
 
       {/* navbar */}
       <header className="sticky top-0 z-30 bg-black/25 backdrop-blur-xl border-b border-white/15">
         <div className="mx-auto max-w-7xl px-4 py-4 flex items-center justify-between">
-          <a className="flex items-center gap-3 font-extrabold" href="/" aria-label="MatchFinderGuide Home">
-            <img src="/logo.svg" className="h-8 w-8" alt="" />
+          <a className="flex items-center gap-3 font-extrabold" href="/">
+            <img src="/logo.svg" className="h-8 w-8" alt="MatchFinderGuide logo" />
             MatchFinderGuide
           </a>
           <nav className="hidden sm:flex gap-6 text-sm">
-            <a href="#offers" className="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80">Offers</a>
-            <a href="#faq" className="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80">FAQ</a>
-            <a href="/privacy.html" className="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80">Privacy</a>
-            <a href="/terms.html" className="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80">Terms</a>
+            <a href="#offers" className="hover:underline">Offers</a>
+            <a href="#faq" className="hover:underline">FAQ</a>
+            <a href="/privacy.html" className="hover:underline">Privacy</a>
+            <a href="/terms.html" className="hover:underline">Terms</a>
           </nav>
         </div>
       </header>
@@ -272,15 +225,13 @@ export default function App() {
             <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
               <a
                 href="#offers"
-                className="rounded-2xl px-6 py-3 bg-white text-rose-700 font-bold shadow-lg hover:opacity-95
-                           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+                className="rounded-2xl px-6 py-3 bg-white text-rose-700 font-bold shadow-lg hover:opacity-95"
               >
                 See Top Picks
               </a>
               <a
                 href="#faq"
-                className="rounded-2xl px-6 py-3 bg-white/10 border border-white/25 backdrop-blur-md text-white font-bold hover:bg-white/20
-                           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+                className="rounded-2xl px-6 py-3 bg-white/10 border border-white/25 backdrop-blur-md text-white font-bold hover:bg-white/20"
               >
                 How We Compare
               </a>
@@ -298,12 +249,11 @@ export default function App() {
                 key={f.key}
                 onClick={() => setFilter(f.key)}
                 className={cn(
-                  "px-4 py-2 rounded-full text-sm font-semibold transition border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80",
+                  "px-4 py-2 rounded-full text-sm font-semibold transition border",
                   filter === f.key
                     ? "bg-white text-rose-700 border-white shadow-lg"
                     : "bg-white/10 text-white border-white/25 hover:bg-white/20"
                 )}
-                aria-pressed={filter === f.key}
               >
                 {f.label}
               </button>
@@ -336,7 +286,7 @@ export default function App() {
 
           <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7 items-stretch">
             {filtered.map((o, index) => (
-              <OfferCard key={o.id || o.name} o={o} index={index} isMobile={isMobile} />
+              <OfferCard key={o.id || o.name} o={o} index={index} />
             ))}
           </div>
         </div>
@@ -378,28 +328,47 @@ export default function App() {
           </p>
           <p className="mt-4 font-bold text-white">Affiliate Disclosure</p>
           <p className="mt-1">We may earn a commission when you sign up through our links.</p>
+
           <div className="mt-6 flex flex-wrap gap-4">
             <a className="hover:text-white underline underline-offset-4" href="/privacy.html">Privacy Policy</a>
             <a className="hover:text-white underline underline-offset-4" href="/terms.html">Terms</a>
             <a className="hover:text-white underline underline-offset-4" href="/cookie.html">Cookie Policy</a>
+
+            <a
+              href="#cookie-settings"
+              onClick={(e) => {
+                e.preventDefault();
+                window.__openConsent?.();
+              }}
+              className="hover:text-white underline underline-offset-4"
+            >
+              Cookie Settings
+            </a>
+
             <a className="hover:text-white underline underline-offset-4" href="/contact.html">Contact</a>
           </div>
+
           <p className="mt-8 text-white/50 hover:text-white transition">
             © {new Date().getFullYear()} MatchFinderGuide.com
           </p>
         </div>
       </footer>
 
-      {/* mobile CTA – respects safe area */}
-      <div className="sm:hidden fixed bottom-4 left-0 right-0 flex justify-center pb-[env(safe-area-inset-bottom)]">
+      {/* mobile CTA */}
+      <div
+        className="sm:hidden fixed left-0 right-0 flex justify-center transition-all duration-300"
+        style={{ bottom: cookieBannerVisible ? 100 : 16 }}
+      >
         <a
           href="#offers"
-          className="rounded-full px-6 py-3 font-bold text-white bg-gradient-to-r from-rose-600 to-pink-600 shadow-lg active:scale-95
-                     focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+          className="rounded-full px-6 py-3 font-bold text-white bg-gradient-to-r from-rose-600 to-pink-600 shadow-lg active:scale-95"
         >
           Compare Top Dating Sites (18+)
         </a>
       </div>
+
+      {/* Cookie Consent */}
+      <CookieConsent onVisibleChange={setCookieBannerVisible} />
     </main>
   );
 }
