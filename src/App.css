@@ -1,0 +1,51 @@
+/* Tailwind v4 import */
+@import "tailwindcss";
+
+/* Brand variables (optional, handy for custom CSS if needed) */
+:root {
+  --brand-rose: #ff4d79;
+  --brand-fuchsia: #c026d3;
+  --brand-purple: #7c3aed;
+}
+
+/* Baseline */
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  background: #0b0b0f; /* fallback before gradient paints */
+  color: #fff; /* fallback */
+}
+
+/* Nice text selection color */
+::selection {
+  background: rgba(255, 77, 121, 0.35);
+}
+
+/* Media defaults */
+img, svg, video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Anchor feel (used in footer/legal links) */
+a {
+  text-underline-offset: 4px;
+}
+
+/* Optional: small utility for subtle divider lines if you need it later */
+.hr-soft {
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255, 255, 255, 0.18),
+    transparent
+  );
+}
