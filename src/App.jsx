@@ -144,7 +144,6 @@ function OfferCard({ o, index }) {
   );
 }
 
-/* ----------------- Filters ----------------- */
 const FILTERS = [
   { key: "all", label: "All" },
   { key: "serious", label: "Serious" },
@@ -163,8 +162,6 @@ export default function App() {
 
   const heroParallax = useParallax(heroRef, 0.32);
   const gridParallax = useParallax(offersRef, 0.22);
-  const footSmall = useParallax(footerRef, 0.1);
-  const footWide = useParallax(footerRef, 0.08);
 
   const filtered = useMemo(() => {
     let list = Array.isArray(OFFERS) ? OFFERS.slice(0) : [];
@@ -184,7 +181,7 @@ export default function App() {
     >
       <div className="pointer-events-none absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.14]" />
 
-      {/* navbar */}
+      {/* NAVBAR */}
       <header className="sticky top-0 z-30 bg-black/25 backdrop-blur-xl border-b border-white/15">
         <div className="mx-auto max-w-7xl px-4 py-4 flex items-center justify-between">
           <a className="flex items-center gap-3 font-extrabold" href="/">
@@ -200,7 +197,7 @@ export default function App() {
         </div>
       </header>
 
-      {/* hero */}
+      {/* HERO */}
       <section ref={heroRef} className="relative">
         <div
           className="absolute inset-0 -z-10 bg-cover bg-center opacity-[0.25]"
@@ -240,7 +237,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* filters */}
+      {/* FILTERS */}
       <section className="bg-black/25 backdrop-blur-lg border-y border-white/15">
         <div className="mx-auto max-w-7xl px-4 py-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap justify-center gap-2">
@@ -259,14 +256,19 @@ export default function App() {
               </button>
             ))}
           </div>
+
           <div className="flex gap-3 justify-center text-xs text-white/75">
-            <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1">Verified Reviews</span>
-            <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1">No Spam</span>
+            <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1">
+              Verified Reviews
+            </span>
+            <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1">
+              No Spam
+            </span>
           </div>
         </div>
       </section>
 
-      {/* offers grid */}
+      {/* OFFERS GRID */}
       <section ref={offersRef} id="offers" className="relative py-12 px-4 overflow-hidden">
         <div
           className="absolute inset-0 -z-10 bg-cover bg-center opacity-[0.22]"
@@ -275,7 +277,7 @@ export default function App() {
               "url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=2200&auto=format&fit=crop')",
             ...gridParallax,
           }}
-        />
+        ></div>
         <div className="absolute inset-0 -z-10 bg-black/25" />
 
         <div className="mx-auto max-w-7xl">
@@ -308,7 +310,9 @@ export default function App() {
               </div>
               <div>
                 <h4 className="font-bold">How do you rank apps?</h4>
-                <p className="text-white/75">We analyze safety, verification, features, pricing, and user feedback.</p>
+                <p className="text-white/75">
+                  We analyze safety, verification, features, pricing, and user feedback.
+                </p>
               </div>
               <div>
                 <h4 className="font-bold">Is this site for adults?</h4>
@@ -319,33 +323,45 @@ export default function App() {
         </div>
       </section>
 
-      {/* footer */}
-      <footer ref={footerRef} className="bg-black/25 backdrop-blur-xl border-t border-white/15 py-12 px-6 text-sm">
+      {/* FOOTER */}
+      <footer
+        ref={footerRef}
+        className="bg-black/25 backdrop-blur-xl border-t border-white/15 py-12 px-6 text-sm"
+      >
         <div className="mx-auto max-w-7xl text-white/80">
           <p className="inline-flex items-center gap-2 text-xs uppercase text-white/75">
             <span className="rounded-full bg-white/10 px-2 py-1 border border-white/20">18+</span>
             Adult-only content
           </p>
+
           <p className="mt-4 font-bold text-white">Affiliate Disclosure</p>
           <p className="mt-1">We may earn a commission when you sign up through our links.</p>
 
           <div className="mt-6 flex flex-wrap gap-4">
-            <a className="hover:text-white underline underline-offset-4" href="/privacy.html">Privacy Policy</a>
-            <a className="hover:text-white underline underline-offset-4" href="/terms.html">Terms</a>
-            <a className="hover:text-white underline underline-offset-4" href="/cookie.html">Cookie Policy</a>
+            <a className="hover:text-white underline underline-offset-4" href="/privacy.html">
+              Privacy Policy
+            </a>
+            <a className="hover:text-white underline underline-offset-4" href="/terms.html">
+              Terms
+            </a>
+            <a className="hover:text-white underline underline-offset-4" href="/cookie.html">
+              Cookie Policy
+            </a>
 
             <a
-              href="#cookie-settings"
+              href="#"
               onClick={(e) => {
                 e.preventDefault();
-                window.__openConsent?.();
+                window.reopenConsent?.();
               }}
               className="hover:text-white underline underline-offset-4"
             >
               Cookie Settings
             </a>
 
-            <a className="hover:text-white underline underline-offset-4" href="/contact.html">Contact</a>
+            <a className="hover:text-white underline underline-offset-4" href="/contact.html">
+              Contact
+            </a>
           </div>
 
           <p className="mt-8 text-white/50 hover:text-white transition">
@@ -354,20 +370,7 @@ export default function App() {
         </div>
       </footer>
 
-      {/* mobile CTA */}
-      <div
-        className="sm:hidden fixed left-0 right-0 flex justify-center transition-all duration-300"
-        style={{ bottom: cookieBannerVisible ? 100 : 16 }}
-      >
-        <a
-          href="#offers"
-          className="rounded-full px-6 py-3 font-bold text-white bg-gradient-to-r from-rose-600 to-pink-600 shadow-lg active:scale-95"
-        >
-          Compare Top Dating Sites (18+)
-        </a>
-      </div>
-
-      {/* Cookie Consent */}
+      {/* COOKIE CONSENT */}
       <CookieConsent onVisibleChange={setCookieBannerVisible} />
     </main>
   );
