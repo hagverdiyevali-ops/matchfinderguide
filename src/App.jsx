@@ -58,7 +58,7 @@ function RatingBadge({ rating }) {
                  backdrop-blur-md border border-white/25
                  text-[11px] font-bold tracking-wide text-white/90"
     >
-      {score} TRUST SCORE
+      {score} EDITORIAL RATING
     </span>
   );
 }
@@ -69,7 +69,7 @@ function isTopChoice(index) {
 
 /* ----------------- Offer Card ----------------- */
 function OfferCard({ o, index }) {
-  const cleanName = (o.name || "").replace(/\.com$/i, "");
+  const cleanName = (o.displayName || o.name || "").replace(/\.com$/i, "");
   const shortFeatures = Array.isArray(o.features) ? o.features.slice(0, 2) : [];
 
   return (
@@ -144,11 +144,12 @@ function OfferCard({ o, index }) {
   );
 }
 
+/* Neutralized filter labels */
 const FILTERS = [
   { key: "all", label: "All" },
   { key: "serious", label: "Serious" },
-  { key: "casual", label: "Casual" },
-  { key: "international", label: "Global" }, // label softened; key kept
+  { key: "social", label: "Social" },
+  { key: "international", label: "International" },
 ];
 
 /* ----------------- PAGE ----------------- */
@@ -167,8 +168,8 @@ export default function App() {
     list.sort((a, b) => (Number(b.rating) || 0) - (Number(a.rating) || 0));
 
     if (filter === "serious") return list.filter((o) => /serious/i.test(o.bestFor));
-    if (filter === "casual") return list.filter((o) => /casual/i.test(o.bestFor));
-    if (filter === "international") return list.filter((o) => /international|global/i.test(o.bestFor));
+    if (filter === "social") return list.filter((o) => /social/i.test(o.bestFor));
+    if (filter === "international") return list.filter((o) => /international/i.test(o.bestFor));
 
     return list;
   }, [filter]);
@@ -210,13 +211,13 @@ export default function App() {
           <div className="rounded-[28px] bg-black/25 border border-white/20 backdrop-blur-xl px-6 sm:px-10 py-10 text-center">
             <p className="mb-2 inline-flex items-center gap-2 text-xs uppercase text-white/80">
               <span className="rounded-full bg-white/10 px-2 py-1 border border-white/20">18+</span>
-              18+ dating app comparisons — no escorting, sugar dating, paid companionship, or marriage brokerage.
+              Comparison site for dating apps
             </p>
             <h1 className="text-4xl sm:text-6xl font-extrabold leading-tight">
               Find Better Matches — Safely & Confidently
             </h1>
             <p className="mt-3 text-white/85 text-lg">
-              We review mainstream dating apps and communities with a safety-first approach.
+              We compare reputable dating apps so you can pick the right one.
             </p>
             <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
               <a
@@ -258,10 +259,10 @@ export default function App() {
 
           <div className="flex gap-3 justify-center text-xs text-white/75">
             <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1">
-              Review Aggregator (18+)
+              Editorial reviews
             </span>
             <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1">
-              No transactional relationships
+              No escort/sugar/compensation
             </span>
           </div>
         </div>
@@ -282,7 +283,7 @@ export default function App() {
         <div className="mx-auto max-w-7xl">
           <h2 className="text-3xl font-extrabold">Editor’s Top Picks</h2>
           <p className="mt-2 text-white/80">
-            Ranked by safety, verification, user feedback, privacy, and transparency.
+            Ranked by safety, features, user feedback, privacy, and transparency.
           </p>
 
           <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7 items-stretch">
@@ -300,6 +301,10 @@ export default function App() {
             <h3 className="text-2xl font-extrabold">Frequently Asked Questions</h3>
             <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6 text-white/95">
               <div>
+                <h4 className="font-bold">What is this site?</h4>
+                <p className="text-white/75">An independent comparison of 18+ dating apps. We don’t run or broker in-person services.</p>
+              </div>
+              <div>
                 <h4 className="font-bold">Are these platforms free?</h4>
                 <p className="text-white/75">Many offer free signup with optional upgrades.</p>
               </div>
@@ -310,12 +315,16 @@ export default function App() {
               <div>
                 <h4 className="font-bold">How do you rank apps?</h4>
                 <p className="text-white/75">
-                  We analyze safety, verification, features, pricing, and user feedback. We don’t list escorting, sugar dating, paid companionship, or marriage brokerage services.
+                  We analyze safety, verification, features, pricing, and user feedback.
                 </p>
               </div>
               <div>
+                <h4 className="font-bold">Do you promote escort/sugar or compensated dating?</h4>
+                <p className="text-white/75">No. We don’t list or promote escort services, sugar dating, compensated companionship, or mail-order spouse/matchmaking services.</p>
+              </div>
+              <div>
                 <h4 className="font-bold">Is this site for adults?</h4>
-                <p className="text-white/75">Yes — intended for adults 18+ only.</p>
+                <p className="text-white/75">Yes — for users 18+ only.</p>
               </div>
             </div>
           </div>
@@ -330,14 +339,14 @@ export default function App() {
         <div className="mx-auto max-w-7xl text-white/80">
           <p className="inline-flex items-center gap-2 text-xs uppercase text-white/75">
             <span className="rounded-full bg-white/10 px-2 py-1 border border-white/20">18+</span>
-            Adults only
+            For users 18+
           </p>
 
-          <p className="mt-4 font-bold text-white">Editorial & Compliance</p>
-          <p className="mt-1">
-            We may earn a commission when you sign up through our links. We do not promote or
-            partner with escorting, sugar dating, paid companionship, or marriage brokerage
-            services. If a listed partner violates these standards, we remove them.
+          <p className="mt-4 font-bold text-white">Affiliate Disclosure</p>
+          <p className="mt-1">We may earn a commission when you sign up through our links.</p>
+
+          <p className="mt-4 text-white/75 max-w-3xl">
+            MatchFinderGuide is an editorial comparison site. We do not offer or promote escort services, “sugar” or compensated dating, in-person companionship, or mail-order spouse/transactional international matchmaking. Listings are for lawful online dating platforms only.
           </p>
 
           <div className="mt-6 flex flex-wrap gap-4">
