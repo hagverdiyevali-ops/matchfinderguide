@@ -148,13 +148,12 @@ const FILTERS = [
   { key: "all", label: "All" },
   { key: "serious", label: "Serious" },
   { key: "casual", label: "Casual" },
-  { key: "international", label: "International" },
+  { key: "international", label: "Global" }, // label softened; key kept
 ];
 
 /* ----------------- PAGE ----------------- */
 export default function App() {
   const [filter, setFilter] = useState("all");
-  const [cookieBannerVisible, setCookieBannerVisible] = useState(false);
 
   const heroRef = useRef(null);
   const offersRef = useRef(null);
@@ -169,7 +168,7 @@ export default function App() {
 
     if (filter === "serious") return list.filter((o) => /serious/i.test(o.bestFor));
     if (filter === "casual") return list.filter((o) => /casual/i.test(o.bestFor));
-    if (filter === "international") return list.filter((o) => /international/i.test(o.bestFor));
+    if (filter === "international") return list.filter((o) => /international|global/i.test(o.bestFor));
 
     return list;
   }, [filter]);
@@ -211,13 +210,13 @@ export default function App() {
           <div className="rounded-[28px] bg-black/25 border border-white/20 backdrop-blur-xl px-6 sm:px-10 py-10 text-center">
             <p className="mb-2 inline-flex items-center gap-2 text-xs uppercase text-white/80">
               <span className="rounded-full bg-white/10 px-2 py-1 border border-white/20">18+</span>
-              Adult-only dating comparisons
+              18+ dating app comparisons — no escorting, sugar dating, paid companionship, or marriage brokerage.
             </p>
             <h1 className="text-4xl sm:text-6xl font-extrabold leading-tight">
               Find Better Matches — Safely & Confidently
             </h1>
             <p className="mt-3 text-white/85 text-lg">
-              We compare trusted dating apps so you can pick the right one.
+              We review mainstream dating apps and communities with a safety-first approach.
             </p>
             <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
               <a
@@ -259,10 +258,10 @@ export default function App() {
 
           <div className="flex gap-3 justify-center text-xs text-white/75">
             <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1">
-              Verified Reviews
+              Review Aggregator (18+)
             </span>
             <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1">
-              No Spam
+              No transactional relationships
             </span>
           </div>
         </div>
@@ -283,7 +282,7 @@ export default function App() {
         <div className="mx-auto max-w-7xl">
           <h2 className="text-3xl font-extrabold">Editor’s Top Picks</h2>
           <p className="mt-2 text-white/80">
-            Ranked by safety, features, user success, privacy, and transparency.
+            Ranked by safety, verification, user feedback, privacy, and transparency.
           </p>
 
           <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7 items-stretch">
@@ -311,7 +310,7 @@ export default function App() {
               <div>
                 <h4 className="font-bold">How do you rank apps?</h4>
                 <p className="text-white/75">
-                  We analyze safety, verification, features, pricing, and user feedback.
+                  We analyze safety, verification, features, pricing, and user feedback. We don’t list escorting, sugar dating, paid companionship, or marriage brokerage services.
                 </p>
               </div>
               <div>
@@ -331,11 +330,15 @@ export default function App() {
         <div className="mx-auto max-w-7xl text-white/80">
           <p className="inline-flex items-center gap-2 text-xs uppercase text-white/75">
             <span className="rounded-full bg-white/10 px-2 py-1 border border-white/20">18+</span>
-            Adult-only content
+            Adults only
           </p>
 
-          <p className="mt-4 font-bold text-white">Affiliate Disclosure</p>
-          <p className="mt-1">We may earn a commission when you sign up through our links.</p>
+          <p className="mt-4 font-bold text-white">Editorial & Compliance</p>
+          <p className="mt-1">
+            We may earn a commission when you sign up through our links. We do not promote or
+            partner with escorting, sugar dating, paid companionship, or marriage brokerage
+            services. If a listed partner violates these standards, we remove them.
+          </p>
 
           <div className="mt-6 flex flex-wrap gap-4">
             <a className="hover:text-white underline underline-offset-4" href="/privacy.html">
@@ -371,7 +374,7 @@ export default function App() {
       </footer>
 
       {/* COOKIE CONSENT */}
-      <CookieConsent onVisibleChange={setCookieBannerVisible} />
+      <CookieConsent />
     </main>
   );
 }

@@ -1,11 +1,10 @@
-// src/offers.js
 const OFFERS = [
   {
     id: "ofs-101",
     name: "Single Slavic",
     rating: 5.0,
     bestFor: "Casual",
-    usp: "Fast signup, real profiles from Central & Eastern Europe.",
+    usp: "Fast signup with real profiles from Central & Eastern Europe.",
     features: [
       "Quick match feed",
       "Photo verification options",
@@ -19,14 +18,13 @@ const OFFERS = [
     name: "NordFlirt",
     rating: 4.9,
     bestFor: "Casual, Local",
-    usp: "Scandinavian-style matching with clean UI and quick chats.",
+    usp: "Clean UI with quick chats and privacy controls.",
     features: [
       "Location-based discovery",
       "Icebreakers & prompts",
       "Profile quality checks",
       "Privacy-first settings"
     ],
-    // ✅ Updated link
     affiliateUrl: "https://find.sereneromance.today/click?affid=16096&offerid=9032"
   },
   {
@@ -34,29 +32,27 @@ const OFFERS = [
     name: "JessieDates",
     rating: 4.7,
     bestFor: "Casual, Fun",
-    usp: "Low-friction chatting for quick connections and meetups.",
+    usp: "Low-friction chatting for quick connections.",
     features: [
       "1-tap like & chat",
       "Readable profiles",
       "Spam & bot filtering",
       "Mobile-friendly UX"
     ],
-    // ✅ Updated link
     affiliateUrl: "https://find.truelovepath.online/click?affid=16096&offerid=8601"
   },
   {
     id: "ofs-203",
     name: "MilfsDiscovery",
     rating: 4.6,
-    bestFor: "Mature, Niche",
-    usp: "Discover verified mature profiles with focused matching.",
+    bestFor: "30+ community, Niche",
+    usp: "Focused matching with verified mature profiles.",
     features: [
       "Niche audience focus",
       "Verified photo badges",
       "Clear filters",
       "Discreet mode"
     ],
-    // ✅ Updated link
     affiliateUrl: "https://eclipse.trkvrtn.com/click?affid=16096&offerid=7773"
   },
   {
@@ -64,10 +60,10 @@ const OFFERS = [
     name: "BeHappy2Day.com",
     rating: 4.5,
     bestFor: "International, Serious",
-    usp: "Global introductions with translation and safety checks.",
+    usp: "Global profiles & translation tools with safety checks.",
     features: [
       "In-app translation",
-      "Intro & video calls",
+      "Video calls",
       "Guided profiles",
       "Support team"
     ],
@@ -92,7 +88,7 @@ const OFFERS = [
     name: "OneWife.com",
     rating: 4.2,
     bestFor: "International, Serious",
-    usp: "Serious connections with strong verification controls.",
+    usp: "Verification-first community for serious connections (no transactional relationships).",
     features: [
       "Document checks",
       "Profile audits",
@@ -106,7 +102,7 @@ const OFFERS = [
     name: "AllTverladies.com",
     rating: 4.0,
     bestFor: "International",
-    usp: "Wide catalog with filters and optional translation.",
+    usp: "Large catalog with filters and optional translation.",
     features: [
       "Large user base",
       "Advanced filters",
