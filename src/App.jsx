@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useEffect, useRef } from "react";
 import OFFERS from "./offers.js";
+import CookieConsent from "./CookieConsent.jsx";
 
 /* ----------------- helpers ----------------- */
 const cn = (...c) => c.filter(Boolean).join(" ");
@@ -45,23 +46,6 @@ function withUTM(url) {
   }
 }
 
-/* ----------------- age consent utils ----------------- */
-const AGE_KEY = "mfg_age_confirmed_until";
-function isAgeConfirmed() {
-  try {
-    const ts = Number(localStorage.getItem(AGE_KEY) || 0);
-    return Date.now() < ts;
-  } catch {
-    return false;
-  }
-}
-function setAgeConfirmed(days = 30) {
-  try {
-    const until = Date.now() + days * 24 * 60 * 60 * 1000;
-    localStorage.setItem(AGE_KEY, String(until));
-  } catch {}
-}
-
 /* ----------------- Rating Badge: TRUST SCORE BLOCK ----------------- */
 function RatingBadge({ rating }) {
   const score = Number(rating)?.toFixed(1) || "0.0";
@@ -81,64 +65,8 @@ function isTopChoice(index) {
   return index === 0 || index === 1 || index === 2;
 }
 
-/* ----------------- 18+ Consent Modal ----------------- */
-function AgeConsentModal({ pendingUrl, onConfirm, onCancel }) {
-  useEffect(() => {
-    const onKey = (e) => {
-      if (e.key === "Escape") onCancel?.();
-    };
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [onCancel]);
-
-  if (!pendingUrl) return null;
-
-  return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      className="fixed inset-0 z-[100] flex items-center justify-center"
-    >
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
-      <div className="relative mx-4 w-full max-w-lg rounded-3xl border border-white/20 bg-[#1b1022]/95 text-white p-6 shadow-2xl">
-        <div className="flex items-start gap-3">
-          <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-rose-600/90 font-bold">
-            18+
-          </span>
-          <div>
-            <h3 className="text-xl font-extrabold">Adults Only (18+)</h3>
-            <p className="mt-2 text-white/85 text-sm">
-              You’re about to visit a dating site that may contain nudity or adult themes.
-              By continuing, you confirm you are at least 18 years old.
-            </p>
-          </div>
-        </div>
-
-        <div className="mt-5 flex flex-col sm:flex-row gap-3 justify-end">
-          <button
-            onClick={onCancel}
-            className="inline-flex items-center justify-center rounded-xl px-4 py-2 border border-white/25 bg-white/10 hover:bg-white/15"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={() => onConfirm(pendingUrl)}
-            className="inline-flex items-center justify-center rounded-xl px-5 py-2 font-bold text-rose-800 bg-white hover:opacity-95"
-          >
-            I am 18+ — Continue
-          </button>
-        </div>
-
-        <p className="mt-3 text-xs text-white/60">
-          We use a one-time age check. You won’t see this again for the next 30 days.
-        </p>
-      </div>
-    </div>
-  );
-}
-
 /* ----------------- Offer Card (no images; centered CTA; short copy) ----------------- */
-function OfferCard({ o, index, onClickOffer }) {
+function OfferCard({ o, index }) {
   const cleanName = (o.name || "").replace(/\.com$/i, "");
   const shortFeatures = Array.isArray(o.features) ? o.features.slice(0, 2) : [];
 
@@ -150,7 +78,7 @@ function OfferCard({ o, index, onClickOffer }) {
         "transition-transform duration-300 hover:scale-[1.02]"
       )}
     >
-      {/* Top Choice ribbon (floating above, left aligned) */}
+      {/* Top Choice ribbon (Option A: floating above, left aligned) */}
       {isTopChoice(index) && (
         <div className="absolute -top-3 left-5 z-30">
           <span className="px-3 py-1 rounded-md bg-gradient-to-r from-rose-500 to-pink-600
@@ -200,17 +128,17 @@ function OfferCard({ o, index, onClickOffer }) {
 
           <div className="mt-6 flex-1" />
 
-          {/* CTA centered; we intercept click to show 18+ consent */}
+          {/* CTA centered */}
           <div className="flex justify-center">
-            <button
-              type="button"
-              onClick={() => onClickOffer(o)}
+            <a
+              href={withUTM(o.affiliateUrl)}
+              rel="nofollow sponsored noopener"
               className="inline-flex items-center justify-center rounded-2xl px-6 py-3 text-sm font-bold
                          text-rose-700 bg-white shadow-[0_8px_20px_-4px_rgba(255,255,255,0.5)]
                          hover:opacity-95 active:scale-95 transition"
             >
               Visit Site
-            </button>
+            </a>
           </div>
         </div>
       </div>
@@ -236,9 +164,8 @@ export default function App() {
 
   const heroParallax = useParallax(heroRef, 0.32);
   const gridParallax = useParallax(offersRef, 0.22);
-
-  // age consent modal state
-  const [pendingUrl, setPendingUrl] = useState(null);
+  const footSmall = useParallax(footerRef, 0.1);
+  const footWide = useParallax(footerRef, 0.08);
 
   const filtered = useMemo(() => {
     let list = Array.isArray(OFFERS) ? OFFERS.slice(0) : [];
@@ -248,25 +175,6 @@ export default function App() {
     if (filter === "international") return list.filter((o) => /international/i.test(o.bestFor));
     return list;
   }, [filter]);
-
-  // Offer click handler → show age modal if needed, otherwise go
-  const handleOfferClick = (offer) => {
-    const url = withUTM(offer.affiliateUrl || "#");
-    if (isAgeConfirmed()) {
-      // go directly
-      window.location.href = url;
-    } else {
-      setPendingUrl(url);
-    }
-  };
-
-  const confirmAndGo = (url) => {
-    setAgeConfirmed(30);
-    setPendingUrl(null);
-    window.location.href = url;
-  };
-
-  const cancelModal = () => setPendingUrl(null);
 
   return (
     <main
@@ -288,6 +196,13 @@ export default function App() {
             <a href="#faq" className="hover:underline">FAQ</a>
             <a href="/privacy.html" className="hover:underline">Privacy</a>
             <a href="/terms.html" className="hover:underline">Terms</a>
+            <button
+              onClick={() => window.openCookieSettings?.()}
+              className="hover:underline"
+              type="button"
+            >
+              Cookie Settings
+            </button>
           </nav>
         </div>
       </header>
@@ -376,9 +291,9 @@ export default function App() {
             Ranked by safety, features, user success, privacy, and transparency.
           </p>
 
-          <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7 items-stretch">
+        <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7 items-stretch">
             {filtered.map((o, index) => (
-              <OfferCard key={o.id || o.name} o={o} index={index} onClickOffer={handleOfferClick} />
+              <OfferCard key={o.id || o.name} o={o} index={index} />
             ))}
           </div>
         </div>
@@ -412,7 +327,7 @@ export default function App() {
       </section>
 
       {/* footer */}
-      <footer className="bg-black/25 backdrop-blur-xl border-t border-white/15 py-12 px-6 text-sm">
+      <footer ref={footerRef} className="bg-black/25 backdrop-blur-xl border-t border-white/15 py-12 px-6 text-sm">
         <div className="mx-auto max-w-7xl text-white/80">
           <p className="inline-flex items-center gap-2 text-xs uppercase text-white/75">
             <span className="rounded-full bg-white/10 px-2 py-1 border border-white/20">18+</span>
@@ -425,6 +340,13 @@ export default function App() {
             <a className="hover:text-white underline underline-offset-4" href="/terms.html">Terms</a>
             <a className="hover:text-white underline underline-offset-4" href="/cookie.html">Cookie Policy</a>
             <a className="hover:text-white underline underline-offset-4" href="/contact.html">Contact</a>
+            <button
+              type="button"
+              onClick={() => window.openCookieSettings?.()}
+              className="hover:text-white underline underline-offset-4"
+            >
+              Cookie Settings
+            </button>
           </div>
           <p className="mt-8 text-white/50 hover:text-white transition">
             © {new Date().getFullYear()} MatchFinderGuide.com
@@ -432,8 +354,8 @@ export default function App() {
         </div>
       </footer>
 
-      {/* 18+ modal */}
-      <AgeConsentModal pendingUrl={pendingUrl} onConfirm={confirmAndGo} onCancel={cancelModal} />
+      {/* Cookie Consent Banner */}
+      <CookieConsent />
     </main>
   );
 }
