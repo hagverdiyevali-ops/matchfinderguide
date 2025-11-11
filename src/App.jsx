@@ -65,10 +65,18 @@ function isTopChoice(index) {
   return index === 0 || index === 1 || index === 2;
 }
 
-/* ----------------- Offer Card (no images; centered CTA; short copy) ----------------- */
+/* ----------------- Offer Card ----------------- */
 function OfferCard({ o, index }) {
   const cleanName = (o.name || "").replace(/\.com$/i, "");
   const shortFeatures = Array.isArray(o.features) ? o.features.slice(0, 2) : [];
+
+  // Age-gate click handler
+  function handleClick(e) {
+    e.preventDefault();
+    if (typeof window !== "undefined") {
+      window.openAgeGate?.(withUTM(o.affiliateUrl));
+    }
+  }
 
   return (
     <div
@@ -78,7 +86,6 @@ function OfferCard({ o, index }) {
         "transition-transform duration-300 hover:scale-[1.02]"
       )}
     >
-      {/* Top Choice ribbon (Option A: floating above, left aligned) */}
       {isTopChoice(index) && (
         <div className="absolute -top-3 left-5 z-30">
           <span className="px-3 py-1 rounded-md bg-gradient-to-r from-rose-500 to-pink-600
@@ -96,13 +103,11 @@ function OfferCard({ o, index }) {
           "group-hover:shadow-[0_24px_60px_-16px_rgba(0,0,0,0.65)] group-hover:border-white/30"
         )}
       >
-        {/* Header */}
         <div className="px-6 pt-6 flex items-center justify-between">
           <h3 className="text-xl font-extrabold text-white">{cleanName}</h3>
           <RatingBadge rating={o.rating} />
         </div>
 
-        {/* Content */}
         <div className="px-6 pb-6 pt-4 flex flex-col grow">
           {o.usp && <p className="text-white/90">{o.usp}</p>}
 
@@ -128,11 +133,10 @@ function OfferCard({ o, index }) {
 
           <div className="mt-6 flex-1" />
 
-          {/* CTA centered */}
           <div className="flex justify-center">
             <a
-              href={withUTM(o.affiliateUrl)}
-              rel="nofollow sponsored noopener"
+              onClick={handleClick}
+              href="#"
               className="inline-flex items-center justify-center rounded-2xl px-6 py-3 text-sm font-bold
                          text-rose-700 bg-white shadow-[0_8px_20px_-4px_rgba(255,255,255,0.5)]
                          hover:opacity-95 active:scale-95 transition"
@@ -154,9 +158,16 @@ const FILTERS = [
   { key: "international", label: "International" },
 ];
 
-/* ----------------- Page ----------------- */
+/* ----------------- Page Component ----------------- */
 export default function App() {
   const [filter, setFilter] = useState("all");
+  const [ageGateURL, setAgeGateURL] = useState(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.openAgeGate = (url) => setAgeGateURL(url);
+    }
+  }, []);
 
   const heroRef = useRef(null);
   const offersRef = useRef(null);
@@ -169,26 +180,33 @@ export default function App() {
 
   const filtered = useMemo(() => {
     let list = Array.isArray(OFFERS) ? OFFERS.slice(0) : [];
-    list.sort((a, b) => (Number(b.rating) || 0) - (Number(a.rating) || 0)); // high → low
+    list.sort((a, b) => (Number(b.rating) || 0) - (Number(a.rating) || 0));
     if (filter === "serious") return list.filter((o) => /serious/i.test(o.bestFor));
     if (filter === "casual") return list.filter((o) => /casual/i.test(o.bestFor));
     if (filter === "international") return list.filter((o) => /international/i.test(o.bestFor));
     return list;
   }, [filter]);
 
+  function acceptAge() {
+    if (ageGateURL) window.location.href = ageGateURL;
+  }
+
+  function closeAgeGate() {
+    setAgeGateURL(null);
+  }
+
   return (
     <main
       className="min-h-screen text-white relative overflow-hidden
                  bg-gradient-to-br from-[#251730] via-[#2a183d] to-[#150a20]"
     >
-      {/* subtle grain */}
       <div className="pointer-events-none absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.14]" />
 
-      {/* navbar */}
+      {/* Navbar */}
       <header className="sticky top-0 z-30 bg-black/25 backdrop-blur-xl border-b border-white/15">
         <div className="mx-auto max-w-7xl px-4 py-4 flex items-center justify-between">
           <a className="flex items-center gap-3 font-extrabold" href="/">
-            <img src="/logo.svg" className="h-8 w-8" alt="MatchFinderGuide logo" />
+            <img src="/logo.svg" className="h-8 w-8" alt="MatchFinderGuide" />
             MatchFinderGuide
           </a>
           <nav className="hidden sm:flex gap-6 text-sm">
@@ -207,7 +225,7 @@ export default function App() {
         </div>
       </header>
 
-      {/* hero */}
+      {/* Hero Section */}
       <section ref={heroRef} className="relative">
         <div
           className="absolute inset-0 -z-10 bg-cover bg-center opacity-[0.25]"
@@ -247,7 +265,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* filters */}
+      {/* Filters */}
       <section className="bg-black/25 backdrop-blur-lg border-y border-white/15">
         <div className="mx-auto max-w-7xl px-4 py-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap justify-center gap-2">
@@ -273,7 +291,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* offers grid */}
+      {/* Offers */}
       <section ref={offersRef} id="offers" className="relative py-12 px-4 overflow-hidden">
         <div
           className="absolute inset-0 -z-10 bg-cover bg-center opacity-[0.22]"
@@ -291,7 +309,7 @@ export default function App() {
             Ranked by safety, features, user success, privacy, and transparency.
           </p>
 
-        <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7 items-stretch">
+          <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7 items-stretch">
             {filtered.map((o, index) => (
               <OfferCard key={o.id || o.name} o={o} index={index} />
             ))}
@@ -310,7 +328,7 @@ export default function App() {
                 <p className="text-white/75">Many offer free signup with optional upgrades.</p>
               </div>
               <div>
-                <h4 className="font-bold">Which is best for serious dating?</h4>
+                <h4 className="font-bold">Which is the best for serious dating?</h4>
                 <p className="text-white/75">Use the “Serious” filter to view long-term focused apps.</p>
               </div>
               <div>
@@ -326,20 +344,21 @@ export default function App() {
         </div>
       </section>
 
-      {/* footer */}
+      {/* Footer */}
       <footer ref={footerRef} className="bg-black/25 backdrop-blur-xl border-t border-white/15 py-12 px-6 text-sm">
         <div className="mx-auto max-w-7xl text-white/80">
           <p className="inline-flex items-center gap-2 text-xs uppercase text-white/75">
             <span className="rounded-full bg-white/10 px-2 py-1 border border-white/20">18+</span>
             Adult-only content
           </p>
+
           <p className="mt-4 font-bold text-white">Affiliate Disclosure</p>
           <p className="mt-1">We may earn a commission when you sign up through our links.</p>
+
           <div className="mt-6 flex flex-wrap gap-4">
             <a className="hover:text-white underline underline-offset-4" href="/privacy.html">Privacy Policy</a>
             <a className="hover:text-white underline underline-offset-4" href="/terms.html">Terms</a>
             <a className="hover:text-white underline underline-offset-4" href="/cookie.html">Cookie Policy</a>
-            <a className="hover:text-white underline underline-offset-4" href="/contact.html">Contact</a>
             <button
               type="button"
               onClick={() => window.openCookieSettings?.()}
@@ -348,13 +367,40 @@ export default function App() {
               Cookie Settings
             </button>
           </div>
+
           <p className="mt-8 text-white/50 hover:text-white transition">
             © {new Date().getFullYear()} MatchFinderGuide.com
           </p>
         </div>
       </footer>
 
-      {/* Cookie Consent Banner */}
+      {/* Age Gate Modal */}
+      {ageGateURL && (
+        <div className="fixed inset-0 bg-black/70 z-[200] flex items-center justify-center px-6 backdrop-blur-sm">
+          <div className="max-w-md w-full bg-[#1b0f23] border border-white/20 rounded-3xl p-8 text-center">
+            <h2 className="text-2xl font-extrabold mb-3">Adults Only (18+)</h2>
+            <p className="text-white/80">
+              This offer contains adult-oriented material.  
+              Please confirm that you are 18 years of age or older.
+            </p>
+            <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+              <button
+                onClick={closeAgeGate}
+                className="px-6 py-3 rounded-xl border border-white/30 bg-white/10 hover:bg-white/20"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={acceptAge}
+                className="px-6 py-3 rounded-xl bg-white text-rose-700 font-bold"
+              >
+                I am 18+
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <CookieConsent />
     </main>
   );
