@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="robots" content="noindex,nofollow" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Age Confirmation • MatchFinderGuide</title>
+  <style>
+    html,body{height:100%;margin:0}
+    body{
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color:#fff; display:flex; align-items:center; justify-content:center;
+      background: radial-gradient(1200px 600px at 50% -10%, rgba(255,0,128,.25), transparent 60%),
+                  linear-gradient(135deg, #251730, #2a183d 50%, #150a20);
+    }
+    .card{
+      width:min(560px,calc(100% - 24px));
+      background: rgba(0,0,0,.35);
+      backdrop-filter: blur(14px);
+      border:1px solid rgba(255,255,255,.22);
+      border-radius: 22px;
+      box-shadow: 0 24px 60px -16px rgba(0,0,0,.6);
+      padding:24px 22px;
+    }
+    .badge{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;
+      padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3)}
+    h1{font-size:28px;margin:12px 0 6px}
+    p{color:rgba(255,255,255,.88);line-height:1.5;margin:8px 0}
+    .site{font-weight:800}
+    .row{display:flex; gap:10px; margin-top:16px; flex-wrap:wrap}
+    .btn{
+      appearance:none; border:0; cursor:pointer; font-weight:800;
+      padding:12px 18px; border-radius:14px; transition:.15s transform,.2s opacity;
+    }
+    .btn-yes{background:#fff; color:#a3124b; box-shadow:0 12px 24px -10px rgba(255,255,255,.6)}
+    .btn-yes:hover{opacity:.95}
+    .btn-yes:active{transform:scale(.98)}
+    .btn-no{background:rgba(255,255,255,.12); color:#fff; border:1px solid rgba(255,255,255,.28)}
+    .muted{font-size:12px; color:rgba(255,255,255,.75)}
+    label{display:flex; gap:8px; align-items:center; margin-top:10px; user-select:none}
+    a{color:#fff}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <span class="badge">18+ Check</span>
+    <h1>Are you 18 years or older?</h1>
+    <p>You're about to visit: <span class="site" id="siteName">the selected site</span>.</p>
+    <p>This destination may contain adult content. Please confirm your age to continue.</p>
+    <label><input id="remember" type="checkbox" /> Remember my choice for 30 days</label>
+    <div class="row">
+      <button class="btn btn-yes" id="proceedBtn">I’m 18+ — Continue</button>
+      <button class="btn btn-no" id="backBtn">No, take me back</button>
+    </div>
+    <p class="muted" style="margin-top:14px">
+      By continuing, you agree to our <a href="/terms.html" rel="nofollow">Terms</a> and confirm you’re 18+.
+    </p>
+  </div>
+
+  <script>
+    // Parse params
+    const params = new URLSearchParams(location.search);
+    const dest = params.get('to') || '/';
+    const name = params.get('name') || 'the selected site';
+
+    // Show destination name
+    document.getElementById('siteName').textContent = name;
+
+    // Simple persisted consent (30 days)
+    const KEY = 'mfg_age_ok';
+    const now = Date.now();
+    try {
+      const stored = JSON.parse(localStorage.getItem(KEY) || 'null');
+      if (stored && stored.ok === 1 && (now - stored.ts) < 30*24*60*60*1000) {
+        // Auto-pass if still valid
+        location.replace(dest);
+      }
+    } catch(_){}
+
+    document.getElementById('proceedBtn').addEventListener('click', () => {
+      const remember = document.getElementById('remember').checked;
+      if (remember) {
+        try { localStorage.setItem(KEY, JSON.stringify({ ok:1, ts: Date.now() })); } catch(_){}
+      }
+      // Mark that interstitial was shown (optional analytics param)
+      const u = new URL(dest, location.origin);
+      if (!u.searchParams.has('from')) u.searchParams.set('from', 'interstitial18');
+      location.replace(u.toString());
+    });
+
+    document.getElementById('backBtn').addEventListener('click', () => {
+      history.length > 1 ? history.back() : location.replace('/');
+    });
+  </script>
+</body>
+</html>

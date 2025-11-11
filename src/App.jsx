@@ -1,16 +1,15 @@
 import React, { useMemo, useState, useEffect, useRef } from "react";
 import OFFERS from "./offers.js";
-import CookieConsent from "./CookieConsent.jsx";
 
-/* ----------------- small utils ----------------- */
+/* ----------------- helpers ----------------- */
 const cn = (...c) => c.filter(Boolean).join(" ");
 
-function useParallax(ref, speed = 0.15) {
+function useParallax(targetRef, speed = 0.15) {
   const [offset, setOffset] = useState(0);
   useEffect(() => {
     let raf = 0;
     const update = () => {
-      const el = ref?.current;
+      const el = targetRef?.current;
       if (!el) return;
       const rect = el.getBoundingClientRect();
       const elemTop = rect.top + window.scrollY;
@@ -18,38 +17,52 @@ function useParallax(ref, speed = 0.15) {
       const delta = (scrollY - elemTop) * speed;
       setOffset(delta);
     };
-    const onScroll = () => {
+    const onScrollOrResize = () => {
       cancelAnimationFrame(raf);
       raf = requestAnimationFrame(update);
     };
     update();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
+    window.addEventListener("scroll", onScrollOrResize, { passive: true });
+    window.addEventListener("resize", onScrollOrResize);
     return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
+      window.removeEventListener("scroll", onScrollOrResize);
+      window.removeEventListener("resize", onScrollOrResize);
       cancelAnimationFrame(raf);
     };
-  }, [ref, speed]);
-
+  }, [targetRef, speed]);
   return { transform: `translate3d(0, ${offset}px, 0)` };
 }
 
 function withUTM(url) {
   try {
     const u = new URL(url);
-    if (!u.searchParams.get("utm_source"))
-      u.searchParams.set("utm_source", "matchfinderguide");
-    if (!u.searchParams.get("utm_medium"))
-      u.searchParams.set("utm_medium", "site");
-    if (!u.searchParams.get("utm_campaign"))
-      u.searchParams.set("utm_campaign", "offers_grid");
+    if (!u.searchParams.get("utm_source")) u.searchParams.set("utm_source", "matchfinderguide");
+    if (!u.searchParams.get("utm_medium")) u.searchParams.set("utm_medium", "site");
+    if (!u.searchParams.get("utm_campaign")) u.searchParams.set("utm_campaign", "offers_grid");
     return u.toString();
   } catch {
     return url;
   }
 }
 
+/* ----------------- age consent utils ----------------- */
+const AGE_KEY = "mfg_age_confirmed_until";
+function isAgeConfirmed() {
+  try {
+    const ts = Number(localStorage.getItem(AGE_KEY) || 0);
+    return Date.now() < ts;
+  } catch {
+    return false;
+  }
+}
+function setAgeConfirmed(days = 30) {
+  try {
+    const until = Date.now() + days * 24 * 60 * 60 * 1000;
+    localStorage.setItem(AGE_KEY, String(until));
+  } catch {}
+}
+
+/* ----------------- Rating Badge: TRUST SCORE BLOCK ----------------- */
 function RatingBadge({ rating }) {
   const score = Number(rating)?.toFixed(1) || "0.0";
   return (
@@ -58,18 +71,75 @@ function RatingBadge({ rating }) {
                  backdrop-blur-md border border-white/25
                  text-[11px] font-bold tracking-wide text-white/90"
     >
-      {score} EDITORIAL RATING
+      {score} TRUST SCORE
     </span>
   );
 }
 
+/* ----------------- Top Choice helper ----------------- */
 function isTopChoice(index) {
   return index === 0 || index === 1 || index === 2;
 }
 
-/* ----------------- Offer Card ----------------- */
-function OfferCard({ o, index }) {
-  const cleanName = (o.displayName || o.name || "").replace(/\.com$/i, "");
+/* ----------------- 18+ Consent Modal ----------------- */
+function AgeConsentModal({ pendingUrl, onConfirm, onCancel }) {
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === "Escape") onCancel?.();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [onCancel]);
+
+  if (!pendingUrl) return null;
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      className="fixed inset-0 z-[100] flex items-center justify-center"
+    >
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+      <div className="relative mx-4 w-full max-w-lg rounded-3xl border border-white/20 bg-[#1b1022]/95 text-white p-6 shadow-2xl">
+        <div className="flex items-start gap-3">
+          <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-rose-600/90 font-bold">
+            18+
+          </span>
+          <div>
+            <h3 className="text-xl font-extrabold">Adults Only (18+)</h3>
+            <p className="mt-2 text-white/85 text-sm">
+              You’re about to visit a dating site that may contain nudity or adult themes.
+              By continuing, you confirm you are at least 18 years old.
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-5 flex flex-col sm:flex-row gap-3 justify-end">
+          <button
+            onClick={onCancel}
+            className="inline-flex items-center justify-center rounded-xl px-4 py-2 border border-white/25 bg-white/10 hover:bg-white/15"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => onConfirm(pendingUrl)}
+            className="inline-flex items-center justify-center rounded-xl px-5 py-2 font-bold text-rose-800 bg-white hover:opacity-95"
+          >
+            I am 18+ — Continue
+          </button>
+        </div>
+
+        <p className="mt-3 text-xs text-white/60">
+          We use a one-time age check. You won’t see this again for the next 30 days.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/* ----------------- Offer Card (no images; centered CTA; short copy) ----------------- */
+function OfferCard({ o, index, onClickOffer }) {
+  const cleanName = (o.name || "").replace(/\.com$/i, "");
   const shortFeatures = Array.isArray(o.features) ? o.features.slice(0, 2) : [];
 
   return (
@@ -80,6 +150,7 @@ function OfferCard({ o, index }) {
         "transition-transform duration-300 hover:scale-[1.02]"
       )}
     >
+      {/* Top Choice ribbon (floating above, left aligned) */}
       {isTopChoice(index) && (
         <div className="absolute -top-3 left-5 z-30">
           <span className="px-3 py-1 rounded-md bg-gradient-to-r from-rose-500 to-pink-600
@@ -97,11 +168,13 @@ function OfferCard({ o, index }) {
           "group-hover:shadow-[0_24px_60px_-16px_rgba(0,0,0,0.65)] group-hover:border-white/30"
         )}
       >
+        {/* Header */}
         <div className="px-6 pt-6 flex items-center justify-between">
           <h3 className="text-xl font-extrabold text-white">{cleanName}</h3>
           <RatingBadge rating={o.rating} />
         </div>
 
+        {/* Content */}
         <div className="px-6 pb-6 pt-4 flex flex-col grow">
           {o.usp && <p className="text-white/90">{o.usp}</p>}
 
@@ -127,16 +200,17 @@ function OfferCard({ o, index }) {
 
           <div className="mt-6 flex-1" />
 
+          {/* CTA centered; we intercept click to show 18+ consent */}
           <div className="flex justify-center">
-            <a
-              href={withUTM(o.affiliateUrl)}
-              rel="nofollow sponsored noopener"
+            <button
+              type="button"
+              onClick={() => onClickOffer(o)}
               className="inline-flex items-center justify-center rounded-2xl px-6 py-3 text-sm font-bold
                          text-rose-700 bg-white shadow-[0_8px_20px_-4px_rgba(255,255,255,0.5)]
                          hover:opacity-95 active:scale-95 transition"
             >
               Visit Site
-            </a>
+            </button>
           </div>
         </div>
       </div>
@@ -144,15 +218,15 @@ function OfferCard({ o, index }) {
   );
 }
 
-/* Neutralized filter labels */
+/* ----------------- Filters ----------------- */
 const FILTERS = [
   { key: "all", label: "All" },
   { key: "serious", label: "Serious" },
-  { key: "social", label: "Social" },
+  { key: "casual", label: "Casual" },
   { key: "international", label: "International" },
 ];
 
-/* ----------------- PAGE ----------------- */
+/* ----------------- Page ----------------- */
 export default function App() {
   const [filter, setFilter] = useState("all");
 
@@ -163,25 +237,46 @@ export default function App() {
   const heroParallax = useParallax(heroRef, 0.32);
   const gridParallax = useParallax(offersRef, 0.22);
 
+  // age consent modal state
+  const [pendingUrl, setPendingUrl] = useState(null);
+
   const filtered = useMemo(() => {
     let list = Array.isArray(OFFERS) ? OFFERS.slice(0) : [];
-    list.sort((a, b) => (Number(b.rating) || 0) - (Number(a.rating) || 0));
-
+    list.sort((a, b) => (Number(b.rating) || 0) - (Number(a.rating) || 0)); // high → low
     if (filter === "serious") return list.filter((o) => /serious/i.test(o.bestFor));
-    if (filter === "social") return list.filter((o) => /social/i.test(o.bestFor));
+    if (filter === "casual") return list.filter((o) => /casual/i.test(o.bestFor));
     if (filter === "international") return list.filter((o) => /international/i.test(o.bestFor));
-
     return list;
   }, [filter]);
+
+  // Offer click handler → show age modal if needed, otherwise go
+  const handleOfferClick = (offer) => {
+    const url = withUTM(offer.affiliateUrl || "#");
+    if (isAgeConfirmed()) {
+      // go directly
+      window.location.href = url;
+    } else {
+      setPendingUrl(url);
+    }
+  };
+
+  const confirmAndGo = (url) => {
+    setAgeConfirmed(30);
+    setPendingUrl(null);
+    window.location.href = url;
+  };
+
+  const cancelModal = () => setPendingUrl(null);
 
   return (
     <main
       className="min-h-screen text-white relative overflow-hidden
                  bg-gradient-to-br from-[#251730] via-[#2a183d] to-[#150a20]"
     >
+      {/* subtle grain */}
       <div className="pointer-events-none absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.14]" />
 
-      {/* NAVBAR */}
+      {/* navbar */}
       <header className="sticky top-0 z-30 bg-black/25 backdrop-blur-xl border-b border-white/15">
         <div className="mx-auto max-w-7xl px-4 py-4 flex items-center justify-between">
           <a className="flex items-center gap-3 font-extrabold" href="/">
@@ -197,7 +292,7 @@ export default function App() {
         </div>
       </header>
 
-      {/* HERO */}
+      {/* hero */}
       <section ref={heroRef} className="relative">
         <div
           className="absolute inset-0 -z-10 bg-cover bg-center opacity-[0.25]"
@@ -211,13 +306,13 @@ export default function App() {
           <div className="rounded-[28px] bg-black/25 border border-white/20 backdrop-blur-xl px-6 sm:px-10 py-10 text-center">
             <p className="mb-2 inline-flex items-center gap-2 text-xs uppercase text-white/80">
               <span className="rounded-full bg-white/10 px-2 py-1 border border-white/20">18+</span>
-              Comparison site for dating apps
+              Adult-only dating comparisons
             </p>
             <h1 className="text-4xl sm:text-6xl font-extrabold leading-tight">
               Find Better Matches — Safely & Confidently
             </h1>
             <p className="mt-3 text-white/85 text-lg">
-              We compare reputable dating apps so you can pick the right one.
+              We compare trusted dating apps so you can pick the right one.
             </p>
             <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
               <a
@@ -237,7 +332,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* FILTERS */}
+      {/* filters */}
       <section className="bg-black/25 backdrop-blur-lg border-y border-white/15">
         <div className="mx-auto max-w-7xl px-4 py-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap justify-center gap-2">
@@ -256,19 +351,14 @@ export default function App() {
               </button>
             ))}
           </div>
-
           <div className="flex gap-3 justify-center text-xs text-white/75">
-            <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1">
-              Editorial reviews
-            </span>
-            <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1">
-              No escort/sugar/compensation
-            </span>
+            <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1">Verified Reviews</span>
+            <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1">No Spam</span>
           </div>
         </div>
       </section>
 
-      {/* OFFERS GRID */}
+      {/* offers grid */}
       <section ref={offersRef} id="offers" className="relative py-12 px-4 overflow-hidden">
         <div
           className="absolute inset-0 -z-10 bg-cover bg-center opacity-[0.22]"
@@ -277,18 +367,18 @@ export default function App() {
               "url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=2200&auto=format&fit=crop')",
             ...gridParallax,
           }}
-        ></div>
+        />
         <div className="absolute inset-0 -z-10 bg-black/25" />
 
         <div className="mx-auto max-w-7xl">
           <h2 className="text-3xl font-extrabold">Editor’s Top Picks</h2>
           <p className="mt-2 text-white/80">
-            Ranked by safety, features, user feedback, privacy, and transparency.
+            Ranked by safety, features, user success, privacy, and transparency.
           </p>
 
           <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7 items-stretch">
             {filtered.map((o, index) => (
-              <OfferCard key={o.id || o.name} o={o} index={index} />
+              <OfferCard key={o.id || o.name} o={o} index={index} onClickOffer={handleOfferClick} />
             ))}
           </div>
         </div>
@@ -301,10 +391,6 @@ export default function App() {
             <h3 className="text-2xl font-extrabold">Frequently Asked Questions</h3>
             <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6 text-white/95">
               <div>
-                <h4 className="font-bold">What is this site?</h4>
-                <p className="text-white/75">An independent comparison of 18+ dating apps. We don’t run or broker in-person services.</p>
-              </div>
-              <div>
                 <h4 className="font-bold">Are these platforms free?</h4>
                 <p className="text-white/75">Many offer free signup with optional upgrades.</p>
               </div>
@@ -314,76 +400,40 @@ export default function App() {
               </div>
               <div>
                 <h4 className="font-bold">How do you rank apps?</h4>
-                <p className="text-white/75">
-                  We analyze safety, verification, features, pricing, and user feedback.
-                </p>
-              </div>
-              <div>
-                <h4 className="font-bold">Do you promote escort/sugar or compensated dating?</h4>
-                <p className="text-white/75">No. We don’t list or promote escort services, sugar dating, compensated companionship, or mail-order spouse/matchmaking services.</p>
+                <p className="text-white/75">We analyze safety, verification, features, pricing, and user feedback.</p>
               </div>
               <div>
                 <h4 className="font-bold">Is this site for adults?</h4>
-                <p className="text-white/75">Yes — for users 18+ only.</p>
+                <p className="text-white/75">Yes — intended for adults 18+ only.</p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer
-        ref={footerRef}
-        className="bg-black/25 backdrop-blur-xl border-t border-white/15 py-12 px-6 text-sm"
-      >
+      {/* footer */}
+      <footer className="bg-black/25 backdrop-blur-xl border-t border-white/15 py-12 px-6 text-sm">
         <div className="mx-auto max-w-7xl text-white/80">
           <p className="inline-flex items-center gap-2 text-xs uppercase text-white/75">
             <span className="rounded-full bg-white/10 px-2 py-1 border border-white/20">18+</span>
-            For users 18+
+            Adult-only content
           </p>
-
           <p className="mt-4 font-bold text-white">Affiliate Disclosure</p>
           <p className="mt-1">We may earn a commission when you sign up through our links.</p>
-
-          <p className="mt-4 text-white/75 max-w-3xl">
-            MatchFinderGuide is an editorial comparison site. We do not offer or promote escort services, “sugar” or compensated dating, in-person companionship, or mail-order spouse/transactional international matchmaking. Listings are for lawful online dating platforms only.
-          </p>
-
           <div className="mt-6 flex flex-wrap gap-4">
-            <a className="hover:text-white underline underline-offset-4" href="/privacy.html">
-              Privacy Policy
-            </a>
-            <a className="hover:text-white underline underline-offset-4" href="/terms.html">
-              Terms
-            </a>
-            <a className="hover:text-white underline underline-offset-4" href="/cookie.html">
-              Cookie Policy
-            </a>
-
-            <a
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                window.reopenConsent?.();
-              }}
-              className="hover:text-white underline underline-offset-4"
-            >
-              Cookie Settings
-            </a>
-
-            <a className="hover:text-white underline underline-offset-4" href="/contact.html">
-              Contact
-            </a>
+            <a className="hover:text-white underline underline-offset-4" href="/privacy.html">Privacy Policy</a>
+            <a className="hover:text-white underline underline-offset-4" href="/terms.html">Terms</a>
+            <a className="hover:text-white underline underline-offset-4" href="/cookie.html">Cookie Policy</a>
+            <a className="hover:text-white underline underline-offset-4" href="/contact.html">Contact</a>
           </div>
-
           <p className="mt-8 text-white/50 hover:text-white transition">
             © {new Date().getFullYear()} MatchFinderGuide.com
           </p>
         </div>
       </footer>
 
-      {/* COOKIE CONSENT */}
-      <CookieConsent />
+      {/* 18+ modal */}
+      <AgeConsentModal pendingUrl={pendingUrl} onConfirm={confirmAndGo} onCancel={cancelModal} />
     </main>
   );
 }
