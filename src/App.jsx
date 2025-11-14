@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useEffect, useRef } from "react";
 import OFFERS from "./offers.js";
 import CookieConsent from "./CookieConsent.jsx";
+import { Analytics } from "@vercel/analytics/react"; // Vercel Analytics
 
 /* ----------------- helpers ----------------- */
 const cn = (...c) => c.filter(Boolean).join(" ");
@@ -196,212 +197,262 @@ export default function App() {
   }
 
   return (
-    <main
-      className="min-h-screen text-white relative overflow-hidden
+    <>
+      <main
+        className="min-h-screen text-white relative overflow-hidden
                  bg-gradient-to-br from-[#251730] via-[#2a183d] to-[#150a20]"
-    >
-      <div className="pointer-events-none absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.14]" />
+      >
+        <div className="pointer-events-none absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.14]" />
 
-      {/* Navbar */}
-      <header className="sticky top-0 z-30 bg-black/25 backdrop-blur-xl border-b border-white/15">
-        <div className="mx-auto max-w-7xl px-4 py-4 flex items-center justify-between">
-          <a className="flex items-center gap-3 font-extrabold" href="/">
-            <img src="/logo.svg" className="h-8 w-8" alt="MatchFinderGuide" />
-            MatchFinderGuide
-          </a>
-          <nav className="hidden sm:flex gap-6 text-sm">
-            <a href="#offers" className="hover:underline">Offers</a>
-            <a href="#faq" className="hover:underline">FAQ</a>
-            <a href="/privacy.html" className="hover:underline">Privacy</a>
-            <a href="/terms.html" className="hover:underline">Terms</a>
-            <button
-              onClick={() => window.openCookieSettings?.()}
-              className="hover:underline"
-              type="button"
-            >
-              Cookie Settings
-            </button>
-          </nav>
-        </div>
-      </header>
-
-      {/* Hero Section */}
-      <section ref={heroRef} className="relative">
-        <div
-          className="absolute inset-0 -z-10 bg-cover bg-center opacity-[0.25]"
-          style={{
-            backgroundImage:
-              "url('https://images.unsplash.com/photo-1517840933437-c41356892b15?q=80&w=2000&auto=format&fit=crop')",
-            ...heroParallax,
-          }}
-        />
-        <div className="mx-auto max-w-5xl px-4 pt-14 pb-14">
-          <div className="rounded-[28px] bg-black/25 border border-white/20 backdrop-blur-xl px-6 sm:px-10 py-10 text-center">
-            <p className="mb-2 inline-flex items-center gap-2 text-xs uppercase text-white/80">
-              <span className="rounded-full bg-white/10 px-2 py-1 border border-white/20">18+</span>
-              Adult-only dating comparisons
-            </p>
-            <h1 className="text-4xl sm:text-6xl font-extrabold leading-tight">
-              Find Better Matches — Safely & Confidently
-            </h1>
-            <p className="mt-3 text-white/85 text-lg">
-              We compare trusted dating apps so you can pick the right one.
-            </p>
-            <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
-              <a
-                href="#offers"
-                className="rounded-2xl px-6 py-3 bg-white text-rose-700 font-bold shadow-lg hover:opacity-95"
+        {/* Navbar */}
+        <header className="sticky top-0 z-30 bg-black/25 backdrop-blur-xl border-b border-white/15">
+          <div className="mx-auto max-w-7xl px-4 py-4 flex items-center justify-between">
+            <a className="flex items-center gap-3 font-extrabold" href="/">
+              <img src="/logo.svg" className="h-8 w-8" alt="MatchFinderGuide" />
+              MatchFinderGuide
+            </a>
+            <nav className="hidden sm:flex gap-6 text-sm">
+              <a href="#offers" className="hover:underline">
+                Offers
+              </a>
+              <a href="#faq" className="hover:underline">
+                FAQ
+              </a>
+              <a href="/privacy.html" className="hover:underline">
+                Privacy
+              </a>
+              <a href="/terms.html" className="hover:underline">
+                Terms
+              </a>
+              <button
+                onClick={() => window.openCookieSettings?.()}
+                className="hover:underline"
+                type="button"
               >
-                See Top Picks
+                Cookie Settings
+              </button>
+            </nav>
+          </div>
+        </header>
+
+        {/* Hero Section */}
+        <section ref={heroRef} className="relative">
+          <div
+            className="absolute inset-0 -z-10 bg-cover bg-center opacity-[0.25]"
+            style={{
+              backgroundImage:
+                "url('https://images.unsplash.com/photo-1517840933437-c41356892b15?q=80&w=2000&auto=format&fit=crop')",
+              ...heroParallax,
+            }}
+          />
+          <div className="mx-auto max-w-5xl px-4 pt-14 pb-14">
+            <div className="rounded-[28px] bg-black/25 border border-white/20 backdrop-blur-xl px-6 sm:px-10 py-10 text-center">
+              <p className="mb-2 inline-flex items-center gap-2 text-xs uppercase text-white/80">
+                <span className="rounded-full bg-white/10 px-2 py-1 border border-white/20">
+                  18+
+                </span>
+                Adult-only dating comparisons
+              </p>
+              <h1 className="text-4xl sm:text-6xl font-extrabold leading-tight">
+                Find Better Matches — Safely & Confidently
+              </h1>
+              <p className="mt-3 text-white/85 text-lg">
+                We compare trusted dating apps so you can pick the right one.
+              </p>
+              <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+                <a
+                  href="#offers"
+                  className="rounded-2xl px-6 py-3 bg-white text-rose-700 font-bold shadow-lg hover:opacity-95"
+                >
+                  See Top Picks
+                </a>
+                <a
+                  href="#faq"
+                  className="rounded-2xl px-6 py-3 bg-white/10 border border-white/25 backdrop-blur-md text-white font-bold hover:bg-white/20"
+                >
+                  How We Compare
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Filters */}
+        <section className="bg-black/25 backdrop-blur-lg border-y border-white/15">
+          <div className="mx-auto max-w-7xl px-4 py-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-wrap justify-center gap-2">
+              {FILTERS.map((f) => (
+                <button
+                  key={f.key}
+                  onClick={() => setFilter(f.key)}
+                  className={cn(
+                    "px-4 py-2 rounded-full text-sm font-semibold transition border",
+                    filter === f.key
+                      ? "bg-white text-rose-700 border-white shadow-lg"
+                      : "bg-white/10 text-white border-white/25 hover:bg-white/20"
+                  )}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
+            <div className="flex gap-3 justify-center text-xs text-white/75">
+              <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1">
+                Verified Reviews
+              </span>
+              <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1">
+                No Spam
+              </span>
+            </div>
+          </div>
+        </section>
+
+        {/* Offers */}
+        <section ref={offersRef} id="offers" className="relative py-12 px-4 overflow-hidden">
+          <div
+            className="absolute inset-0 -z-10 bg-cover bg-center opacity-[0.22]"
+            style={{
+              backgroundImage:
+                "url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=2200&auto=format&fit=crop')",
+              ...gridParallax,
+            }}
+          />
+          <div className="absolute inset-0 -z-10 bg-black/25" />
+
+          <div className="mx-auto max-w-7xl">
+            <h2 className="text-3xl font-extrabold">Editor’s Top Picks</h2>
+            <p className="mt-2 text-white/80">
+              Ranked by safety, features, user success, privacy, and transparency.
+            </p>
+
+            <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7 items-stretch">
+              {filtered.map((o, index) => (
+                <OfferCard key={o.id || o.name} o={o} index={index} />
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ */}
+        <section id="faq" className="px-4 pb-14">
+          <div className="mx-auto max-w-7xl">
+            <div className="rounded-3xl bg-black/25 backdrop-blur-lg border border-white/20 p-6">
+              <h3 className="text-2xl font-extrabold">Frequently Asked Questions</h3>
+              <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6 text-white/95">
+                <div>
+                  <h4 className="font-bold">Are these platforms free?</h4>
+                  <p className="text-white/75">
+                    Many offer free signup with optional upgrades.
+                  </p>
+                </div>
+                <div>
+                  <h4 className="font-bold">Which is the best for serious dating?</h4>
+                  <p className="text-white/75">
+                    Use the “Serious” filter to view long-term focused apps.
+                  </p>
+                </div>
+                <div>
+                  <h4 className="font-bold">How do you rank apps?</h4>
+                  <p className="text-white/75">
+                    We analyze safety, verification, features, pricing, and user feedback.
+                  </p>
+                </div>
+                <div>
+                  <h4 className="font-bold">Is this site for adults?</h4>
+                  <p className="text-white/75">
+                    Yes — intended for adults 18+ only.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Footer */}
+        <footer
+          ref={footerRef}
+          className="bg-black/25 backdrop-blur-xl border-t border-white/15 py-12 px-6 text-sm"
+        >
+          <div className="mx-auto max-w-7xl text-white/80">
+            <p className="inline-flex items-center gap-2 text-xs uppercase text-white/75">
+              <span className="rounded-full bg-white/10 px-2 py-1 border border-white/20">
+                18+
+              </span>
+              Adult-only content
+            </p>
+
+            <p className="mt-4 font-bold text-white">Affiliate Disclosure</p>
+            <p className="mt-1">
+              We may earn a commission when you sign up through our links.
+            </p>
+
+            <div className="mt-6 flex flex-wrap gap-4">
+              <a
+                className="hover:text-white underline underline-offset-4"
+                href="/privacy.html"
+              >
+                Privacy Policy
               </a>
               <a
-                href="#faq"
-                className="rounded-2xl px-6 py-3 bg-white/10 border border-white/25 backdrop-blur-md text-white font-bold hover:bg-white/20"
+                className="hover:text-white underline underline-offset-4"
+                href="/terms.html"
               >
-                How We Compare
+                Terms
               </a>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Filters */}
-      <section className="bg-black/25 backdrop-blur-lg border-y border-white/15">
-        <div className="mx-auto max-w-7xl px-4 py-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-wrap justify-center gap-2">
-            {FILTERS.map((f) => (
-              <button
-                key={f.key}
-                onClick={() => setFilter(f.key)}
-                className={cn(
-                  "px-4 py-2 rounded-full text-sm font-semibold transition border",
-                  filter === f.key
-                    ? "bg-white text-rose-700 border-white shadow-lg"
-                    : "bg-white/10 text-white border-white/25 hover:bg-white/20"
-                )}
+              <a
+                className="hover:text-white underline underline-offset-4"
+                href="/cookie.html"
               >
-                {f.label}
+                Cookie Policy
+              </a>
+              <button
+                type="button"
+                onClick={() => window.openCookieSettings?.()}
+                className="hover:text-white underline underline-offset-4"
+              >
+                Cookie Settings
               </button>
-            ))}
-          </div>
-          <div className="flex gap-3 justify-center text-xs text-white/75">
-            <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1">Verified Reviews</span>
-            <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1">No Spam</span>
-          </div>
-        </div>
-      </section>
-
-      {/* Offers */}
-      <section ref={offersRef} id="offers" className="relative py-12 px-4 overflow-hidden">
-        <div
-          className="absolute inset-0 -z-10 bg-cover bg-center opacity-[0.22]"
-          style={{
-            backgroundImage:
-              "url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=2200&auto=format&fit=crop')",
-            ...gridParallax,
-          }}
-        />
-        <div className="absolute inset-0 -z-10 bg-black/25" />
-
-        <div className="mx-auto max-w-7xl">
-          <h2 className="text-3xl font-extrabold">Editor’s Top Picks</h2>
-          <p className="mt-2 text-white/80">
-            Ranked by safety, features, user success, privacy, and transparency.
-          </p>
-
-          <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7 items-stretch">
-            {filtered.map((o, index) => (
-              <OfferCard key={o.id || o.name} o={o} index={index} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ */}
-      <section id="faq" className="px-4 pb-14">
-        <div className="mx-auto max-w-7xl">
-          <div className="rounded-3xl bg-black/25 backdrop-blur-lg border border-white/20 p-6">
-            <h3 className="text-2xl font-extrabold">Frequently Asked Questions</h3>
-            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6 text-white/95">
-              <div>
-                <h4 className="font-bold">Are these platforms free?</h4>
-                <p className="text-white/75">Many offer free signup with optional upgrades.</p>
-              </div>
-              <div>
-                <h4 className="font-bold">Which is the best for serious dating?</h4>
-                <p className="text-white/75">Use the “Serious” filter to view long-term focused apps.</p>
-              </div>
-              <div>
-                <h4 className="font-bold">How do you rank apps?</h4>
-                <p className="text-white/75">We analyze safety, verification, features, pricing, and user feedback.</p>
-              </div>
-              <div>
-                <h4 className="font-bold">Is this site for adults?</h4>
-                <p className="text-white/75">Yes — intended for adults 18+ only.</p>
-              </div>
             </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Footer */}
-      <footer ref={footerRef} className="bg-black/25 backdrop-blur-xl border-t border-white/15 py-12 px-6 text-sm">
-        <div className="mx-auto max-w-7xl text-white/80">
-          <p className="inline-flex items-center gap-2 text-xs uppercase text-white/75">
-            <span className="rounded-full bg-white/10 px-2 py-1 border border-white/20">18+</span>
-            Adult-only content
-          </p>
-
-          <p className="mt-4 font-bold text-white">Affiliate Disclosure</p>
-          <p className="mt-1">We may earn a commission when you sign up through our links.</p>
-
-          <div className="mt-6 flex flex-wrap gap-4">
-            <a className="hover:text-white underline underline-offset-4" href="/privacy.html">Privacy Policy</a>
-            <a className="hover:text-white underline underline-offset-4" href="/terms.html">Terms</a>
-            <a className="hover:text-white underline underline-offset-4" href="/cookie.html">Cookie Policy</a>
-            <button
-              type="button"
-              onClick={() => window.openCookieSettings?.()}
-              className="hover:text-white underline underline-offset-4"
-            >
-              Cookie Settings
-            </button>
-          </div>
-
-          <p className="mt-8 text-white/50 hover:text-white transition">
-            © {new Date().getFullYear()} MatchFinderGuide.com
-          </p>
-        </div>
-      </footer>
-
-      {/* Age Gate Modal */}
-      {ageGateURL && (
-        <div className="fixed inset-0 bg-black/70 z-[200] flex items-center justify-center px-6 backdrop-blur-sm">
-          <div className="max-w-md w-full bg-[#1b0f23] border border-white/20 rounded-3xl p-8 text-center">
-            <h2 className="text-2xl font-extrabold mb-3">Adults Only (18+)</h2>
-            <p className="text-white/80">
-              This offer contains adult-oriented material.  
-              Please confirm that you are 18 years of age or older.
+            <p className="mt-8 text-white/50 hover:text-white transition">
+              © {new Date().getFullYear()} MatchFinderGuide.com
             </p>
-            <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
-              <button
-                onClick={closeAgeGate}
-                className="px-6 py-3 rounded-xl border border-white/30 bg-white/10 hover:bg-white/20"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={acceptAge}
-                className="px-6 py-3 rounded-xl bg-white text-rose-700 font-bold"
-              >
-                I am 18+
-              </button>
+          </div>
+        </footer>
+
+        {/* Age Gate Modal */}
+        {ageGateURL && (
+          <div className="fixed inset-0 bg-black/70 z-[200] flex items-center justify-center px-6 backdrop-blur-sm">
+            <div className="max-w-md w-full bg-[#1b0f23] border border-white/20 rounded-3xl p-8 text-center">
+              <h2 className="text-2xl font-extrabold mb-3">Adults Only (18+)</h2>
+              <p className="text-white/80">
+                This offer contains adult-oriented material.
+                <br />
+                Please confirm that you are 18 years of age or older.
+              </p>
+              <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+                <button
+                  onClick={closeAgeGate}
+                  className="px-6 py-3 rounded-xl border border-white/30 bg-white/10 hover:bg-white/20"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={acceptAge}
+                  className="px-6 py-3 rounded-xl bg-white text-rose-700 font-bold"
+                >
+                  I am 18+
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      <CookieConsent />
-    </main>
+        <CookieConsent />
+      </main>
+
+      {/* Vercel Analytics */}
+      <Analytics />
+    </>
   );
 }
