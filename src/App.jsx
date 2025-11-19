@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 import OFFERS from "./offers.js";
 import CookieConsent from "./CookieConsent.jsx";
 import { Analytics } from "@vercel/analytics/react"; // Vercel Analytics
@@ -209,10 +210,10 @@ export default function App() {
         {/* Navbar */}
         <header className="sticky top-0 z-30 bg-black/25 backdrop-blur-xl border-b border-white/15">
           <div className="mx-auto max-w-7xl px-4 py-4 flex items-center justify-between">
-            <a className="flex items-center gap-3 font-extrabold" href="/">
+            <Link className="flex items-center gap-3 font-extrabold" to="/">
               <img src="/logo.svg" className="h-8 w-8" alt="MatchFinderGuide" />
               MatchFinderGuide
-            </a>
+            </Link>
 
             <nav className="hidden sm:flex items-center gap-6 text-sm">
               {/* Categories dropdown */}
@@ -231,30 +232,30 @@ export default function App() {
                              group-hover:opacity-100 group-hover:translate-y-0 group-hover:visible
                              transition"
                 >
-                  <a
-                    href="/general"
+                  <Link
+                    to="/general"
                     className="block px-4 py-2.5 text-sm text-white/90 hover:bg-white/10 hover:text-white"
                   >
                     All / General
-                  </a>
-                  <a
-                    href="/serios"
+                  </Link>
+                  <Link
+                    to="/serios"
                     className="block px-4 py-2.5 text-sm text-white/90 hover:bg-white/10 hover:text-white"
                   >
                     Serious Dating
-                  </a>
-                  <a
-                    href="/international"
+                  </Link>
+                  <Link
+                    to="/international"
                     className="block px-4 py-2.5 text-sm text-white/90 hover:bg-white/10 hover:text-white"
                   >
                     International Dating
-                  </a>
-                  <a
-                    href="/casual"
+                  </Link>
+                  <Link
+                    to="/casual"
                     className="block px-4 py-2.5 text-sm text-white/90 hover:bg-white/10 hover:text-white"
                   >
                     Casual Dating
-                  </a>
+                  </Link>
                 </div>
               </div>
 
