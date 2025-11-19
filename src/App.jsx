@@ -67,11 +67,10 @@ function isTopChoice(index) {
 }
 
 /* ----------------- Offer Card ----------------- */
-function OfferCard({ o, index }) {
+export function OfferCard({ o, index }) {
   const cleanName = (o.name || "").replace(/\.com$/i, "");
   const shortFeatures = Array.isArray(o.features) ? o.features.slice(0, 2) : [];
 
-  // Age-gate click handler
   function handleClick(e) {
     e.preventDefault();
     if (typeof window !== "undefined") {
@@ -214,10 +213,51 @@ export default function App() {
               <img src="/logo.svg" className="h-8 w-8" alt="MatchFinderGuide" />
               MatchFinderGuide
             </a>
-            <nav className="hidden sm:flex gap-6 text-sm">
-              <a href="#offers" className="hover:underline">
-                Offers
-              </a>
+
+            <nav className="hidden sm:flex items-center gap-6 text-sm">
+              {/* Categories dropdown */}
+              <div className="relative group">
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-1 hover:underline"
+                >
+                  Categories
+                  <span className="text-xs">▾</span>
+                </button>
+
+                <div
+                  className="absolute right-0 mt-2 w-52 rounded-2xl bg-black/95 border border-white/15 
+                             shadow-xl py-2 opacity-0 translate-y-1 pointer-events-none
+                             group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto
+                             transition"
+                >
+                  <a
+                    href="/general"
+                    className="block px-4 py-2.5 text-sm text-white/90 hover:bg-white/10 hover:text-white"
+                  >
+                    All / General
+                  </a>
+                  <a
+                    href="/serios"
+                    className="block px-4 py-2.5 text-sm text-white/90 hover:bg-white/10 hover:text-white"
+                  >
+                    Serious Dating
+                  </a>
+                  <a
+                    href="/international"
+                    className="block px-4 py-2.5 text-sm text-white/90 hover:bg-white/10 hover:text-white"
+                  >
+                    International Dating
+                  </a>
+                  <a
+                    href="/casual"
+                    className="block px-4 py-2.5 text-sm text-white/90 hover:bg-white/10 hover:text-white"
+                  >
+                    Casual Dating
+                  </a>
+                </div>
+              </div>
+
               <a href="#faq" className="hover:underline">
                 FAQ
               </a>
@@ -381,13 +421,13 @@ export default function App() {
         >
           <div className="mx-auto max-w-7xl text-white/80">
             <p className="inline-flex items-center gap-2 text-xs uppercase text-white/75">
-              <span className="rounded-full bg-white/10 px-2 py-1 border border:white/20">
+              <span className="rounded-full bg-white/10 px-2 py-1 border border-white/20">
                 18+
               </span>
               Adult-only content
             </p>
 
-            <p className="mt-4 font-bold text:white">Affiliate Disclosure</p>
+            <p className="mt-4 font-bold text-white">Affiliate Disclosure</p>
             <p className="mt-1">
               We may earn a commission when you sign up through our links.
             </p>
@@ -428,10 +468,10 @@ export default function App() {
 
         {/* Age Gate Modal */}
         {ageGateURL && (
-          <div className="fixed inset-0 bg-black/70 z-[200] flex items:center justify-center px-6 backdrop-blur-sm">
-            <div className="max-w-md w-full bg-[#1b0f23] border border:white/20 rounded-3xl p-8 text:center">
+          <div className="fixed inset-0 bg-black/70 z-[200] flex items-center justify-center px-6 backdrop-blur-sm">
+            <div className="max-w-md w-full bg-[#1b0f23] border border-white/20 rounded-3xl p-8 text-center">
               <h2 className="text-2xl font-extrabold mb-3">Adults Only (18+)</h2>
-              <p className="text:white/80">
+              <p className="text-white/80">
                 This offer contains adult-oriented material.
                 <br />
                 Please confirm that you are 18 years of age or older.
@@ -439,13 +479,13 @@ export default function App() {
               <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
                 <button
                   onClick={closeAgeGate}
-                  className="px-6 py-3 rounded-xl border border-white/30 bg:white/10 hover:bg-white/20"
+                  className="px-6 py-3 rounded-xl border border-white/30 bg-white/10 hover:bg-white/20"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={acceptAge}
-                  className="px-6 py-3 rounded-xl bg:white text-rose-700 font-bold"
+                  className="px-6 py-3 rounded-xl bg-white text-rose-700 font-bold"
                 >
                   I am 18+
                 </button>

@@ -1,10 +1,59 @@
 import React from "react";
-import { createRoot } from "react-dom/client";
-import "./index.css";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import App from "./App.jsx";
+import CategoryPage from "./CategoryPage.jsx";
+import "./index.css";
 
-createRoot(document.getElementById("root")).render(
+ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <App />
+    <BrowserRouter>
+      <Routes>
+        {/* Ana sayfa */}
+        <Route path="/" element={<App />} />
+
+        {/* Kategori sayfaları */}
+        <Route
+          path="/serios"
+          element={
+            <CategoryPage
+              variant="serious"
+              title="Serious Dating Sites"
+              subtitle="Carefully selected platforms focused on long-term, meaningful relationships."
+            />
+          }
+        />
+        <Route
+          path="/international"
+          element={
+            <CategoryPage
+              variant="international"
+              title="International Dating Sites"
+              subtitle="Top-rated platforms to meet singles from different countries and cultures."
+            />
+          }
+        />
+        <Route
+          path="/casual"
+          element={
+            <CategoryPage
+              variant="casual"
+              title="Casual Dating & Social Apps"
+              subtitle="Relaxed, low-pressure dating apps ideal for casual connections and flirting."
+            />
+          }
+        />
+        <Route
+          path="/general"
+          element={
+            <CategoryPage
+              variant="general"
+              title="All Dating Offers"
+              subtitle="A complete overview of all dating offers listed on MatchFinderGuide."
+            />
+          }
+        />
+      </Routes>
+    </BrowserRouter>
   </React.StrictMode>
 );
