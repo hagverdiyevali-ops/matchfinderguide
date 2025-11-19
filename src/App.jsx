@@ -84,7 +84,7 @@ function OfferCard({ o, index }) {
       className={cn(
         "group relative rounded-3xl p-[1px] bg-gradient-to-br",
         o.color || "from-white/25 to-white/8",
-        "transition-transform duration-300 hover:scale-[1.02]"
+        "transition-transform duration-300 hover:scale-[1.01]"
       )}
     >
       {isTopChoice(index) && (
@@ -105,7 +105,10 @@ function OfferCard({ o, index }) {
         )}
       >
         <div className="px-6 pt-6 flex items-center justify-between">
-          <h3 className="text-xl font-extrabold text-white">{cleanName}</h3>
+          <h3 className="text-xl font-extrabold text-white">
+            <span className="text-white/60 mr-2 text-base">#{index + 1}</span>
+            {cleanName}
+          </h3>
           <RatingBadge rating={o.rating} />
         </div>
 
@@ -324,8 +327,11 @@ export default function App() {
             <p className="mt-2 text-white/80">
               Ranked by safety, features, user success, privacy, and transparency.
             </p>
+            <p className="mt-3 text-sm text-white/70">
+              Sorted by <span className="font-semibold">Trust Score</span> (highest to lowest).
+            </p>
 
-            <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7 items-stretch">
+            <div className="mt-8 space-y-5 max-w-3xl mx-auto">
               {filtered.map((o, index) => (
                 <OfferCard key={o.id || o.name} o={o} index={index} />
               ))}
@@ -375,13 +381,13 @@ export default function App() {
         >
           <div className="mx-auto max-w-7xl text-white/80">
             <p className="inline-flex items-center gap-2 text-xs uppercase text-white/75">
-              <span className="rounded-full bg-white/10 px-2 py-1 border border-white/20">
+              <span className="rounded-full bg-white/10 px-2 py-1 border border:white/20">
                 18+
               </span>
               Adult-only content
             </p>
 
-            <p className="mt-4 font-bold text-white">Affiliate Disclosure</p>
+            <p className="mt-4 font-bold text:white">Affiliate Disclosure</p>
             <p className="mt-1">
               We may earn a commission when you sign up through our links.
             </p>
@@ -422,10 +428,10 @@ export default function App() {
 
         {/* Age Gate Modal */}
         {ageGateURL && (
-          <div className="fixed inset-0 bg-black/70 z-[200] flex items-center justify-center px-6 backdrop-blur-sm">
-            <div className="max-w-md w-full bg-[#1b0f23] border border-white/20 rounded-3xl p-8 text-center">
+          <div className="fixed inset-0 bg-black/70 z-[200] flex items:center justify-center px-6 backdrop-blur-sm">
+            <div className="max-w-md w-full bg-[#1b0f23] border border:white/20 rounded-3xl p-8 text:center">
               <h2 className="text-2xl font-extrabold mb-3">Adults Only (18+)</h2>
-              <p className="text-white/80">
+              <p className="text:white/80">
                 This offer contains adult-oriented material.
                 <br />
                 Please confirm that you are 18 years of age or older.
@@ -433,13 +439,13 @@ export default function App() {
               <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
                 <button
                   onClick={closeAgeGate}
-                  className="px-6 py-3 rounded-xl border border-white/30 bg-white/10 hover:bg-white/20"
+                  className="px-6 py-3 rounded-xl border border-white/30 bg:white/10 hover:bg-white/20"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={acceptAge}
-                  className="px-6 py-3 rounded-xl bg-white text-rose-700 font-bold"
+                  className="px-6 py-3 rounded-xl bg:white text-rose-700 font-bold"
                 >
                   I am 18+
                 </button>
