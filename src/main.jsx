@@ -9,10 +9,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
-        {/* Ana sayfa */}
         <Route path="/" element={<App />} />
-
-        {/* Kategori sayfaları */}
         <Route
           path="/serios"
           element={
