@@ -227,8 +227,8 @@ export default function App() {
 
                 <div
                   className="absolute right-0 mt-2 w-52 rounded-2xl bg-black/95 border border-white/15 
-                             shadow-xl py-2 opacity-0 translate-y-1 pointer-events-none
-                             group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto
+                             shadow-xl py-2 opacity-0 translate-y-1 invisible
+                             group-hover:opacity-100 group-hover:translate-y-0 group-hover:visible
                              transition"
                 >
                   <a
