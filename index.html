@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <!-- Google Tag Manager -->
+    <script>
+      (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+      'https://www.googletagmanager.com/gtm.js?id=GTM-MT6CPQT7'+dl;f.parentNode.insertBefore(j,f);
+      })(window,document,'script','dataLayer','GTM-MT6CPQT7');
+    </script>
+    <!-- End Google Tag Manager -->
+
     <meta charset="UTF-8" />
 
     <!-- ✅ Mobile viewport (critical) -->
@@ -22,7 +32,7 @@
       content="Compare the most trusted dating platforms. Safe picks, verified reviews, and expert rankings. Find the best match for you — adult users only (18+)."
     />
 
-    <!-- ✅ OG tags (optional but good for share previews) -->
+    <!-- ✅ OG tags -->
     <meta property="og:title" content="MatchFinderGuide — Dating Site Comparisons" />
     <meta
       property="og:description"
@@ -36,27 +46,34 @@
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
-    <!-- ✅ Preload logo (improves LCP speed a bit) -->
+    <!-- ✅ Preload logo -->
     <link rel="preload" href="/logo.svg" as="image" />
-
-    <!-- ✅ Fonts (Tailwind-safe) -->
-    <!-- If you add a custom font later, preload it here -->
 
     <!-- ✅ Vite injects compiled CSS & JS here -->
     <script type="module" crossorigin src="/src/main.jsx"></script>
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=AW-17713734601"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){ dataLayer.push(arguments); }
-  gtag('js', new Date());
 
-  gtag('config', 'AW-17713734601');
-</script>
-
+    <!-- Google tag (gtag.js) - Google Ads -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17713734601"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){ dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'AW-17713734601');
+    </script>
   </head>
 
   <body class="antialiased bg-black text-white">
+    <!-- Google Tag Manager (noscript) -->
+    <noscript>
+      <iframe
+        src="https://www.googletagmanager.com/ns.html?id=GTM-MT6CPQT7"
+        height="0"
+        width="0"
+        style="display:none;visibility:hidden"
+      ></iframe>
+    </noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
     <div id="root"></div>
   </body>
 </html>
