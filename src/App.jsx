@@ -136,10 +136,10 @@ export function OfferCard({ o, index }) {
     ? o.bestFor.charAt(0).toUpperCase() + o.bestFor.slice(1)
     : null;
 
-  function handleClick(e) {
-    e.preventDefault();
+  function handleClick() {
     if (typeof window !== "undefined") {
-      window.openAgeGate?.(withUTM(o.affiliateUrl));
+      const finalUrl = withUTM(o.affiliateUrl);
+      window.open(finalUrl, "_blank", "noopener,noreferrer");
     }
   }
 
@@ -303,14 +303,7 @@ const FILTERS = [
 /* ----------------- Page Component ----------------- */
 export default function App() {
   const [filter, setFilter] = useState("all");
-  const [ageGateURL, setAgeGateURL] = useState(null);
-  const [mobileOpen, setMobileOpen] = useState(false); // NEW: mobile menu
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      window.openAgeGate = (url) => setAgeGateURL(url);
-    }
-  }, []);
+  const [mobileOpen, setMobileOpen] = useState(false); // mobile menu
 
   const heroRef = useRef(null);
   const offersRef = useRef(null);
@@ -330,14 +323,6 @@ export default function App() {
       return list.filter((o) => /international/i.test(o.bestFor));
     return list;
   }, [filter]);
-
-  function acceptAge() {
-    if (ageGateURL) window.location.href = ageGateURL;
-  }
-
-  function closeAgeGate() {
-    setAgeGateURL(null);
-  }
 
   function closeMobileMenu() {
     setMobileOpen(false);
@@ -784,38 +769,6 @@ export default function App() {
             </p>
           </div>
         </footer>
-
-        {/* Age Gate Modal */}
-        {ageGateURL && (
-          <div className="fixed inset-0 bg-black/70 z-[200] flex items-center justify-center px-6 backdrop-blur-sm">
-            <div className="max-w-md w-full bg-[#1b0f23] border border-white/20 rounded-3xl p-8 text-center">
-              <h2 className="text-2xl font-extrabold mb-3">Adults Only (18+)</h2>
-              <p className="text-white/80">
-                This offer contains adult-oriented material.
-                <br />
-                Please confirm that you are 18 years of age or older.
-              </p>
-              <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
-                <button
-                  onClick={closeAgeGate}
-                  className="px-6 py-3 rounded-xl border border-white/30 bg-white/10 hover:bg-white/20"
-                >
-                  Cancel
-                </button>
-                {/* 🔥 GTM için gerçek link */}
-                <a
-                  href={ageGateURL || "#"}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={closeAgeGate}
-                  className="px-6 py-3 rounded-xl bg-white text-rose-700 font-bold inline-flex items-center justify-center"
-                >
-                  I am 18+
-                </a>
-              </div>
-            </div>
-          </div>
-        )}
 
         <CookieConsent />
       </main>
