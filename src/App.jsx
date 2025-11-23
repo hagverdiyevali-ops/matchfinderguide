@@ -136,12 +136,8 @@ export function OfferCard({ o, index }) {
     ? o.bestFor.charAt(0).toUpperCase() + o.bestFor.slice(1)
     : null;
 
-  function handleClick() {
-    if (typeof window !== "undefined") {
-      const finalUrl = withUTM(o.affiliateUrl);
-      window.open(finalUrl, "_blank", "noopener,noreferrer");
-    }
-  }
+  // UTM eklenmiş final URL
+  const finalUrl = withUTM(o.affiliateUrl || "");
 
   const isTop = isTopChoice(index);
 
@@ -271,8 +267,10 @@ export function OfferCard({ o, index }) {
 
           {/* CTA */}
           <div className="mt-5 flex flex-col sm:flex-row sm:items-center gap-3">
-            <button
-              onClick={handleClick}
+            <a
+              href={finalUrl}
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center justify-center rounded-2xl px-6 py-3 text-sm font-semibold
                          bg-gradient-to-r from-rose-200 via-pink-200 to-amber-200 text-[#2a1028]
                          shadow-[0_18px_45px_-24px_rgba(0,0,0,0.9)]
@@ -280,7 +278,7 @@ export function OfferCard({ o, index }) {
             >
               Visit Site
               <span className="ml-2 text-xs">↗</span>
-            </button>
+            </a>
 
             <p className="text-[11px] text-white/55 sm:ml-1">
               External partner site · 18+ only
