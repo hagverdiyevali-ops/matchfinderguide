@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import OFFERS from "./offers.js";
 import CookieConsent from "./CookieConsent.jsx";
 import { Analytics } from "@vercel/analytics/react"; // Vercel Analytics
@@ -358,6 +358,39 @@ export default function App() {
   const gridParallax = useParallax(offersRef, 0.22);
   const footSmall = useParallax(footerRef, 0.1);
   const footWide = useParallax(footerRef, 0.08); // reserved if needed
+
+  const navigate = useNavigate();
+
+  // 🔹 IP-based geo redirect: Norway visitors on "/" → /webcam
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.location.pathname !== "/") return;
+
+    let cancelled = false;
+
+    async function checkCountry() {
+      try {
+        const res = await fetch("https://ipapi.co/json/");
+        if (!res.ok) return;
+
+        const data = await res.json();
+        const countryCode =
+          data.country_code || data.country || data.countryCode || "";
+
+        if (!cancelled && countryCode.toUpperCase() === "NO") {
+          navigate("/webcam", { replace: true });
+        }
+      } catch (err) {
+        console.error("Geo lookup failed", err);
+      }
+    }
+
+    checkCountry();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [navigate]);
 
   // Sort offers once by rating
   const sortedByRating = useMemo(() => {
