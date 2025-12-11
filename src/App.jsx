@@ -346,8 +346,49 @@ const FILTERS = [
   { key: "international", label: "International" },
 ];
 
-/* ----------------- Original dating homepage (kept as-is) ----------------- */
-function DatingApp() {
+/* ----------------- Page Component ----------------- */
+export default function App() {
+  // 🌍 GEO + BOT detection
+  const [countryCode, setCountryCode] = useState(null);
+  const [geoReady, setGeoReady] = useState(false);
+  const [isBot, setIsBot] = useState(false);
+
+  useEffect(() => {
+    // 1) Detect Google-related bots by User-Agent
+    try {
+      const ua = navigator.userAgent || "";
+      const botRegex =
+        /(Googlebot|Mediapartners-Google|AdsBot-Google|APIs-Google|Google-InspectionTool)/i;
+      setIsBot(botRegex.test(ua));
+    } catch {
+      setIsBot(false);
+    }
+
+    // 2) Fetch IP-based country
+    fetch("https://ipapi.co/json/")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data && data.country) {
+          setCountryCode(data.country);
+        }
+      })
+      .catch(() => {
+        // ignore errors, fallback: countryCode stays null
+      })
+      .finally(() => {
+        setGeoReady(true);
+      });
+  }, []);
+
+  const isNorway = countryCode === "NO";
+  const shouldShowWebcam = geoReady && isNorway && !isBot;
+
+  // If geo says "Norway human user", show webcam layout as root page
+  if (shouldShowWebcam) {
+    return <WebcamPage />;
+  }
+
+  // normal dating page below
   const [filter, setFilter] = useState("all");
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -880,54 +921,4 @@ function DatingApp() {
       <Analytics />
     </>
   );
-}
-
-/* ----------------- Geo-aware wrapper: decide what to show on "/" ----------------- */
-
-export default function App() {
-  const [countryCode, setCountryCode] = useState(null);
-  const [geoChecked, setGeoChecked] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function fetchGeo() {
-      try {
-        const res = await fetch("https://ipapi.co/json/");
-        if (!res.ok) throw new Error("Geo lookup failed");
-        const data = await res.json();
-        if (!cancelled) {
-          const code = data.country_code || data.country || null;
-          setCountryCode(code);
-          setGeoChecked(true);
-        }
-      } catch (e) {
-        if (!cancelled) {
-          // On error, just fall back to normal homepage
-          setGeoChecked(true);
-        }
-      }
-    }
-
-    fetchGeo();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  const isNorway = countryCode === "NO";
-
-  // While geo is loading, show normal homepage (no flash/blank)
-  if (!geoChecked) {
-    return <DatingApp />;
-  }
-
-  if (isNorway) {
-    // Render the webcam offers experience directly on "/"
-    return <WebcamPage />;
-  }
-
-  // Everyone else sees the normal dating comparison homepage
-  return <DatingApp />;
 }
