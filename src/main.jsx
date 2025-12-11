@@ -3,13 +3,17 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import App from "./App.jsx";
 import CategoryPage from "./CategoryPage.jsx";
+import WebcamPage from "./WebcamPage.jsx"; // ⬅️ NEW
 import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
+        {/* Main homepage */}
         <Route path="/" element={<App />} />
+
+        {/* Existing category pages */}
         <Route
           path="/serios"
           element={
@@ -50,6 +54,10 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             />
           }
         />
+
+        {/* 🔒 Hidden webcam routes – no links from main UI */}
+        <Route path="/webcam" element={<WebcamPage />} />
+        <Route path="/webcam-offers" element={<WebcamPage />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
