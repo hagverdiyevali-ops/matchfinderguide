@@ -1,4 +1,9 @@
-import React, { useMemo, useState, useEffect, useRef } from "react";
+import React, {
+  useMemo,
+  useState,
+  useEffect,
+  useRef
+} from "react";
 import { Link } from "react-router-dom";
 import OFFERS from "./offers.js";
 import CookieConsent from "./CookieConsent.jsx";
@@ -346,54 +351,10 @@ const FILTERS = [
   { key: "international", label: "International" },
 ];
 
-/* ----------------- Page Component ----------------- */
-export default function App() {
-  // 🌍 GEO + BOT detection
-  const [countryCode, setCountryCode] = useState(null);
-  const [geoReady, setGeoReady] = useState(false);
-  const [isBot, setIsBot] = useState(false);
-
-  useEffect(() => {
-    // 1) Detect Google-related bots by User-Agent
-    try {
-      const ua = navigator.userAgent || "";
-      const botRegex =
-        /(Googlebot|Mediapartners-Google|AdsBot-Google|APIs-Google|Google-InspectionTool)/i;
-      setIsBot(botRegex.test(ua));
-    } catch {
-      setIsBot(false);
-    }
-
-    // 2) Fetch IP-based country (two-letter code)
-    fetch("https://ipapi.co/country/")
-      .then((res) => (res.ok ? res.text() : null))
-      .then((text) => {
-        if (text && typeof text === "string") {
-          setCountryCode(text.trim().toUpperCase());
-        }
-      })
-      .catch(() => {
-        // ignore errors; countryCode stays null
-      })
-      .finally(() => {
-        setGeoReady(true);
-      });
-  }, []);
-
-  const isNorway = countryCode === "NO";
-  const shouldShowWebcam = geoReady && isNorway && !isBot;
-
-  // Norway human users → webcam page as root content
-  if (shouldShowWebcam) {
-    return (
-      <>
-        <WebcamPage />
-        <Analytics />
-      </>
-    );
-  }
-
-  // Normal dating homepage (also used as fallback while geo loads)
+/* ------------------------------------------------
+   MAIN DATING HOMEPAGE (unchanged UI, with hooks)
+--------------------------------------------------*/
+function MainDatingPage() {
   const [filter, setFilter] = useState("all");
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -432,7 +393,11 @@ export default function App() {
   // helper to change filter + scroll to offers
   function goToOffersWithFilter(key) {
     setFilter(key);
-    setMobileOpen(false);
+    setMobileMenu(false);
+  }
+
+  function setMobileMenu(value) {
+    setMobileOpen(value);
     const el = document.getElementById("offers");
     if (el) {
       el.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -440,489 +405,536 @@ export default function App() {
   }
 
   return (
-    <>
-      <main className="min-h-screen text-slate-900 relative overflow-hidden bg-gradient-to-b from-rose-50 via-white to-slate-50">
-        {/* soft light noise */}
-        <div className="pointer-events-none absolute inset-0 -z-10 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.12]" />
+    <main className="min-h-screen text-slate-900 relative overflow-hidden bg-gradient-to-b from-rose-50 via-white to-slate-50">
+      {/* soft light noise */}
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.12]" />
 
-        {/* Navbar */}
-        <header className="sticky top-0 z-30 bg-white/85 backdrop-blur-xl border-b border-slate-200">
-          <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between">
-            <Link
-              className="flex items-center gap-3 font-extrabold text-slate-900"
-              to="/"
-              onClick={closeMobileMenu}
-            >
-              <div className="h-9 w-9 rounded-2xl bg-white border border-slate-200 flex items-center justify-center shadow-sm">
-                <img src="/logo.svg" className="h-6 w-6" alt="MatchFinderGuide" />
-              </div>
-              <span className="tracking-tight text-sm sm:text-base">
-                MatchFinder<span className="text-rose-500">Guide</span>
-              </span>
-            </Link>
+      {/* Navbar */}
+      <header className="sticky top-0 z-30 bg-white/85 backdrop-blur-xl border-b border-slate-200">
+        <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between">
+          <Link
+            className="flex items-center gap-3 font-extrabold text-slate-900"
+            to="/"
+            onClick={closeMobileMenu}
+          >
+            <div className="h-9 w-9 rounded-2xl bg-white border border-slate-200 flex items-center justify-center shadow-sm">
+              <img src="/logo.svg" className="h-6 w-6" alt="MatchFinderGuide" />
+            </div>
+            <span className="tracking-tight text-sm sm:text-base">
+              MatchFinder<span className="text-rose-500">Guide</span>
+            </span>
+          </Link>
 
-            {/* Desktop nav */}
-            <nav className="hidden sm:flex items-center gap-5 text-sm">
-              <div className="relative group">
-                <button
-                  type="button"
-                  className="inline-flex items-center gap-2 rounded-full px-4 py-2 bg-slate-50 border border-slate-200 hover:bg-slate-100 text-xs font-semibold tracking-wide text-slate-700"
-                >
-                  <span>Categories</span>
-                  <span className="text-[10px]">▾</span>
-                </button>
+          {/* Desktop nav */}
+          <nav className="hidden sm:flex items-center gap-5 text-sm">
+            <div className="relative group">
+              <button
+                type="button"
+                className="inline-flex items-center gap-2 rounded-full px-4 py-2 bg-slate-50 border border-slate-200 hover:bg-slate-100 text-xs font-semibold tracking-wide text-slate-700"
+              >
+                <span>Categories</span>
+                <span className="text-[10px]">▾</span>
+              </button>
 
-                <div
-                  className="absolute right-0 mt-2 w-56 rounded-2xl bg-white border border-slate-200 
+              <div
+                className="absolute right-0 mt-2 w-56 rounded-2xl bg-white border border-slate-200 
                              shadow-xl py-2 opacity-0 translate-y-1 invisible
                              group-hover:opacity-100 group-hover:translate-y-0 group-hover:visible
                              transition"
-                >
-                  <button
-                    type="button"
-                    onClick={() => goToOffersWithFilter("all")}
-                    className="w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 hover:text-slate-900"
-                  >
-                    All / General
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => goToOffersWithFilter("serious")}
-                    className="w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 hover:text-slate-900"
-                  >
-                    Serious Dating
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => goToOffersWithFilter("international")}
-                    className="w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 hover:text-slate-900"
-                  >
-                    International Dating
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => goToOffersWithFilter("casual")}
-                    className="w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 hover:text-slate-900"
-                  >
-                    Casual Dating
-                  </button>
-                </div>
-              </div>
-
-              <span className="w-px h-5 bg-slate-200" />
-
-              <a
-                href="#faq"
-                className="hover:text-slate-900 text-slate-600 hover:underline"
               >
-                FAQ
-              </a>
-              <a
-                href="/privacy.html"
-                className="hover:text-slate-900 text-slate-600 hover:underline"
-              >
-                Privacy
-              </a>
-              <a
-                href="/terms.html"
-                className="hover:text-slate-900 text-slate-600 hover:underline"
-              >
-                Terms
-              </a>
-              <button
-                onClick={() => window.openCookieSettings?.()}
-                className="hover:text-slate-900 text-slate-600 hover:underline"
-                type="button"
-              >
-                Cookie Settings
-              </button>
-            </nav>
-
-            {/* Mobile menu button */}
-            <button
-              type="button"
-              className="sm:hidden inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-3 py-2 text-xs text-slate-700"
-              onClick={() => setMobileOpen((v) => !v)}
-            >
-              {mobileOpen ? "Close" : "Menu"}
-            </button>
-          </div>
-
-          {mobileOpen && (
-            <div className="sm:hidden border-t border-slate-200 bg-white px-4 py-4 text-sm space-y-4">
-              <div className="space-y-2">
-                <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">
-                  Categories
-                </p>
                 <button
                   type="button"
                   onClick={() => goToOffersWithFilter("all")}
-                  className="block w-full text-left text-slate-700 hover:text-slate-900"
+                  className="w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 hover:text-slate-900"
                 >
                   All / General
                 </button>
                 <button
                   type="button"
                   onClick={() => goToOffersWithFilter("serious")}
-                  className="block w-full text-left text-slate-700 hover:text-slate-900"
+                  className="w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 hover:text-slate-900"
                 >
                   Serious Dating
                 </button>
                 <button
                   type="button"
                   onClick={() => goToOffersWithFilter("international")}
-                  className="block w-full text-left text-slate-700 hover:text-slate-900"
+                  className="w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 hover:text-slate-900"
                 >
                   International Dating
                 </button>
                 <button
                   type="button"
                   onClick={() => goToOffersWithFilter("casual")}
-                  className="block w-full text-left text-slate-700 hover:text-slate-900"
+                  className="w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 hover:text-slate-900"
                 >
                   Casual Dating
                 </button>
               </div>
-
-              <div className="h-px bg-slate-200" />
-
-              <div className="space-y-2">
-                <a
-                  href="#faq"
-                  onClick={closeMobileMenu}
-                  className="block text-slate-600 hover:text-slate-900"
-                >
-                  FAQ
-                </a>
-                <a
-                  href="/privacy.html"
-                  onClick={closeMobileMenu}
-                  className="block text-slate-600 hover:text-slate-900"
-                >
-                  Privacy Policy
-                </a>
-                <a
-                  href="/terms.html"
-                  onClick={closeMobileMenu}
-                  className="block text-slate-600 hover:text-slate-900"
-                >
-                  Terms
-                </a>
-                <button
-                  type="button"
-                  onClick={() => {
-                    window.openCookieSettings?.();
-                    closeMobileMenu();
-                  }}
-                  className="block text-left text-slate-600 hover:text-slate-900"
-                >
-                  Cookie Settings
-                </button>
-              </div>
-            </div>
-          )}
-        </header>
-
-        {/* Hero Section */}
-        <section ref={heroRef} className="relative">
-          <div
-            className="absolute inset-0 -z-10 bg-gradient-to-b from-rose-50 via-white to-rose-50"
-            style={heroParallax}
-          />
-          <div className="mx-auto max-w-7xl px-4 pt-6 pb-6">
-            <div className="rounded-[28px] bg-white/95 border border-slate-200 backdrop-blur-xl px-6 sm:px-10 py-6 shadow-[0_20px_60px_-35px_rgba(15,23,42,0.45)]">
-              <div className="grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] items-center">
-                {/* LEFT */}
-                <div>
-                  <div className="mb-3 inline-flex items-center gap-3 px-4 py-2 rounded-full bg-rose-50 border border-rose-200 shadow-sm">
-                    <span className="rounded-full bg-white px-2.5 py-1 border border-rose-200 text-[11px] font-semibold tracking-[0.18em] uppercase text-rose-700">
-                      18+
-                    </span>
-                    <span className="text-[11px] sm:text-xs font-medium tracking-[0.18em] uppercase text-rose-700/80">
-                      Adult-only dating comparisons
-                    </span>
-                  </div>
-
-                  <div className="mt-1 space-y-3">
-                    <h1 className="text-2xl sm:text-4xl md:text-[2.6rem] font-extrabold leading-snug sm:leading-tight tracking-tight text-slate-900">
-                      Find Better Matches —{" "}
-                      <span className="bg-gradient-to-r from-rose-500 via-pink-500 to-amber-500 bg-clip-text text-transparent">
-                        Safely &amp; Confidently
-                      </span>
-                    </h1>
-                    <p className="max-w-xl text-slate-600 text-sm sm:text-base md:text-[0.98rem] leading-relaxed mt-1.5">
-                      <span className="font-semibold text-slate-900">
-                        Independent, policy-compliant comparisons.
-                      </span>{" "}
-                      We highlight trusted dating apps and filter out low-quality,
-                      spammy platforms so you can focus on real connections that fit
-                      what you&apos;re looking for.
-                    </p>
-                  </div>
-
-                  <div className="mt-5 flex flex-col sm:flex-row gap-3">
-                    <a
-                      href="#offers"
-                      className="inline-flex items-center justify-center rounded-2xl px-7 py-3 
-                         bg-gradient-to-r from-rose-500 via-pink-500 to-amber-400 
-                         text-white font-semibold text-sm sm:text-base
-                         shadow-[0_18px_45px_-24px_rgba(15,23,42,0.9)]
-                         hover:brightness-105 active:scale-95 transition"
-                    >
-                      See Top Picks
-                      <span className="ml-2 text-xs">↗</span>
-                    </a>
-                    <a
-                      href="#faq"
-                      className="inline-flex items-center justify-center rounded-2xl px-7 py-3 
-                         bg-slate-50 border border-slate-200 text-slate-800 
-                         text-sm sm:text-base font-semibold
-                         hover:bg-white active:scale-95 transition"
-                    >
-                      How We Compare
-                    </a>
-                  </div>
-                </div>
-
-                {/* RIGHT: romantic couple visual */}
-                <div className="relative">
-                  <div className="h-44 sm:h-48 md:h-52 rounded-[24px] bg-rose-50 border border-rose-100 overflow-hidden shadow-[0_16px_40px_-28px_rgba(15,23,42,0.8)]">
-                    <img
-                      src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1600&q=80"
-                      alt="Romantic couple enjoying time together"
-                      className="h-full w-full object-cover"
-                      loading="lazy"
-                    />
-
-                    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/45 via-black/10 to-transparent" />
-                    <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between text-[11px] text-white/90">
-                      <p className="font-medium">Real people. Real connections.</p>
-                      <span className="inline-flex items-center gap-1 rounded-full bg-white/15 px-3 py-1 border border-white/30 text-[10px] uppercase tracking-[0.18em]">
-                        Curated Matches
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Top 3 Picks strip */}
-        {topThree.length > 0 && (
-          <section className="bg-rose-50/60 border-y border-rose-100">
-            <div className="mx-auto max-w-6xl px-4 py-6">
-              <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
-                <h2 className="text-[11px] sm:text-xs font-semibold text-rose-700 uppercase tracking-[0.18em]">
-                  Our top 3 picks
-                </h2>
-                <p className="text-[11px] sm:text-xs text-slate-500">
-                  Selected by trust score, safety &amp; overall quality.
-                </p>
-              </div>
-
-              <div className="grid gap-4 lg:grid-cols-3">
-                {topThree.map((o, index) => (
-                  <TopStripCard key={o.id || o.name || index} o={o} index={index} />
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* Filters */}
-        <section className="border-y border-slate-200 bg-white/80">
-          <div className="mx-auto max-w-7xl px-4 py-7">
-            <div className="rounded-3xl bg-white border border-slate-200 backdrop-blur-xl px-4 sm:px-6 py-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between shadow-sm">
-              <div className="flex flex-col gap-2">
-                <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">
-                  Filter offers
-                </p>
-                <div className="flex flex-wrap justify-start gap-2">
-                  {FILTERS.map((f) => (
-                    <button
-                      key={f.key}
-                      onClick={() => goToOffersWithFilter(f.key)}
-                      className={cn(
-                        "inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs sm:text-sm font-semibold transition border",
-                        filter === f.key
-                          ? "bg-slate-900 text-white border-slate-900 shadow-[0_12px_30px_-18px_rgba(15,23,42,0.95)]"
-                          : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-white hover:text-slate-900"
-                      )}
-                    >
-                      <span
-                        className={cn(
-                          "h-1.5 w-1.5 rounded-full",
-                          filter === f.key ? "bg-rose-300" : "bg-slate-300"
-                        )}
-                      />
-                      {f.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="flex flex-wrap gap-2 justify-start sm:justify-end text-[11px] sm:text-xs">
-                <span className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5">
-                  <span className="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 text-[9px] text-white font-bold">
-                    ✓
-                  </span>
-                  <span className="text-slate-700 font-medium">Verified Reviews</span>
-                </span>
-                <span className="inline-flex items-center gap-2 rounded-full border border-sky-200 bg-sky-50 px-3 py-1.5">
-                  <span className="flex h-4 w-4 items-center justify-center rounded-full bg-sky-500 text-[9px] text-white font-bold">
-                    ✺
-                  </span>
-                  <span className="text-slate-700 font-medium">No Spam</span>
-                </span>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Offers */}
-        <section ref={offersRef} id="offers" className="relative py-12 px-4 overflow-hidden">
-          <div
-            className="absolute inset-0 -z-10 bg-cover bg-center opacity-[0.12]"
-            style={{
-              backgroundImage:
-                "url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=2200&auto=format&fit=crop')",
-              ...gridParallax,
-            }}
-          />
-          <div className="absolute inset-0 -z-10 bg-white/80" />
-
-          <div className="mx-auto max-w-7xl">
-            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-              <div>
-                <div className="inline-flex items-center gap-2 rounded-full bg-slate-50 border border-slate-200 px-3 py-1 text-[10px] uppercase tracking-[0.22em] text-slate-500">
-                  <span className="h-1.5 w-1.5 rounded-full bg-rose-300" />
-                  Editor’s Top Picks
-                </div>
-                <h2 className="mt-3 text-3xl sm:text-4xl font-extrabold text-slate-900">
-                  Curated Dating Platforms We Trust
-                </h2>
-                <p className="mt-2 text-slate-600 text-sm sm:text-base max-w-xl">
-                  Ranked by safety, features, user success, privacy, and overall
-                  transparency of each platform&apos;s experience.
-                </p>
-              </div>
-
-              <div className="text-xs sm:text-sm text-slate-600 md:text-right">
-                <p className="font-semibold text-slate-800">
-                  Sorted by Trust Score{" "}
-                  <span className="text-slate-400">(highest → lowest)</span>
-                </p>
-                <p className="mt-1 text-slate-500">
-                  #1 is the strongest overall balance of safety, quality and value.
-                </p>
-              </div>
             </div>
 
-            {/* wider cards */}
-            <div className="mt-8 space-y-6 max-w-6xl mx-auto w-full px-1 sm:px-2">
-              {filtered.map((o, index) => (
-                <OfferCard key={o.id || o.name || index} o={o} index={index} />
-              ))}
+            <span className="w-px h-5 bg-slate-200" />
+
+            <a
+              href="#faq"
+              className="hover:text-slate-900 text-slate-600 hover:underline"
+            >
+              FAQ
+            </a>
+            <a
+              href="/privacy.html"
+              className="hover:text-slate-900 text-slate-600 hover:underline"
+            >
+              Privacy
+            </a>
+            <a
+              href="/terms.html"
+              className="hover:text-slate-900 text-slate-600 hover:underline"
+            >
+              Terms
+            </a>
+            <button
+              onClick={() => window.openCookieSettings?.()}
+              className="hover:text-slate-900 text-slate-600 hover:underline"
+              type="button"
+            >
+              Cookie Settings
+            </button>
+          </nav>
+
+          {/* Mobile menu button */}
+          <button
+            type="button"
+            className="sm:hidden inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-3 py-2 text-xs text-slate-700"
+            onClick={() => setMobileOpen((v) => !v)}
+          >
+            {mobileOpen ? "Close" : "Menu"}
+          </button>
+        </div>
+
+        {mobileOpen && (
+          <div className="sm:hidden border-t border-slate-200 bg-white px-4 py-4 text-sm space-y-4">
+            <div className="space-y-2">
+              <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">
+                Categories
+              </p>
+              <button
+                type="button"
+                onClick={() => goToOffersWithFilter("all")}
+                className="block w-full text-left text-slate-700 hover:text-slate-900"
+              >
+                All / General
+              </button>
+              <button
+                type="button"
+                onClick={() => goToOffersWithFilter("serious")}
+                className="block w-full text-left text-slate-700 hover:text-slate-900"
+              >
+                Serious Dating
+              </button>
+              <button
+                type="button"
+                onClick={() => goToOffersWithFilter("international")}
+                className="block w-full text-left text-slate-700 hover:text-slate-900"
+              >
+                International Dating
+              </button>
+              <button
+                type="button"
+                onClick={() => goToOffersWithFilter("casual")}
+                className="block w-full text-left text-slate-700 hover:text-slate-900"
+              >
+                Casual Dating
+              </button>
             </div>
-          </div>
-        </section>
 
-        {/* FAQ */}
-        <section id="faq" className="px-4 pb-14">
-          <div className="mx-auto max-w-7xl">
-            <div className="rounded-3xl bg-white/95 backdrop-blur-lg border border-slate-200 p-6 shadow-sm">
-              <h3 className="text-2xl font-extrabold text-slate-900">
-                Frequently Asked Questions
-              </h3>
-              <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6 text-slate-900">
-                <div>
-                  <h4 className="font-bold">Are these platforms free?</h4>
-                  <p className="text-slate-600">
-                    Many offer free signup with optional upgrades.
-                  </p>
-                </div>
-                <div>
-                  <h4 className="font-bold">Which is the best for serious dating?</h4>
-                  <p className="text-slate-600">
-                    Use the “Serious” filter to view long-term focused apps.
-                  </p>
-                </div>
-                <div>
-                  <h4 className="font-bold">How do you rank apps?</h4>
-                  <p className="text-slate-600">
-                    We analyze safety, verification, features, pricing, and user
-                    feedback.
-                  </p>
-                </div>
-                <div>
-                  <h4 className="font-bold">Is this site for adults?</h4>
-                  <p className="text-slate-600">
-                    Yes — intended for adults 18+ only.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+            <div className="h-px bg-slate-200" />
 
-        {/* Footer */}
-        <footer
-          ref={footerRef}
-          className="bg-white/95 backdrop-blur-xl border-t border-slate-200 py-12 px-6 text-sm"
-          style={footSmall}
-        >
-          <div className="mx-auto max-w-7xl text-slate-700">
-            <p className="inline-flex items-center gap-2 text-xs uppercase text-slate-600">
-              <span className="rounded-full bg-rose-50 px-2 py-1 border border-rose-200 text-rose-700">
-                18+
-              </span>
-              Adult-only content
-            </p>
-
-            <p className="mt-4 font-bold text-slate-900">Affiliate Disclosure</p>
-            <p className="mt-1 text-slate-600">
-              We may earn a commission when you sign up through our links.
-            </p>
-
-            <div className="mt-6 flex flex-wrap gap-4">
+            <div className="space-y-2">
               <a
-                className="hover:text-slate-900 underline underline-offset-4"
+                href="#faq"
+                onClick={closeMobileMenu}
+                className="block text-slate-600 hover:text-slate-900"
+              >
+                FAQ
+              </a>
+              <a
                 href="/privacy.html"
+                onClick={closeMobileMenu}
+                className="block text-slate-600 hover:text-slate-900"
               >
                 Privacy Policy
               </a>
               <a
-                className="hover:text-slate-900 underline underline-offset-4"
                 href="/terms.html"
+                onClick={closeMobileMenu}
+                className="block text-slate-600 hover:text-slate-900"
               >
                 Terms
               </a>
-              <a
-                className="hover:text-slate-900 underline underline-offset-4"
-                href="/cookie.html"
-              >
-                Cookie Policy
-              </a>
               <button
                 type="button"
-                onClick={() => window.openCookieSettings?.()}
-                className="hover:text-slate-900 underline underline-offset-4"
+                onClick={() => {
+                  window.openCookieSettings?.();
+                  closeMobileMenu();
+                }}
+                className="block text-left text-slate-600 hover:text-slate-900"
               >
                 Cookie Settings
               </button>
             </div>
-
-            <p className="mt-8 text-slate-400 hover:text-slate-700 transition">
-              © {new Date().getFullYear()} MatchFinderGuide.com
-            </p>
           </div>
-        </footer>
+        )}
+      </header>
 
-        <CookieConsent />
-      </main>
+      {/* Hero Section */}
+      <section ref={heroRef} className="relative">
+        <div
+          className="absolute inset-0 -z-10 bg-gradient-to-b from-rose-50 via-white to-rose-50"
+          style={heroParallax}
+        />
+        <div className="mx-auto max-w-7xl px-4 pt-6 pb-6">
+          <div className="rounded-[28px] bg-white/95 border border-slate-200 backdrop-blur-xl px-6 sm:px-10 py-6 shadow-[0_20px_60px_-35px_rgba(15,23,42,0.45)]">
+            <div className="grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] items-center">
+              {/* LEFT */}
+              <div>
+                <div className="mb-3 inline-flex items-center gap-3 px-4 py-2 rounded-full bg-rose-50 border border-rose-200 shadow-sm">
+                  <span className="rounded-full bg-white px-2.5 py-1 border border-rose-200 text-[11px] font-semibold tracking-[0.18em] uppercase text-rose-700">
+                    18+
+                  </span>
+                  <span className="text-[11px] sm:text-xs font-medium tracking-[0.18em] uppercase text-rose-700/80">
+                    Adult-only dating comparisons
+                  </span>
+                </div>
 
-      {/* Vercel Analytics */}
+                <div className="mt-1 space-y-3">
+                  <h1 className="text-2xl sm:text-4xl md:text-[2.6rem] font-extrabold leading-snug sm:leading-tight tracking-tight text-slate-900">
+                    Find Better Matches —{" "}
+                    <span className="bg-gradient-to-r from-rose-500 via-pink-500 to-amber-500 bg-clip-text text-transparent">
+                      Safely &amp; Confidently
+                    </span>
+                  </h1>
+                  <p className="max-w-xl text-slate-600 text-sm sm:text-base md:text-[0.98rem] leading-relaxed mt-1.5">
+                    <span className="font-semibold text-slate-900">
+                      Independent, policy-compliant comparisons.
+                    </span>{" "}
+                    We highlight trusted dating apps and filter out low-quality,
+                    spammy platforms so you can focus on real connections that fit
+                    what you&apos;re looking for.
+                  </p>
+                </div>
+
+                <div className="mt-5 flex flex-col sm:flex-row gap-3">
+                  <a
+                    href="#offers"
+                    className="inline-flex items-center justify-center rounded-2xl px-7 py-3 
+                         bg-gradient-to-r from-rose-500 via-pink-500 to-amber-400 
+                         text-white font-semibold text-sm sm:text-base
+                         shadow-[0_18px_45px_-24px_rgba(15,23,42,0.9)]
+                         hover:brightness-105 active:scale-95 transition"
+                  >
+                    See Top Picks
+                    <span className="ml-2 text-xs">↗</span>
+                  </a>
+                  <a
+                    href="#faq"
+                    className="inline-flex items-center justify-center rounded-2xl px-7 py-3 
+                         bg-slate-50 border border-slate-200 text-slate-800 
+                         text-sm sm:text-base font-semibold
+                         hover:bg-white active:scale-95 transition"
+                  >
+                    How We Compare
+                  </a>
+                </div>
+              </div>
+
+              {/* RIGHT: romantic couple visual */}
+              <div className="relative">
+                <div className="h-44 sm:h-48 md:h-52 rounded-[24px] bg-rose-50 border border-rose-100 overflow-hidden shadow-[0_16px_40px_-28px_rgba(15,23,42,0.8)]">
+                  <img
+                    src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1600&q=80"
+                    alt="Romantic couple enjoying time together"
+                    className="h-full w-full object-cover"
+                    loading="lazy"
+                  />
+
+                  <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/45 via-black/10 to-transparent" />
+                  <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between text-[11px] text-white/90">
+                    <p className="font-medium">Real people. Real connections.</p>
+                    <span className="inline-flex items-center gap-1 rounded-full bg-white/15 px-3 py-1 border border-white/30 text-[10px] uppercase tracking-[0.18em]">
+                      Curated Matches
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Top 3 Picks strip */}
+      {topThree.length > 0 && (
+        <section className="bg-rose-50/60 border-y border-rose-100">
+          <div className="mx-auto max-w-6xl px-4 py-6">
+            <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+              <h2 className="text-[11px] sm:text-xs font-semibold text-rose-700 uppercase tracking-[0.18em]">
+                Our top 3 picks
+              </h2>
+              <p className="text-[11px] sm:text-xs text-slate-500">
+                Selected by trust score, safety &amp; overall quality.
+              </p>
+            </div>
+
+            <div className="grid gap-4 lg:grid-cols-3">
+              {topThree.map((o, index) => (
+                <TopStripCard key={o.id || o.name || index} o={o} index={index} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Filters */}
+      <section className="border-y border-slate-200 bg-white/80">
+        <div className="mx-auto max-w-7xl px-4 py-7">
+          <div className="rounded-3xl bg-white border border-slate-200 backdrop-blur-xl px-4 sm:px-6 py-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between shadow-sm">
+            <div className="flex flex-col gap-2">
+              <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">
+                Filter offers
+              </p>
+              <div className="flex flex-wrap justify-start gap-2">
+                {FILTERS.map((f) => (
+                  <button
+                    key={f.key}
+                    onClick={() => goToOffersWithFilter(f.key)}
+                    className={cn(
+                      "inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs sm:text-sm font-semibold transition border",
+                      filter === f.key
+                        ? "bg-slate-900 text-white border-slate-900 shadow-[0_12px_30px_-18px_rgba(15,23,42,0.95)]"
+                        : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-white hover:text-slate-900"
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        "h-1.5 w-1.5 rounded-full",
+                        filter === f.key ? "bg-rose-300" : "bg-slate-300"
+                      )}
+                    />
+                    {f.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-2 justify-start sm:justify-end text-[11px] sm:text-xs">
+              <span className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5">
+                <span className="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 text-[9px] text-white font-bold">
+                  ✓
+                </span>
+                <span className="text-slate-700 font-medium">
+                  Verified Reviews
+                </span>
+              </span>
+              <span className="inline-flex items-center gap-2 rounded-full border border-sky-200 bg-sky-50 px-3 py-1.5">
+                <span className="flex h-4 w-4 items-center justify-center rounded-full bg-sky-500 text-[9px] text-white font-bold">
+                  ✺
+                </span>
+                <span className="text-slate-700 font-medium">No Spam</span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Offers */}
+      <section
+        ref={offersRef}
+        id="offers"
+        className="relative py-12 px-4 overflow-hidden"
+      >
+        <div
+          className="absolute inset-0 -z-10 bg-cover bg-center opacity-[0.12]"
+          style={{
+            backgroundImage:
+              "url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=2200&auto=format&fit=crop')",
+            ...gridParallax,
+          }}
+        />
+        <div className="absolute inset-0 -z-10 bg-white/80" />
+
+        <div className="mx-auto max-w-7xl">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+            <div>
+              <div className="inline-flex items-center gap-2 rounded-full bg-slate-50 border border-slate-200 px-3 py-1 text-[10px] uppercase tracking-[0.22em] text-slate-500">
+                <span className="h-1.5 w-1.5 rounded-full bg-rose-300" />
+                Editor’s Top Picks
+              </div>
+              <h2 className="mt-3 text-3xl sm:text-4xl font-extrabold text-slate-900">
+                Curated Dating Platforms We Trust
+              </h2>
+              <p className="mt-2 text-slate-600 text-sm sm:text-base max-w-xl">
+                Ranked by safety, features, user success, privacy, and overall
+                transparency of each platform&apos;s experience.
+              </p>
+            </div>
+
+            <div className="text-xs sm:text-sm text-slate-600 md:text-right">
+              <p className="font-semibold text-slate-800">
+                Sorted by Trust Score{" "}
+                <span className="text-slate-400">(highest → lowest)</span>
+              </p>
+              <p className="mt-1 text-slate-500">
+                #1 is the strongest overall balance of safety, quality and value.
+              </p>
+            </div>
+          </div>
+
+          {/* wider cards */}
+          <div className="mt-8 space-y-6 max-w-6xl mx-auto w-full px-1 sm:px-2">
+            {filtered.map((o, index) => (
+              <OfferCard key={o.id || o.name || index} o={o} index={index} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section id="faq" className="px-4 pb-14">
+        <div className="mx-auto max-w-7xl">
+          <div className="rounded-3xl bg-white/95 backdrop-blur-lg border border-slate-200 p-6 shadow-sm">
+            <h3 className="text-2xl font-extrabold text-slate-900">
+              Frequently Asked Questions
+            </h3>
+            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6 text-slate-900">
+              <div>
+                <h4 className="font-bold">Are these platforms free?</h4>
+                <p className="text-slate-600">
+                  Many offer free signup with optional upgrades.
+                </p>
+              </div>
+              <div>
+                <h4 className="font-bold">Which is the best for serious dating?</h4>
+                <p className="text-slate-600">
+                  Use the “Serious” filter to view long-term focused apps.
+                </p>
+              </div>
+              <div>
+                <h4 className="font-bold">How do you rank apps?</h4>
+                <p className="text-slate-600">
+                  We analyze safety, verification, features, pricing, and user
+                  feedback.
+                </p>
+              </div>
+              <div>
+                <h4 className="font-bold">Is this site for adults?</h4>
+                <p className="text-slate-600">
+                  Yes — intended for adults 18+ only.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer
+        ref={footerRef}
+        className="bg-white/95 backdrop-blur-xl border-t border-slate-200 py-12 px-6 text-sm"
+        style={footSmall}
+      >
+        <div className="mx-auto max-w-7xl text-slate-700">
+          <p className="inline-flex items-center gap-2 text-xs uppercase text-slate-600">
+            <span className="rounded-full bg-rose-50 px-2 py-1 border border-rose-200 text-rose-700">
+              18+
+            </span>
+            Adult-only content
+          </p>
+
+          <p className="mt-4 font-bold text-slate-900">Affiliate Disclosure</p>
+          <p className="mt-1 text-slate-600">
+            We may earn a commission when you sign up through our links.
+          </p>
+
+          <div className="mt-6 flex flex-wrap gap-4">
+            <a
+              className="hover:text-slate-900 underline underline-offset-4"
+              href="/privacy.html"
+            >
+              Privacy Policy
+            </a>
+            <a
+              className="hover:text-slate-900 underline underline-offset-4"
+              href="/terms.html"
+            >
+              Terms
+            </a>
+            <a
+              className="hover:text-slate-900 underline underline-offset-4"
+              href="/cookie.html"
+            >
+              Cookie Policy
+            </a>
+            <button
+              type="button"
+              onClick={() => window.openCookieSettings?.()}
+              className="hover:text-slate-900 underline underline-offset-4"
+            >
+              Cookie Settings
+            </button>
+          </div>
+
+          <p className="mt-8 text-slate-400 hover:text-slate-700 transition">
+            © {new Date().getFullYear()} MatchFinderGuide.com
+          </p>
+        </div>
+      </footer>
+
+      <CookieConsent />
+    </main>
+  );
+}
+
+/* ------------------------------------------------
+   ROOT APP: GEO + BOT SWITCHER
+--------------------------------------------------*/
+export default function App() {
+  const [countryCode, setCountryCode] = useState(null);
+  const [geoReady, setGeoReady] = useState(false);
+  const [isBot, setIsBot] = useState(false);
+
+  useEffect(() => {
+    // Detect Google-related bots
+    try {
+      const ua = navigator.userAgent || "";
+      const botRegex =
+        /(Googlebot|Mediapartners-Google|AdsBot-Google|APIs-Google|Google-InspectionTool)/i;
+      setIsBot(botRegex.test(ua));
+    } catch {
+      setIsBot(false);
+    }
+
+    // Fetch 2-letter country code
+    fetch("https://ipapi.co/country/")
+      .then((res) => (res.ok ? res.text() : null))
+      .then((text) => {
+        if (text && typeof text === "string") {
+          setCountryCode(text.trim().toUpperCase());
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        setGeoReady(true);
+      });
+  }, []);
+
+  const isNorway = countryCode === "NO";
+  const shouldShowWebcam = geoReady && isNorway && !isBot;
+
+  const content = shouldShowWebcam ? <WebcamPage /> : <MainDatingPage />;
+
+  return (
+    <>
+      {content}
       <Analytics />
     </>
   );
