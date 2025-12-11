@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import OFFERS from "./offers.js";
 import CookieConsent from "./CookieConsent.jsx";
 import WebcamPage from "./WebcamPage.jsx";
-import { Analytics } from "@vercel/analytics/react"; // Vercel Analytics
+import { Analytics } from "@vercel/analytics/react";
 
 /* ----------------- helpers ----------------- */
 const cn = (...c) => c.filter(Boolean).join(" ");
@@ -364,16 +364,16 @@ export default function App() {
       setIsBot(false);
     }
 
-    // 2) Fetch IP-based country
-    fetch("https://ipapi.co/json/")
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (data && data.country) {
-          setCountryCode(data.country);
+    // 2) Fetch IP-based country (two-letter code)
+    fetch("https://ipapi.co/country/")
+      .then((res) => (res.ok ? res.text() : null))
+      .then((text) => {
+        if (text && typeof text === "string") {
+          setCountryCode(text.trim().toUpperCase());
         }
       })
       .catch(() => {
-        // ignore errors, fallback: countryCode stays null
+        // ignore errors; countryCode stays null
       })
       .finally(() => {
         setGeoReady(true);
@@ -383,12 +383,17 @@ export default function App() {
   const isNorway = countryCode === "NO";
   const shouldShowWebcam = geoReady && isNorway && !isBot;
 
-  // If geo says "Norway human user", show webcam layout as root page
+  // Norway human users → webcam page as root content
   if (shouldShowWebcam) {
-    return <WebcamPage />;
+    return (
+      <>
+        <WebcamPage />
+        <Analytics />
+      </>
+    );
   }
 
-  // normal dating page below
+  // Normal dating homepage (also used as fallback while geo loads)
   const [filter, setFilter] = useState("all");
   const [mobileOpen, setMobileOpen] = useState(false);
 
