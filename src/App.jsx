@@ -1,7 +1,8 @@
 import React, { useMemo, useState, useEffect, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import OFFERS from "./offers.js";
 import CookieConsent from "./CookieConsent.jsx";
+import WebcamPage from "./WebcamPage.jsx";
 import { Analytics } from "@vercel/analytics/react"; // Vercel Analytics
 
 /* ----------------- helpers ----------------- */
@@ -345,8 +346,8 @@ const FILTERS = [
   { key: "international", label: "International" },
 ];
 
-/* ----------------- Page Component ----------------- */
-export default function App() {
+/* ----------------- Original dating homepage (kept as-is) ----------------- */
+function DatingApp() {
   const [filter, setFilter] = useState("all");
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -358,39 +359,6 @@ export default function App() {
   const gridParallax = useParallax(offersRef, 0.22);
   const footSmall = useParallax(footerRef, 0.1);
   const footWide = useParallax(footerRef, 0.08); // reserved if needed
-
-  const navigate = useNavigate();
-
-  // 🔹 IP-based geo redirect: Norway visitors on "/" → /webcam
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (window.location.pathname !== "/") return;
-
-    let cancelled = false;
-
-    async function checkCountry() {
-      try {
-        const res = await fetch("https://ipapi.co/json/");
-        if (!res.ok) return;
-
-        const data = await res.json();
-        const countryCode =
-          data.country_code || data.country || data.countryCode || "";
-
-        if (!cancelled && countryCode.toUpperCase() === "NO") {
-          navigate("/webcam", { replace: true });
-        }
-      } catch (err) {
-        console.error("Geo lookup failed", err);
-      }
-    }
-
-    checkCountry();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [navigate]);
 
   // Sort offers once by rating
   const sortedByRating = useMemo(() => {
@@ -912,4 +880,54 @@ export default function App() {
       <Analytics />
     </>
   );
+}
+
+/* ----------------- Geo-aware wrapper: decide what to show on "/" ----------------- */
+
+export default function App() {
+  const [countryCode, setCountryCode] = useState(null);
+  const [geoChecked, setGeoChecked] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function fetchGeo() {
+      try {
+        const res = await fetch("https://ipapi.co/json/");
+        if (!res.ok) throw new Error("Geo lookup failed");
+        const data = await res.json();
+        if (!cancelled) {
+          const code = data.country_code || data.country || null;
+          setCountryCode(code);
+          setGeoChecked(true);
+        }
+      } catch (e) {
+        if (!cancelled) {
+          // On error, just fall back to normal homepage
+          setGeoChecked(true);
+        }
+      }
+    }
+
+    fetchGeo();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const isNorway = countryCode === "NO";
+
+  // While geo is loading, show normal homepage (no flash/blank)
+  if (!geoChecked) {
+    return <DatingApp />;
+  }
+
+  if (isNorway) {
+    // Render the webcam offers experience directly on "/"
+    return <WebcamPage />;
+  }
+
+  // Everyone else sees the normal dating comparison homepage
+  return <DatingApp />;
 }
