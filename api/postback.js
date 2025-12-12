@@ -14,7 +14,7 @@ function pick(q, keys) {
 function detectPartner(q) {
   const keys = new Set(Object.keys(q || {}).map((k) => k.toLowerCase()));
 
-  // Cpamatica is very distinctive
+  // Cpamatica is distinctive
   if (keys.has("offer_id") || keys.has("transaction_id") || keys.has("status_name")) return "cpamatica";
 
   // Vortex style
@@ -111,8 +111,9 @@ export default async function handler(req, res) {
       sub5: pick(q, map.sub5 || ["sub5"]),
     };
 
+    // ✅ IMPORTANT: write into postbacks_v2
     await sql`
-      INSERT INTO postbacks (
+      INSERT INTO postbacks_v2 (
         partner,
         offer_id, offer_name,
         goal_id, goal_name, goal,
@@ -141,6 +142,8 @@ export default async function handler(req, res) {
 
     return res.status(200).send("OK");
   } catch (e) {
+    // ✅ log the real error so you can see it in Vercel -> Functions -> Logs
+    console.error("postback error:", e);
     return res.status(500).send("ERROR");
   }
 }
