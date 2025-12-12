@@ -42,49 +42,22 @@ function getStoredGclid() {
  */
 function withTracking(url) {
   try {
-    const clickId = getStoredClickId(); // required for postback attribution
-    const gclid = getStoredGclid(); // optional
+    const clickId = getStoredClickId();
+    const gclid = getStoredGclid();
 
-    const u = new URL(url);
+    // 1) Replace placeholders in the URL string
+    const replaced = replacePartnerMacros(url, clickId, gclid);
 
-    // ---------- UTMs ----------
+    // 2) Parse safely and add UTMs
+    const u = new URL(replaced);
+
     if (!u.searchParams.get("utm_source")) u.searchParams.set("utm_source", "matchfinderguide");
     if (!u.searchParams.get("utm_medium")) u.searchParams.set("utm_medium", "site");
     if (!u.searchParams.get("utm_campaign")) u.searchParams.set("utm_campaign", "webcam_offers");
 
-    // ---------- Partner params ----------
-    // aff_sub1 must be your click id
-    const currentSub1 = u.searchParams.get("aff_sub1");
-    if (clickId) {
-      if (!currentSub1 || currentSub1 === "{click_id}") {
-        u.searchParams.set("aff_sub1", clickId);
-      }
-    } else {
-      // prevent leaking placeholder
-      if (currentSub1 === "{click_id}") u.searchParams.delete("aff_sub1");
-    }
-
-    // aff_sub2 can hold gclid if you want it mapped in reporting / later Google Ads import
-    const currentSub2 = u.searchParams.get("aff_sub2");
-    if (gclid) {
-      if (!currentSub2 || currentSub2 === "{gclid}") {
-        u.searchParams.set("aff_sub2", gclid);
-      }
-    } else {
-      if (currentSub2 === "{gclid}") u.searchParams.delete("aff_sub2");
-    }
-
-    // ---------- Optional debug params ----------
-    // Keep OFF unless you specifically want click_id/gclid visible in URL separately
-    const DEBUG_PARAMS = false;
-    if (DEBUG_PARAMS) {
-      if (clickId && !u.searchParams.get("click_id")) u.searchParams.set("click_id", clickId);
-      if (gclid && !u.searchParams.get("gclid")) u.searchParams.set("gclid", gclid);
-    } else {
-      // If you previously added these and want to keep URLs clean, you can uncomment:
-      // u.searchParams.delete("click_id");
-      // u.searchParams.delete("gclid");
-    }
+    // Optional debug only (doesn't break partners)
+    if (clickId && !u.searchParams.get("click_id")) u.searchParams.set("click_id", clickId);
+    if (gclid && !u.searchParams.get("gclid")) u.searchParams.set("gclid", gclid);
 
     return u.toString();
   } catch {
