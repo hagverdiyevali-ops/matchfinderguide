@@ -40,24 +40,67 @@ function getStoredGclid() {
  *    aff_sub2 = gclid  (optional)
  * - IMPORTANT: never leave placeholders like "{click_id}" or "{gclid}" in the final URL
  */
+/**
+ * Replace partner placeholders in any URL string.
+ * Supports: {click_id}, {gclid}, {source}
+ */
+function replacePartnerMacros(rawUrl, clickId, gclid, source) {
+  let out = String(rawUrl || "");
+  if (clickId) out = out.replaceAll("{click_id}", encodeURIComponent(clickId));
+  if (gclid) out = out.replaceAll("{gclid}", encodeURIComponent(gclid));
+  if (source) out = out.replaceAll("{source}", encodeURIComponent(source));
+  return out;
+}
+
+/**
+ * Safe URL builder:
+ * - Replaces partner macros if present (aff_sub1={click_id}, aff_sub2={gclid}, aff_sub3={source})
+ * - Adds UTMs if missing
+ * - Ensures aff_sub1 & aff_sub2 (& aff_sub3 if present) are populated
+ * - Keeps click_id/gclid params too (debug-friendly)
+ */
 function withTracking(url) {
   try {
     const clickId = getStoredClickId();
     const gclid = getStoredGclid();
 
-    // 1) Replace placeholders in the URL string
-    const replaced = replacePartnerMacros(url, clickId, gclid);
+    // ✅ Choose your "source" value (simple default)
+    // You can later upgrade this to read from URL / cookie / localStorage.
+    const source = "matchfinderguide";
 
-    // 2) Parse safely and add UTMs
+    // 1) Replace placeholders like aff_sub1={click_id}
+    const replaced = replacePartnerMacros(url, clickId, gclid, source);
+
+    // 2) Parse and set query params safely
     const u = new URL(replaced);
 
+    // default UTMs (keep existing if already present)
     if (!u.searchParams.get("utm_source")) u.searchParams.set("utm_source", "matchfinderguide");
     if (!u.searchParams.get("utm_medium")) u.searchParams.set("utm_medium", "site");
     if (!u.searchParams.get("utm_campaign")) u.searchParams.set("utm_campaign", "webcam_offers");
 
-    // Optional debug only (doesn't break partners)
-    if (clickId && !u.searchParams.get("click_id")) u.searchParams.set("click_id", clickId);
-    if (gclid && !u.searchParams.get("gclid")) u.searchParams.set("gclid", gclid);
+    // Partner tracking params (postback-critical)
+    if (clickId) {
+      const affSub1 = u.searchParams.get("aff_sub1");
+      if (!affSub1 || affSub1 === "{click_id}") u.searchParams.set("aff_sub1", clickId);
+
+      // optional debug param
+      if (!u.searchParams.get("click_id")) u.searchParams.set("click_id", clickId);
+    }
+
+    if (gclid) {
+      const affSub2 = u.searchParams.get("aff_sub2");
+      if (!affSub2 || affSub2 === "{gclid}") u.searchParams.set("aff_sub2", gclid);
+
+      // optional debug param
+      if (!u.searchParams.get("gclid")) u.searchParams.set("gclid", gclid);
+    }
+
+    // ✅ optional: aff_sub3 = source (only if it exists in URL OR if you want to always force it)
+    if (source) {
+      const affSub3 = u.searchParams.get("aff_sub3");
+      if (!affSub3 || affSub3 === "{source}") u.searchParams.set("aff_sub3", source);
+    }
 
     return u.toString();
   } catch {
