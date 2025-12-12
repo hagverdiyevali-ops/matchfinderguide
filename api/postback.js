@@ -10,6 +10,19 @@ function pick(q, keys) {
   return null;
 }
 
+// Try to detect partner by presence of distinctive keys
+function detectPartner(q) {
+  const keys = new Set(Object.keys(q || {}).map((k) => k.toLowerCase()));
+
+  // Cpamatica is very distinctive
+  if (keys.has("offer_id") || keys.has("transaction_id") || keys.has("status_name")) return "cpamatica";
+
+  // Vortex style
+  if (keys.has("offerid") || keys.has("affid") || keys.has("sub1")) return "vortex";
+
+  return "unknown";
+}
+
 // Partner-specific mapping config
 const PARTNER_MAP = {
   vortex: {
@@ -17,8 +30,8 @@ const PARTNER_MAP = {
     affiliate_id: ["affid"],
     goal: ["goal"],
     payout: ["payout"],
-    country: ["geo"],         // vortex calls it geo
-    click_id: ["sub1"],       // vortex click id
+    country: ["geo"],
+    click_id: ["sub1"],
     sub2: ["sub2"],
     sub3: ["sub3"],
     sub4: ["sub4"],
@@ -47,15 +60,28 @@ const PARTNER_MAP = {
   },
 };
 
+// Convert payout string to a numeric-ish string (keeps DB as TEXT if your column is TEXT)
+function normalizePayout(p) {
+  if (!p) return null;
+  const s = String(p).trim().replace(",", "."); // handle "12,34"
+  return /^[0-9]+(\.[0-9]+)?$/.test(s) ? s : null;
+}
+
 export default async function handler(req, res) {
   try {
     const sql = neon(process.env.POSTGRES_URL);
 
     const q = req.query || {};
-    const partner = (q.partner || "").toString().trim().toLowerCase() || "unknown";
+
+    // partner can be provided OR auto-detected
+    const partnerParam = (q.partner || "").toString().trim().toLowerCase();
+    const partner = partnerParam || detectPartner(q);
+
     const map = PARTNER_MAP[partner] || {};
 
-    // Normalize fields (works even if partner=unknown; then most become null)
+    const clickId = pick(q, map.click_id || ["click_id", "sub1"]);
+    const payout = normalizePayout(pick(q, map.payout || ["payout"]));
+
     const normalized = {
       partner,
       offer_id: pick(q, map.offer_id || ["offer_id", "offerid"]),
@@ -67,7 +93,7 @@ export default async function handler(req, res) {
       status_name: pick(q, map.status_name || ["status_name"]),
       affiliate_id: pick(q, map.affiliate_id || ["affiliate_id", "affid"]),
       source: pick(q, map.source || ["source", "sub3"]),
-      click_id: pick(q, map.click_id || ["click_id", "sub1"]),
+      click_id: clickId,
       offer_prelander_id: pick(q, map.offer_prelander_id || ["offer_prelander_id"]),
       offer_url_id: pick(q, map.offer_url_id || ["offer_url_id"]),
       transaction_id: pick(q, map.transaction_id || ["transaction_id"]),
@@ -76,9 +102,9 @@ export default async function handler(req, res) {
       date: pick(q, map.date || ["date"]),
       time: pick(q, map.time || ["time"]),
       currency: pick(q, map.currency || ["currency"]),
-      payout: pick(q, map.payout || ["payout"]),
+      payout,
       country: pick(q, map.country || ["country", "geo"]),
-      geo: pick(q, ["geo"]), // optional separate geo column
+      geo: pick(q, ["geo"]),
       sub2: pick(q, map.sub2 || ["sub2"]),
       sub3: pick(q, map.sub3 || ["sub3"]),
       sub4: pick(q, map.sub4 || ["sub4"]),
