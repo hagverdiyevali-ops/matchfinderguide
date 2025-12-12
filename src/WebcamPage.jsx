@@ -65,6 +65,37 @@ function replacePartnerMacros(rawUrl, clickId, gclid, source, subSource) {
 }
 
 /**
+ * Decide which param family to use (aff_sub* vs sub*).
+ * - Prefer existing query keys if present.
+ * - Otherwise, decide by hostname pattern.
+ */
+function detectParamFamily(u) {
+  const hasAff =
+    u.searchParams.has("aff_sub1") ||
+    u.searchParams.has("aff_sub2") ||
+    u.searchParams.has("aff_sub3") ||
+    u.searchParams.has("aff_sub5");
+
+  const hasSub =
+    u.searchParams.has("sub1") ||
+    u.searchParams.has("sub2") ||
+    u.searchParams.has("sub3") ||
+    u.searchParams.has("sub5");
+
+  if (hasAff) return "aff";
+  if (hasSub) return "sub";
+
+  const host = (u.hostname || "").toLowerCase();
+  // Cpamatica style
+  if (host.includes("cm-trk6.com")) return "aff";
+  // Vortex style
+  if (host.includes(".today")) return "sub";
+
+  // fallback
+  return "aff";
+}
+
+/**
  * Safe URL builder:
  * - Replaces partner macros in the URL string
  * - Adds UTMs if missing
@@ -92,12 +123,7 @@ function withTracking(url) {
     if (!u.searchParams.get("utm_medium")) u.searchParams.set("utm_medium", "site");
     if (!u.searchParams.get("utm_campaign")) u.searchParams.set("utm_campaign", "webcam_offers");
 
-    // Detect which param set this link uses (aff_sub* vs sub*)
-    const usesAffSubs =
-      u.searchParams.has("aff_sub1") ||
-      u.searchParams.has("aff_sub2") ||
-      u.searchParams.has("aff_sub3") ||
-      u.searchParams.has("aff_sub5");
+    const family = detectParamFamily(u);
 
     // Helper: set param if missing/empty/placeholder
     const setIfMissing = (key, value) => {
@@ -106,14 +132,12 @@ function withTracking(url) {
       if (!cur || cur.includes("{")) u.searchParams.set(key, value);
     };
 
-    if (usesAffSubs) {
-      // Cpamatica style
+    if (family === "aff") {
       setIfMissing("aff_sub1", clickId);
       setIfMissing("aff_sub2", gclid);
       setIfMissing("aff_sub3", source);
       setIfMissing("aff_sub5", subSource);
     } else {
-      // Vortex style
       setIfMissing("sub1", clickId);
       setIfMissing("sub2", gclid);
       setIfMissing("sub3", source);
@@ -123,13 +147,6 @@ function withTracking(url) {
     // Optional debug params (helpful when you inspect final URLs)
     if (clickId && !u.searchParams.get("click_id")) u.searchParams.set("click_id", clickId);
     if (gclid && !u.searchParams.get("gclid")) u.searchParams.set("gclid", gclid);
-
-    // Final safeguard: remove any leftover "{...}" placeholders (if any)
-    const finalStr = u.toString().replaceAll("%7B", "{").replaceAll("%7D", "}"); // normalize if any weird encoding
-    if (finalStr.includes("{") && finalStr.includes("}")) {
-      // If somehow a placeholder remains, return the parsed URL anyway (most cases won't happen)
-      return u.toString();
-    }
 
     return u.toString();
   } catch {
@@ -160,9 +177,7 @@ function RatingStars({ rating }) {
     <div className="inline-flex flex-col items-end text-right gap-1">
       <div className="inline-flex items-center gap-2 rounded-full bg-slate-900/80 border border-slate-700 px-3 py-1">
         <div className="flex items-center gap-0.5 leading-none">{stars}</div>
-        <span className="text-[11px] font-semibold text-slate-100">
-          {value.toFixed(1)} / 5
-        </span>
+        <span className="text-[11px] font-semibold text-slate-100">{value.toFixed(1)} / 5</span>
       </div>
       <span className="text-[10px] text-slate-400 uppercase tracking-[0.16em]">Trust score</span>
     </div>

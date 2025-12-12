@@ -1,26 +1,45 @@
 // api/postback.js
 import { neon } from "@neondatabase/serverless";
 
-// Helper: first non-empty value
+/* -------------------- helpers -------------------- */
+
+// first non-empty value from query
 function pick(q, keys) {
   for (const k of keys) {
     const v = q?.[k];
-    if (v !== undefined && v !== null && String(v).trim() !== "") return String(v);
+    if (v !== undefined && v !== null && String(v).trim() !== "") {
+      return String(v);
+    }
   }
   return null;
 }
 
-// Try to detect partner by presence of distinctive keys
+// auto-detect partner by parameter shape
 function detectPartner(q) {
   const keys = new Set(Object.keys(q || {}).map((k) => k.toLowerCase()));
 
-  if (keys.has("offer_id") || keys.has("transaction_id") || keys.has("status_name")) return "cpamatica";
-  if (keys.has("offerid") || keys.has("affid") || keys.has("sub1")) return "vortex";
+  // Cpamatica-style
+  if (keys.has("offer_id") || keys.has("transaction_id") || keys.has("status_name")) {
+    return "cpamatica";
+  }
+
+  // Vortex-style
+  if (keys.has("offerid") || keys.has("affid") || keys.has("sub1")) {
+    return "vortex";
+  }
 
   return "unknown";
 }
 
-// Partner-specific mapping config (optional; helps normalize cleanly)
+// normalize payout safely
+function normalizePayout(p) {
+  if (!p) return null;
+  const s = String(p).trim().replace(",", ".");
+  return /^[0-9]+(\.[0-9]+)?$/.test(s) ? s : null;
+}
+
+/* ---------------- partner maps (optional helpers) ---------------- */
+
 const PARTNER_MAP = {
   vortex: {
     offer_id: ["offerid"],
@@ -29,63 +48,50 @@ const PARTNER_MAP = {
     payout: ["payout"],
     geo: ["geo"],
     click_id: ["sub1"],
-    sub2: ["sub2"], // could be gclid or other data
-    sub3: ["sub3"],
-    sub4: ["sub4"],
-    sub5: ["sub5"],
   },
+
   cpamatica: {
     offer_id: ["offer_id"],
-    offer_name: ["offer_name"],
-    goal_id: ["goal_id"],
-    goal_name: ["goal_name"],
-    status: ["status"],
-    status_name: ["status_name"],
     affiliate_id: ["affiliate_id"],
-    source: ["source"],
-    click_id: ["click_id"],
-    offer_prelander_id: ["offer_prelander_id"],
-    offer_url_id: ["offer_url_id"],
-    transaction_id: ["transaction_id"],
-    session_ip: ["session_ip"],
-    ip: ["ip"],
-    date: ["date"],
-    time: ["time"],
-    currency: ["currency"],
+    goal: ["goal", "goal_id", "goal_name"],
     payout: ["payout"],
-    geo: ["country"], // cpamatica uses country; we store in geo
-    gclid: ["gclid", "aff_sub2"], // allow both
+    currency: ["currency"],
+    geo: ["country"],
+    click_id: ["click_id", "aff_sub1"],
   },
 };
 
-// Convert payout to numeric
-function normalizePayout(p) {
-  if (!p) return null;
-  const s = String(p).trim().replace(",", ".");
-  return /^[0-9]+(\.[0-9]+)?$/.test(s) ? s : null;
-}
+/* -------------------- handler -------------------- */
 
 export default async function handler(req, res) {
   try {
     const sql = neon(process.env.POSTGRES_URL);
     const q = req.query || {};
 
+    // detect partner
     const partnerParam = (q.partner || "").toString().trim().toLowerCase();
     const partner = partnerParam || detectPartner(q);
     const map = PARTNER_MAP[partner] || {};
 
-    const click_id = pick(q, map.click_id || ["click_id", "sub1", "aff_sub1"]);
+    // core fields
+    const click_id = pick(q, map.click_id || ["click_id", "aff_sub1", "sub1"]);
     const offer_id = pick(q, map.offer_id || ["offer_id", "offerid"]);
-    const transaction_id = pick(q, map.transaction_id || ["transaction_id", "txid", "tid"]);
+    const goal = pick(q, map.goal || ["goal", "goal_id", "goal_name"]);
+    const transaction_id = pick(q, ["transaction_id", "txid", "tid"]);
 
-    // ✅ GLOBAL gclid pick (works for all partners)
-    // Priority: explicit gclid -> aff_sub2 -> sub2
-    const gclid = pick(q, map.gclid || ["gclid", "aff_sub2", "sub2"]);
+    // ✅ GLOBAL gclid handling (future-proof)
+    const gclid = pick(q, [
+      "gclid",
+      "aff_sub2",
+      "sub2",
+      "aff_sub4",
+      "sub4",
+    ]);
 
     const payout = normalizePayout(pick(q, map.payout || ["payout"]));
-
-    // store country/geo in one column called geo
+    const currency = pick(q, map.currency || ["currency"]);
     const geo = pick(q, map.geo || ["geo", "country"]);
+    const status = pick(q, ["status", "status_name"]);
 
     await sql`
       INSERT INTO postbacks_v2 (
@@ -104,17 +110,18 @@ export default async function handler(req, res) {
         ${partner},
         ${click_id},
         ${offer_id},
-        ${pick(q, map.goal || ["goal", "goal_id", "goal_name"])},
+        ${goal},
         ${payout},
-        ${pick(q, map.currency || ["currency"])},
+        ${currency},
         ${geo},
         ${gclid},
         ${transaction_id},
-        ${pick(q, map.status || ["status", "status_name"])},
+        ${status},
         ${JSON.stringify(q)}
       );
     `;
 
+    // partners only care about 200 OK
     return res.status(200).send("OK");
   } catch (e) {
     return res.status(500).send("ERROR");
