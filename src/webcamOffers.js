@@ -1,6 +1,8 @@
 // src/webcamOffers.js
 
 const WEBCAM_OFFERS = [
+  /* ---------- CPAMATICA (go.cm-trk6.com) ---------- */
+
   {
     name: "Jerk-Roulette",
     rating: 4.5,
@@ -12,7 +14,7 @@ const WEBCAM_OFFERS = [
       "Simple signup — start chatting quickly",
     ],
     affiliateUrl:
-      "https://go.cm-trk6.com/aff_c?offer_id=13753&aff_id=92400&url_id=25740&aff_sub1={click_id}&aff_sub2={gclid}&aff_sub3={source}&aff_sub5=search-traffic",
+      "https://go.cm-trk6.com/aff_c?offer_id=13753&aff_id=92400&url_id=25740&aff_sub1={click_id}&aff_sub2={gclid}&aff_sub3={source}&aff_sub5={sub_source}",
     color: "from-slate-800/40 to-slate-900/20",
     preview: "/previews-webcam/jerkroulette.png",
   },
@@ -28,7 +30,7 @@ const WEBCAM_OFFERS = [
       "Private shows available anytime",
     ],
     affiliateUrl:
-      "https://go.cm-trk6.com/aff_c?offer_id=12348&aff_id=92400&url_id=21759&aff_sub1={click_id}&aff_sub2={gclid}&aff_sub3={source}&aff_sub5=search-traffic",
+      "https://go.cm-trk6.com/aff_c?offer_id=12348&aff_id=92400&url_id=21759&aff_sub1={click_id}&aff_sub2={gclid}&aff_sub3={source}&aff_sub5={sub_source}",
     color: "from-purple-500/30 to-pink-500/20",
     preview: "/previews-webcam/instacams.png",
   },
@@ -44,9 +46,9 @@ const WEBCAM_OFFERS = [
       "Works smoothly on mobile",
     ],
     affiliateUrl:
-      "https://go.cm-trk6.com/aff_nl?offer_id=12909&aff_id=92400&lands=133&url_id=23334&aff_sub1={click_id}&aff_sub2={gclid}&aff_sub3={source}&aff_sub5=search-traffic",
+      "https://go.cm-trk6.com/aff_nl?offer_id=12909&aff_id=92400&lands=133&url_id=23334&aff_sub1={click_id}&aff_sub2={gclid}&aff_sub3={source}&aff_sub5={sub_source}",
     color: "from-red-600/30 to-black/20",
-    preview: "/previews-webcam/Kukost.png",
+    preview: "/previews-webcam/kukost.png",
   },
 
   {
@@ -60,12 +62,12 @@ const WEBCAM_OFFERS = [
       "Beginner-friendly layout",
     ],
     affiliateUrl:
-      "https://go.cm-trk6.com/aff_nl?offer_id=13670&aff_id=92400&lands=123&aff_sub1={click_id}&aff_sub2={gclid}&aff_sub3={source}&aff_sub5=search-traffic",
+      "https://go.cm-trk6.com/aff_nl?offer_id=13670&aff_id=92400&lands=123&aff_sub1={click_id}&aff_sub2={gclid}&aff_sub3={source}&aff_sub5={sub_source}",
     color: "from-emerald-300/25 to-blue-800/20",
     preview: "/previews-webcam/lust-station.png",
   },
 
-  /* ---------- NEW OFFERS ---------- */
+  /* ---------- VORTEX STYLE (find.*.today) ---------- */
 
   {
     name: "MyUkrainianGirls",
@@ -78,7 +80,7 @@ const WEBCAM_OFFERS = [
       "Private messaging & live interaction",
     ],
     affiliateUrl:
-      "https://find.gentletouch.today/click?affid=16096&offerid=9297&sub1={click_id}&sub3={source}&sub5=search-traffic&lp=0e8cbef5c5",
+      "https://find.gentletouch.today/click?affid=16096&offerid=9297&sub1={click_id}&sub2={gclid}&sub3={source}&sub5={sub_source}&lp=0e8cbef5c5",
     color: "from-sky-500/25 to-indigo-700/20",
     preview: "/previews-webcam/myukrainiangirls.png",
   },
@@ -94,7 +96,7 @@ const WEBCAM_OFFERS = [
       "Optimized for desktop and mobile",
     ],
     affiliateUrl:
-      "https://find.sereneromance.today/click?affid=16096&offerid=9283&sub1={click_id}&sub3={source}&sub5=search-traffic&lp=8f47617c6f",
+      "https://find.sereneromance.today/click?affid=16096&offerid=9283&sub1={click_id}&sub2={gclid}&sub3={source}&sub5={sub_source}&lp=8f47617c6f",
     color: "from-rose-400/25 to-pink-700/20",
     preview: "/previews-webcam/nabomatch.png",
   },
@@ -110,7 +112,7 @@ const WEBCAM_OFFERS = [
       "Secure communication tools",
     ],
     affiliateUrl:
-      "https://find.sereneromance.today/click?affid=16096&offerid=9032&sub1={click_id}&sub3={source}&sub5=search-traffic&lp=a3481aed61",
+      "https://find.sereneromance.today/click?affid=16096&offerid=9032&sub1={click_id}&sub2={gclid}&sub3={source}&sub5={sub_source}&lp=a3481aed61",
     color: "from-cyan-400/25 to-blue-900/20",
     preview: "/previews-webcam/nordflirt.png",
   },

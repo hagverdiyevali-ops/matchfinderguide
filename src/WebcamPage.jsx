@@ -33,43 +33,56 @@ function getStoredGclid() {
 }
 
 /**
- * Safe URL builder:
- * - Adds UTMs if missing
- * - Ensures partner params are correct:
- *    aff_sub1 = clickId (required for postback)
- *    aff_sub2 = gclid  (optional)
- * - IMPORTANT: never leave placeholders like "{click_id}" or "{gclid}" in the final URL
+ * Get traffic source/sub-source (simple defaults).
+ * If you later want, you can read these from:
+ * - URL params (?source=..&sub_source=..)
+ * - localStorage
+ * - cookies
  */
+function getTrafficSource() {
+  return "matchfinderguide";
+}
+
+function getSubSource() {
+  // You can set this to anything you want globally (ex: "search-traffic", "seo", "tiktok", etc.)
+  return "search-traffic";
+}
+
 /**
  * Replace partner placeholders in any URL string.
- * Supports: {click_id}, {gclid}, {source}
+ * Supports: {click_id}, {gclid}, {source}, {sub_source}
  */
-function replacePartnerMacros(rawUrl, clickId, gclid, source) {
+function replacePartnerMacros(rawUrl, clickId, gclid, source, subSource) {
   let out = String(rawUrl || "");
-  if (clickId) out = out.replaceAll("{click_id}", encodeURIComponent(clickId));
-  if (gclid) out = out.replaceAll("{gclid}", encodeURIComponent(gclid));
-  if (source) out = out.replaceAll("{source}", encodeURIComponent(source));
+
+  // Always replace, even if empty, so no placeholders remain
+  out = out.replaceAll("{click_id}", encodeURIComponent(clickId || ""));
+  out = out.replaceAll("{gclid}", encodeURIComponent(gclid || ""));
+  out = out.replaceAll("{source}", encodeURIComponent(source || ""));
+  out = out.replaceAll("{sub_source}", encodeURIComponent(subSource || ""));
+
   return out;
 }
 
 /**
  * Safe URL builder:
- * - Replaces partner macros if present (aff_sub1={click_id}, aff_sub2={gclid}, aff_sub3={source})
+ * - Replaces partner macros in the URL string
  * - Adds UTMs if missing
- * - Ensures aff_sub1 & aff_sub2 (& aff_sub3 if present) are populated
- * - Keeps click_id/gclid params too (debug-friendly)
+ * - Ensures partner params are populated for BOTH patterns:
+ *    Cpamatica: aff_sub1/2/3/5
+ *    Vortex:    sub1/2/3/5
+ * - Optional debug params: click_id, gclid
+ * - Never throws (returns original url if parsing fails)
  */
 function withTracking(url) {
   try {
     const clickId = getStoredClickId();
     const gclid = getStoredGclid();
+    const source = getTrafficSource();
+    const subSource = getSubSource();
 
-    // ✅ Choose your "source" value (simple default)
-    // You can later upgrade this to read from URL / cookie / localStorage.
-    const source = "matchfinderguide";
-
-    // 1) Replace placeholders like aff_sub1={click_id}
-    const replaced = replacePartnerMacros(url, clickId, gclid, source);
+    // 1) Replace placeholders in raw string (works for both partner URL styles)
+    const replaced = replacePartnerMacros(url, clickId, gclid, source, subSource);
 
     // 2) Parse and set query params safely
     const u = new URL(replaced);
@@ -79,27 +92,43 @@ function withTracking(url) {
     if (!u.searchParams.get("utm_medium")) u.searchParams.set("utm_medium", "site");
     if (!u.searchParams.get("utm_campaign")) u.searchParams.set("utm_campaign", "webcam_offers");
 
-    // Partner tracking params (postback-critical)
-    if (clickId) {
-      const affSub1 = u.searchParams.get("aff_sub1");
-      if (!affSub1 || affSub1 === "{click_id}") u.searchParams.set("aff_sub1", clickId);
+    // Detect which param set this link uses (aff_sub* vs sub*)
+    const usesAffSubs =
+      u.searchParams.has("aff_sub1") ||
+      u.searchParams.has("aff_sub2") ||
+      u.searchParams.has("aff_sub3") ||
+      u.searchParams.has("aff_sub5");
 
-      // optional debug param
-      if (!u.searchParams.get("click_id")) u.searchParams.set("click_id", clickId);
+    // Helper: set param if missing/empty/placeholder
+    const setIfMissing = (key, value) => {
+      if (!value) return;
+      const cur = u.searchParams.get(key);
+      if (!cur || cur.includes("{")) u.searchParams.set(key, value);
+    };
+
+    if (usesAffSubs) {
+      // Cpamatica style
+      setIfMissing("aff_sub1", clickId);
+      setIfMissing("aff_sub2", gclid);
+      setIfMissing("aff_sub3", source);
+      setIfMissing("aff_sub5", subSource);
+    } else {
+      // Vortex style
+      setIfMissing("sub1", clickId);
+      setIfMissing("sub2", gclid);
+      setIfMissing("sub3", source);
+      setIfMissing("sub5", subSource);
     }
 
-    if (gclid) {
-      const affSub2 = u.searchParams.get("aff_sub2");
-      if (!affSub2 || affSub2 === "{gclid}") u.searchParams.set("aff_sub2", gclid);
+    // Optional debug params (helpful when you inspect final URLs)
+    if (clickId && !u.searchParams.get("click_id")) u.searchParams.set("click_id", clickId);
+    if (gclid && !u.searchParams.get("gclid")) u.searchParams.set("gclid", gclid);
 
-      // optional debug param
-      if (!u.searchParams.get("gclid")) u.searchParams.set("gclid", gclid);
-    }
-
-    // ✅ optional: aff_sub3 = source (only if it exists in URL OR if you want to always force it)
-    if (source) {
-      const affSub3 = u.searchParams.get("aff_sub3");
-      if (!affSub3 || affSub3 === "{source}") u.searchParams.set("aff_sub3", source);
+    // Final safeguard: remove any leftover "{...}" placeholders (if any)
+    const finalStr = u.toString().replaceAll("%7B", "{").replaceAll("%7D", "}"); // normalize if any weird encoding
+    if (finalStr.includes("{") && finalStr.includes("}")) {
+      // If somehow a placeholder remains, return the parsed URL anyway (most cases won't happen)
+      return u.toString();
     }
 
     return u.toString();
