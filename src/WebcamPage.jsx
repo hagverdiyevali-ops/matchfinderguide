@@ -8,15 +8,92 @@ import WEBCAM_OFFERS from "./webcamOffers.js";
 /* ---------- small helpers ---------- */
 const cn = (...c) => c.filter(Boolean).join(" ");
 
-function withUTM(url) {
+/**
+ * Uses same keys as App.jsx
+ * App.jsx is responsible for creating click_id and storing gclid from the landing URL.
+ * Here we only READ them and append to outbound links.
+ */
+const CLICK_ID_KEY = "mfg_click_id";
+const GCLID_KEY = "mfg_gclid";
+
+function getStoredClickId() {
   try {
-    const u = new URL(url);
+    return localStorage.getItem(CLICK_ID_KEY) || "";
+  } catch {
+    return "";
+  }
+}
+
+function getStoredGclid() {
+  try {
+    return localStorage.getItem(GCLID_KEY) || "";
+  } catch {
+    return "";
+  }
+}
+
+/**
+ * Replace partner placeholders in any URL string.
+ * Supports: {click_id}, {gclid}
+ */
+function replacePartnerMacros(rawUrl, clickId, gclid) {
+  let out = String(rawUrl || "");
+  if (clickId) out = out.replaceAll("{click_id}", encodeURIComponent(clickId));
+  if (gclid) out = out.replaceAll("{gclid}", encodeURIComponent(gclid));
+  return out;
+}
+
+/**
+ * Safe URL builder:
+ * - Replaces partner macros if present (aff_sub1={click_id}, aff_sub2={gclid})
+ * - Adds UTMs if missing
+ * - Ensures aff_sub1 & aff_sub2 are populated (recommended for postback + Google Ads mapping)
+ * - Optionally keeps click_id/gclid params too (handy for debugging)
+ */
+function withTracking(url) {
+  try {
+    const clickId = getStoredClickId();
+    const gclid = getStoredGclid();
+
+    // 1) Replace placeholders like aff_sub1={click_id}
+    const replaced = replacePartnerMacros(url, clickId, gclid);
+
+    // 2) Parse and set query params safely
+    const u = new URL(replaced);
+
+    // default UTMs (keep existing if already present)
     if (!u.searchParams.get("utm_source"))
       u.searchParams.set("utm_source", "matchfinderguide");
     if (!u.searchParams.get("utm_medium"))
       u.searchParams.set("utm_medium", "site");
     if (!u.searchParams.get("utm_campaign"))
       u.searchParams.set("utm_campaign", "webcam_offers");
+
+    // Partner tracking params (most important for postback)
+    if (clickId) {
+      const affSub1 = u.searchParams.get("aff_sub1");
+      if (!affSub1 || affSub1 === "{click_id}") {
+        u.searchParams.set("aff_sub1", clickId);
+      }
+
+      // optional debug param
+      if (!u.searchParams.get("click_id")) {
+        u.searchParams.set("click_id", clickId);
+      }
+    }
+
+    if (gclid) {
+      const affSub2 = u.searchParams.get("aff_sub2");
+      if (!affSub2 || affSub2 === "{gclid}") {
+        u.searchParams.set("aff_sub2", gclid);
+      }
+
+      // optional debug param
+      if (!u.searchParams.get("gclid")) {
+        u.searchParams.set("gclid", gclid);
+      }
+    }
+
     return u.toString();
   } catch {
     return url;
@@ -71,7 +148,7 @@ function WebcamOfferCard({ offer, index }) {
     ? offer.bestFor.charAt(0).toUpperCase() + offer.bestFor.slice(1)
     : null;
 
-  const finalUrl = withUTM(offer.affiliateUrl || "");
+  const finalUrl = withTracking(offer.affiliateUrl || "");
   const isTop = isTopChoice(index);
   const previewSrc = offer.preview || null;
 
@@ -105,7 +182,6 @@ function WebcamOfferCard({ offer, index }) {
                    transition-shadow duration-300"
       >
         <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-stretch">
-          {/* WIDE logo area only for webcam page */}
           <div className="flex-shrink-0 w-full sm:w-60 md:w-72">
             <div className="h-28 sm:h-28 md:h-32 rounded-2xl bg-slate-900 border border-slate-700 overflow-hidden shadow-inner flex items-center justify-center">
               {previewSrc ? (
@@ -125,9 +201,7 @@ function WebcamOfferCard({ offer, index }) {
             </div>
           </div>
 
-          {/* Right content */}
           <div className="flex-1 min-w-[0] flex flex-col gap-4">
-            {/* title + rating row */}
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
@@ -143,10 +217,7 @@ function WebcamOfferCard({ offer, index }) {
                   <div className="mt-2">
                     <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-900 border border-slate-700 px-3 py-1 text-[11px] text-slate-100">
                       <span className="h-1.5 w-1.5 rounded-full bg-pink-400" />
-                      Best for:{" "}
-                      <span className="font-medium">
-                        {category}
-                      </span>
+                      Best for: <span className="font-medium">{category}</span>
                     </span>
                   </div>
                 )}
@@ -157,7 +228,6 @@ function WebcamOfferCard({ offer, index }) {
               </div>
             </div>
 
-            {/* USP + features */}
             <div className="space-y-2">
               {offer.usp && (
                 <p className="text-sm text-slate-200 leading-relaxed">
@@ -177,7 +247,6 @@ function WebcamOfferCard({ offer, index }) {
               )}
             </div>
 
-            {/* CTA */}
             <div className="mt-1 flex flex-col sm:flex-row sm:items-center gap-3">
               <a
                 href={finalUrl}
@@ -188,8 +257,7 @@ function WebcamOfferCard({ offer, index }) {
                            shadow-[0_18px_45px_-24px_rgba(0,0,0,0.9)]
                            hover:brightness-105 active:scale-95 transition"
               >
-                Visit site
-                <span className="ml-2 text-xs">↗</span>
+                Visit site <span className="ml-2 text-xs">↗</span>
               </a>
 
               <p className="text-[11px] text-slate-400 sm:ml-1">
@@ -214,12 +282,15 @@ export default function WebcamPage() {
   return (
     <>
       <main className="min-h-screen bg-slate-950 text-slate-50">
-        {/* Header */}
         <header className="sticky top-0 z-20 bg-slate-950/90 border-b border-slate-800 backdrop-blur">
           <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between gap-3">
             <Link to="/" className="inline-flex items-center gap-2">
               <div className="h-8 w-8 rounded-2xl bg-slate-900 border border-slate-700 flex items-center justify-center">
-                <img src="/logo.svg" className="h-5 w-5" alt="MatchFinderGuide" />
+                <img
+                  src="/logo.svg"
+                  className="h-5 w-5"
+                  alt="MatchFinderGuide"
+                />
               </div>
 
               <div className="flex flex-col leading-tight">
@@ -234,9 +305,7 @@ export default function WebcamPage() {
           </div>
         </header>
 
-        {/* Content */}
         <section className="mx-auto max-w-6xl px-4 pt-4 pb-10">
-          {/* Headline & intro */}
           <div className="mb-4 space-y-1">
             <p className="text-[11px] uppercase tracking-[0.22em] text-pink-400">
               Trusted webcam platforms · 18+ only
@@ -253,14 +322,16 @@ export default function WebcamPage() {
             </p>
           </div>
 
-          {/* Offer list with wide logos */}
           <div className="space-y-5">
             {sortedByRating.map((offer, index) => (
-              <WebcamOfferCard key={offer.name || index} offer={offer} index={index} />
+              <WebcamOfferCard
+                key={offer.name || index}
+                offer={offer}
+                index={index}
+              />
             ))}
           </div>
 
-          {/* Footer note */}
           <p className="mt-6 text-[11px] text-slate-500">
             These platforms are intended for adults 18+ only. We may earn a
             commission when you create an account through our links. Please

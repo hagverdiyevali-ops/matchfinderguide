@@ -1,9 +1,5 @@
-import React, {
-  useMemo,
-  useState,
-  useEffect,
-  useRef
-} from "react";
+// src/App.jsx
+import React, { useMemo, useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import OFFERS from "./offers.js";
 import CookieConsent from "./CookieConsent.jsx";
@@ -12,6 +8,65 @@ import { Analytics } from "@vercel/analytics/react";
 
 /* ----------------- helpers ----------------- */
 const cn = (...c) => c.filter(Boolean).join(" ");
+
+/**
+ * Tracking keys (shared with WebcamPage.jsx)
+ */
+const CLICK_ID_KEY = "mfg_click_id";
+const GCLID_KEY = "mfg_gclid";
+
+/** safe uuid generator for browsers */
+function generateId() {
+  try {
+    if (typeof crypto !== "undefined" && crypto.randomUUID) {
+      return crypto.randomUUID();
+    }
+  } catch {}
+  // fallback
+  return `cid_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+}
+
+function getOrCreateClickId() {
+  try {
+    const existing = localStorage.getItem(CLICK_ID_KEY);
+    if (existing) return existing;
+    const id = generateId();
+    localStorage.setItem(CLICK_ID_KEY, id);
+    return id;
+  } catch {
+    return generateId();
+  }
+}
+
+function storeGclidFromUrlOnce() {
+  try {
+    const params = new URLSearchParams(window.location.search || "");
+    const gclid = params.get("gclid");
+    if (gclid) localStorage.setItem(GCLID_KEY, gclid);
+  } catch {}
+}
+
+/**
+ * Main page outbound links:
+ * Keep this ONLY for UTMs.
+ * (WebcamPage handles partner macros: {click_id} / {gclid} via aff_sub1/aff_sub2)
+ */
+function withUTM(url) {
+  try {
+    const u = new URL(url);
+
+    if (!u.searchParams.get("utm_source"))
+      u.searchParams.set("utm_source", "matchfinderguide");
+    if (!u.searchParams.get("utm_medium"))
+      u.searchParams.set("utm_medium", "site");
+    if (!u.searchParams.get("utm_campaign"))
+      u.searchParams.set("utm_campaign", "offers_grid");
+
+    return u.toString();
+  } catch {
+    return url;
+  }
+}
 
 function useParallax(targetRef, speed = 0.15) {
   const [offset, setOffset] = useState(0);
@@ -42,21 +97,6 @@ function useParallax(targetRef, speed = 0.15) {
   return { transform: `translate3d(0, ${offset}px, 0)` };
 }
 
-function withUTM(url) {
-  try {
-    const u = new URL(url);
-    if (!u.searchParams.get("utm_source"))
-      u.searchParams.set("utm_source", "matchfinderguide");
-    if (!u.searchParams.get("utm_medium"))
-      u.searchParams.set("utm_medium", "site");
-    if (!u.searchParams.get("utm_campaign"))
-      u.searchParams.set("utm_campaign", "offers_grid");
-    return u.toString();
-  } catch {
-    return url;
-  }
-}
-
 /* ----------------- Trust score stars (main cards) ----------------- */
 function RatingStars({ rating }) {
   const raw = Number(rating) || 0;
@@ -68,11 +108,8 @@ function RatingStars({ rating }) {
   const stars = [];
   for (let i = 0; i < total; i++) {
     let cls = "text-slate-300";
-    if (i < full) {
-      cls = "text-amber-400";
-    } else if (i === full && hasHalf) {
-      cls = "text-amber-300";
-    }
+    if (i < full) cls = "text-amber-400";
+    else if (i === full && hasHalf) cls = "text-amber-300";
     stars.push(
       <span key={i} className={cn("text-base", cls)}>
         ★
@@ -130,7 +167,6 @@ export function OfferCard({ o, index }) {
   const finalUrl = withUTM(o.affiliateUrl || "");
   const isTop = isTopChoice(index);
 
-  // website preview screenshot
   const previewSrc = o.preview || o.heroImage || o.hero || null;
 
   return (
@@ -161,7 +197,6 @@ export function OfferCard({ o, index }) {
         </div>
       )}
 
-      {/* subtle highlight */}
       <div className="pointer-events-none absolute inset-0 rounded-3xl bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.7),transparent_55%)] opacity-80 z-10" />
 
       <div
@@ -172,7 +207,6 @@ export function OfferCard({ o, index }) {
         )}
       >
         <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-stretch">
-          {/* Website preview on the very left / on top for mobile */}
           <div className="flex-shrink-0 w-full sm:w-40 md:w-48">
             <div className="h-32 xs:h-28 sm:h-24 md:h-28 rounded-2xl bg-slate-50 border border-slate-200 overflow-hidden shadow-inner flex items-center justify-center">
               {previewSrc ? (
@@ -192,9 +226,7 @@ export function OfferCard({ o, index }) {
             </div>
           </div>
 
-          {/* Right block: content + rating + CTA */}
           <div className="flex-1 min-w-[0] flex flex-col gap-4">
-            {/* Top: title + category + rating */}
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
@@ -216,13 +248,11 @@ export function OfferCard({ o, index }) {
                 )}
               </div>
 
-              {/* stars drop below title on mobile, side on larger screens */}
               <div className="mt-2 sm:mt-0 self-start sm:self-auto">
                 <RatingStars rating={o.rating} />
               </div>
             </div>
 
-            {/* USP + features */}
             <div className="space-y-2">
               {o.usp && (
                 <p className="text-sm text-slate-700 leading-relaxed">{o.usp}</p>
@@ -240,7 +270,6 @@ export function OfferCard({ o, index }) {
               )}
             </div>
 
-            {/* CTA */}
             <div className="mt-1 flex flex-col sm:flex-row sm:items-center gap-3">
               <a
                 href={finalUrl}
@@ -251,8 +280,7 @@ export function OfferCard({ o, index }) {
                          shadow-[0_18px_45px_-24px_rgba(15,23,42,0.8)]
                          hover:brightness-105 active:scale-95 transition"
               >
-                Visit Site
-                <span className="ml-2 text-xs">↗</span>
+                Visit Site <span className="ml-2 text-xs">↗</span>
               </a>
 
               <p className="text-[11px] text-slate-500 sm:ml-1">
@@ -289,7 +317,6 @@ function TopStripCard({ o, index }) {
 
       <div className="flex h-full flex-col rounded-2xl bg-white border border-slate-200 shadow-sm overflow-hidden">
         <div className="flex flex-1 flex-row items-stretch gap-3 sm:gap-4 px-4 py-4 border-l-4 border-rose-400">
-          {/* Small site preview */}
           <div className="flex-shrink-0 w-24 md:w-28">
             <div className="w-full h-20 rounded-xl bg-slate-50 border border-slate-200 overflow-hidden flex items-center justify-center">
               {previewSrc ? (
@@ -307,10 +334,8 @@ function TopStripCard({ o, index }) {
             </div>
           </div>
 
-          {/* Text + rating/CTA (stacked) */}
           <div className="flex-1 min-w-0 flex flex-col justify-between gap-2">
             <div>
-              {/* mobile: single-line, desktop: wrap */}
               <p className="text-sm font-semibold text-slate-900 truncate md:whitespace-normal md:overflow-visible">
                 {cleanName}
               </p>
@@ -352,7 +377,7 @@ const FILTERS = [
 ];
 
 /* ------------------------------------------------
-   MAIN DATING HOMEPAGE (unchanged UI, with hooks)
+   MAIN DATING HOMEPAGE (full UI)
 --------------------------------------------------*/
 function MainDatingPage() {
   const [filter, setFilter] = useState("all");
@@ -365,9 +390,7 @@ function MainDatingPage() {
   const heroParallax = useParallax(heroRef, 0.18);
   const gridParallax = useParallax(offersRef, 0.22);
   const footSmall = useParallax(footerRef, 0.1);
-  const footWide = useParallax(footerRef, 0.08); // reserved if needed
 
-  // Sort offers once by rating
   const sortedByRating = useMemo(() => {
     let list = Array.isArray(OFFERS) ? OFFERS.slice(0) : [];
     list.sort((a, b) => (Number(b.rating) || 0) - (Number(a.rating) || 0));
@@ -390,23 +413,15 @@ function MainDatingPage() {
     setMobileOpen(false);
   }
 
-  // helper to change filter + scroll to offers
   function goToOffersWithFilter(key) {
     setFilter(key);
-    setMobileMenu(false);
-  }
-
-  function setMobileMenu(value) {
-    setMobileOpen(value);
+    setMobileOpen(false);
     const el = document.getElementById("offers");
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   return (
     <main className="min-h-screen text-slate-900 relative overflow-hidden bg-gradient-to-b from-rose-50 via-white to-slate-50">
-      {/* soft light noise */}
       <div className="pointer-events-none absolute inset-0 -z-10 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.12]" />
 
       {/* Navbar */}
@@ -596,7 +611,6 @@ function MainDatingPage() {
         <div className="mx-auto max-w-7xl px-4 pt-6 pb-6">
           <div className="rounded-[28px] bg-white/95 border border-slate-200 backdrop-blur-xl px-6 sm:px-10 py-6 shadow-[0_20px_60px_-35px_rgba(15,23,42,0.45)]">
             <div className="grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] items-center">
-              {/* LEFT */}
               <div>
                 <div className="mb-3 inline-flex items-center gap-3 px-4 py-2 rounded-full bg-rose-50 border border-rose-200 shadow-sm">
                   <span className="rounded-full bg-white px-2.5 py-1 border border-rose-200 text-[11px] font-semibold tracking-[0.18em] uppercase text-rose-700">
@@ -648,7 +662,6 @@ function MainDatingPage() {
                 </div>
               </div>
 
-              {/* RIGHT: romantic couple visual */}
               <div className="relative">
                 <div className="h-44 sm:h-48 md:h-52 rounded-[24px] bg-rose-50 border border-rose-100 overflow-hidden shadow-[0_16px_40px_-28px_rgba(15,23,42,0.8)]">
                   <img
@@ -657,7 +670,6 @@ function MainDatingPage() {
                     className="h-full w-full object-cover"
                     loading="lazy"
                   />
-
                   <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/45 via-black/10 to-transparent" />
                   <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between text-[11px] text-white/90">
                     <p className="font-medium">Real people. Real connections.</p>
@@ -687,7 +699,11 @@ function MainDatingPage() {
 
             <div className="grid gap-4 lg:grid-cols-3">
               {topThree.map((o, index) => (
-                <TopStripCard key={o.id || o.name || index} o={o} index={index} />
+                <TopStripCard
+                  key={o.id || o.name || index}
+                  o={o}
+                  index={index}
+                />
               ))}
             </div>
           </div>
@@ -789,7 +805,6 @@ function MainDatingPage() {
             </div>
           </div>
 
-          {/* wider cards */}
           <div className="mt-8 space-y-6 max-w-6xl mx-auto w-full px-1 sm:px-2">
             {filtered.map((o, index) => (
               <OfferCard key={o.id || o.name || index} o={o} index={index} />
@@ -813,7 +828,9 @@ function MainDatingPage() {
                 </p>
               </div>
               <div>
-                <h4 className="font-bold">Which is the best for serious dating?</h4>
+                <h4 className="font-bold">
+                  Which is the best for serious dating?
+                </h4>
                 <p className="text-slate-600">
                   Use the “Serious” filter to view long-term focused apps.
                 </p>
@@ -850,7 +867,9 @@ function MainDatingPage() {
             Adult-only content
           </p>
 
-          <p className="mt-4 font-bold text-slate-900">Affiliate Disclosure</p>
+          <p className="mt-4 font-bold text-slate-900">
+            Affiliate Disclosure
+          </p>
           <p className="mt-1 text-slate-600">
             We may earn a commission when you sign up through our links.
           </p>
@@ -903,6 +922,12 @@ export default function App() {
   const [isBot, setIsBot] = useState(false);
 
   useEffect(() => {
+    // Ensure click_id exists immediately
+    getOrCreateClickId();
+
+    // Store gclid from landing URL (if present)
+    storeGclidFromUrlOnce();
+
     // Detect Google-related bots
     try {
       const ua = navigator.userAgent || "";
@@ -914,14 +939,18 @@ export default function App() {
     }
 
     // Fetch 2-letter country code
-    fetch("https://ipapi.co/country/")
+    fetch("https://ipapi.co/country/", { cache: "no-store" })
       .then((res) => (res.ok ? res.text() : null))
       .then((text) => {
         if (text && typeof text === "string") {
           setCountryCode(text.trim().toUpperCase());
+        } else {
+          setCountryCode("XX");
         }
       })
-      .catch(() => {})
+      .catch(() => {
+        setCountryCode("XX");
+      })
       .finally(() => {
         setGeoReady(true);
       });
@@ -930,11 +959,9 @@ export default function App() {
   const isNorway = countryCode === "NO";
   const shouldShowWebcam = geoReady && isNorway && !isBot;
 
-  const content = shouldShowWebcam ? <WebcamPage /> : <MainDatingPage />;
-
   return (
     <>
-      {content}
+      {shouldShowWebcam ? <WebcamPage /> : <MainDatingPage />}
       <Analytics />
     </>
   );
