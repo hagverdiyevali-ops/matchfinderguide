@@ -6,7 +6,7 @@ const WEBCAM_OFFERS = [
   
   {
      name: "Nabo Match",
-    rating: 4.0,
+    rating: 4.9,
     bestFor: "serious dating",
     usp: "A clean and focused dating platform designed for long-term connections.",
     features: [
@@ -22,7 +22,7 @@ const WEBCAM_OFFERS = [
 
   {
     name: "KuKost",
-    rating: 4.3,
+    rating: 4.8,
     bestFor: "free access",
     usp: "Simple, straightforward webcam site offering quick access to live rooms.",
     features: [
@@ -38,7 +38,7 @@ const WEBCAM_OFFERS = [
 
   {
     name: "InstaCams",
-    rating: 4.4,
+    rating: 4.6,
     bestFor: "live chat",
     usp: "Friendly performers and smooth streams — great for live chatting anytime.",
     features: [
@@ -54,7 +54,7 @@ const WEBCAM_OFFERS = [
 
   {
     name: "Lust Station",
-    rating: 4.2,
+    rating: 4.5,
     bestFor: "variety",
     usp: "A diverse webcam platform with many categories and live rooms to explore.",
     features: [
@@ -72,7 +72,7 @@ const WEBCAM_OFFERS = [
 
   {
     name: "MyUkrainianGirls",
-    rating: 4.1,
+    rating: 4.3,
     bestFor: "international dating",
     usp: "International dating platform focused on meaningful connections with verified profiles.",
     features: [
@@ -88,7 +88,7 @@ const WEBCAM_OFFERS = [
 
   {
  name: "Jerk-Roulette",
-    rating: 4.5,
+    rating: 4.1,
     bestFor: "random chat",
     usp: "Fast-paced random webcam chat with a modern, easy-to-use interface.",
     features: [
