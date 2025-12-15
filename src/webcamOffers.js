@@ -3,36 +3,21 @@
 const WEBCAM_OFFERS = [
   /* ---------- CPAMATICA (go.cm-trk6.com) ---------- */
 
+  
   {
-    name: "Jerk-Roulette",
-    rating: 4.5,
-    bestFor: "random chat",
-    usp: "Fast-paced random webcam chat with a modern, easy-to-use interface.",
+     name: "Nabo Match",
+    rating: 4.0,
+    bestFor: "serious dating",
+    usp: "A clean and focused dating platform designed for long-term connections.",
     features: [
-      "Instant random matching",
-      "Large, active user base",
-      "Simple signup — start chatting quickly",
+      "Relationship-focused community",
+      "Easy onboarding process",
+      "Optimized for desktop and mobile",
     ],
     affiliateUrl:
-      "https://go.cm-trk6.com/aff_c?offer_id=13753&aff_id=92400&url_id=25740&aff_sub1={click_id}&aff_sub2={gclid}&aff_sub3={source}&aff_sub5={sub_source}",
-    color: "from-slate-800/40 to-slate-900/20",
-    preview: "/previews-webcam/jerkroulette.png",
-  },
-
-  {
-    name: "InstaCams",
-    rating: 4.4,
-    bestFor: "live chat",
-    usp: "Friendly performers and smooth streams — great for live chatting anytime.",
-    features: [
-      "HD streams & reliable quality",
-      "Easy navigation for beginners",
-      "Private shows available anytime",
-    ],
-    affiliateUrl:
-      "https://go.cm-trk6.com/aff_c?offer_id=12348&aff_id=92400&url_id=21759&aff_sub1={click_id}&aff_sub2={gclid}&aff_sub3={source}&aff_sub5={sub_source}",
-    color: "from-purple-500/30 to-pink-500/20",
-    preview: "/previews-webcam/instacams.png",
+      "https://find.sereneromance.today/click?affid=16096&offerid=9283&sub1={click_id}&sub2={gclid}&sub3={source}&sub5={sub_source}&lp=8f47617c6f",
+    color: "from-rose-400/25 to-pink-700/20",
+    preview: "/previews-webcam/nabomatch.png",
   },
 
   {
@@ -49,6 +34,22 @@ const WEBCAM_OFFERS = [
       "https://go.cm-trk6.com/aff_nl?offer_id=12909&aff_id=92400&lands=133&url_id=23334&aff_sub1={click_id}&aff_sub2={gclid}&aff_sub3={source}&aff_sub5={sub_source}",
     color: "from-red-600/30 to-black/20",
     preview: "/previews-webcam/kukost.png",
+  },
+
+  {
+    name: "InstaCams",
+    rating: 4.4,
+    bestFor: "live chat",
+    usp: "Friendly performers and smooth streams — great for live chatting anytime.",
+    features: [
+      "HD streams & reliable quality",
+      "Easy navigation for beginners",
+      "Private shows available anytime",
+    ],
+    affiliateUrl:
+      "https://go.cm-trk6.com/aff_c?offer_id=12348&aff_id=92400&url_id=21759&aff_sub1={click_id}&aff_sub2={gclid}&aff_sub3={source}&aff_sub5={sub_source}",
+    color: "from-purple-500/30 to-pink-500/20",
+    preview: "/previews-webcam/instacams.png",
   },
 
   {
@@ -86,19 +87,19 @@ const WEBCAM_OFFERS = [
   },
 
   {
-    name: "Nabo Match",
-    rating: 4.0,
-    bestFor: "serious dating",
-    usp: "A clean and focused dating platform designed for long-term connections.",
+ name: "Jerk-Roulette",
+    rating: 4.5,
+    bestFor: "random chat",
+    usp: "Fast-paced random webcam chat with a modern, easy-to-use interface.",
     features: [
-      "Relationship-focused community",
-      "Easy onboarding process",
-      "Optimized for desktop and mobile",
+      "Instant random matching",
+      "Large, active user base",
+      "Simple signup — start chatting quickly",
     ],
     affiliateUrl:
-      "https://find.sereneromance.today/click?affid=16096&offerid=9283&sub1={click_id}&sub2={gclid}&sub3={source}&sub5={sub_source}&lp=8f47617c6f",
-    color: "from-rose-400/25 to-pink-700/20",
-    preview: "/previews-webcam/nabomatch.png",
+      "https://go.cm-trk6.com/aff_c?offer_id=13753&aff_id=92400&url_id=25740&aff_sub1={click_id}&aff_sub2={gclid}&aff_sub3={source}&aff_sub5={sub_source}",
+    color: "from-slate-800/40 to-slate-900/20",
+    preview: "/previews-webcam/jerkroulette.png",
   },
 
   {
