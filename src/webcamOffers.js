@@ -1,11 +1,9 @@
 // src/webcamOffers.js
 
 const WEBCAM_OFFERS = [
-  /* ---------- CPAMATICA (go.cm-trk6.com) ---------- */
-
-  
+  /* 1️⃣ NABO MATCH */
   {
-     name: "Nabo Match",
+    name: "Nabo Match",
     rating: 4.9,
     bestFor: "serious dating",
     usp: "A clean and focused dating platform designed for long-term connections.",
@@ -20,38 +18,24 @@ const WEBCAM_OFFERS = [
     preview: "/previews-webcam/nabomatch.png",
   },
 
+  /* 2️⃣ LYSTPASEX (AFFILITEX) */
   {
-    name: "KuKost",
-    rating: 4.8,
-    bestFor: "free access",
-    usp: "Simple, straightforward webcam site offering quick access to live rooms.",
+    name: "LystPaSex",
+    rating: 4.4,
+    bestFor: "casual encounters",
+    usp: "Fast signup dating platform focused on instant connections and nearby matches.",
     features: [
-      "Free basic access",
-      "24/7 online performers",
-      "Works smoothly on mobile",
+      "Quick registration",
+      "Location-based matches",
+      "Mobile-optimized experience",
     ],
     affiliateUrl:
-      "https://go.cm-trk6.com/aff_nl?offer_id=12909&aff_id=92400&lands=133&url_id=23334&aff_sub1={click_id}&aff_sub2={gclid}&aff_sub3={source}&aff_sub5={sub_source}",
-    color: "from-red-600/30 to-black/20",
-    preview: "/previews-webcam/kukost.png",
+      "https://jndabb.afftrk06.com/?utm_source=2b9d283c183e14fc&s1=235083&s2=229745&s3={click_id}&s5={sub_source}&click_id={click_id}",
+    color: "from-fuchsia-500/25 to-purple-800/20",
+    preview: "/previews-webcam/lystpasex.png",
   },
 
-  {
-    name: "InstaCams",
-    rating: 4.6,
-    bestFor: "live chat",
-    usp: "Friendly performers and smooth streams — great for live chatting anytime.",
-    features: [
-      "HD streams & reliable quality",
-      "Easy navigation for beginners",
-      "Private shows available anytime",
-    ],
-    affiliateUrl:
-      "https://go.cm-trk6.com/aff_c?offer_id=12348&aff_id=92400&url_id=21759&aff_sub1={click_id}&aff_sub2={gclid}&aff_sub3={source}&aff_sub5={sub_source}",
-    color: "from-purple-500/30 to-pink-500/20",
-    preview: "/previews-webcam/instacams.png",
-  },
-
+  /* 3️⃣ LUST STATION */
   {
     name: "Lust Station",
     rating: 4.5,
@@ -68,8 +52,41 @@ const WEBCAM_OFFERS = [
     preview: "/previews-webcam/lust-station.png",
   },
 
-  /* ---------- VORTEX STYLE (find.*.today) ---------- */
+  /* 4️⃣ KUKOST */
+  {
+    name: "KuKost",
+    rating: 4.8,
+    bestFor: "free access",
+    usp: "Simple, straightforward webcam site offering quick access to live rooms.",
+    features: [
+      "Free basic access",
+      "24/7 online performers",
+      "Works smoothly on mobile",
+    ],
+    affiliateUrl:
+      "https://go.cm-trk6.com/aff_nl?offer_id=12909&aff_id=92400&lands=133&url_id=23334&aff_sub1={click_id}&aff_sub2={gclid}&aff_sub3={source}&aff_sub5={sub_source}",
+    color: "from-red-600/30 to-black/20",
+    preview: "/previews-webcam/kukost.png",
+  },
 
+  /* 5️⃣ INSTACAMS */
+  {
+    name: "InstaCams",
+    rating: 4.6,
+    bestFor: "live chat",
+    usp: "Friendly performers and smooth streams — great for live chatting anytime.",
+    features: [
+      "HD streams & reliable quality",
+      "Easy navigation for beginners",
+      "Private shows available anytime",
+    ],
+    affiliateUrl:
+      "https://go.cm-trk6.com/aff_c?offer_id=12348&aff_id=92400&url_id=21759&aff_sub1={click_id}&aff_sub2={gclid}&aff_sub3={source}&aff_sub5={sub_source}",
+    color: "from-purple-500/30 to-pink-500/20",
+    preview: "/previews-webcam/instacams.png",
+  },
+
+  /* 6️⃣ MYUKRAINIANGIRLS */
   {
     name: "MyUkrainianGirls",
     rating: 4.3,
@@ -86,8 +103,9 @@ const WEBCAM_OFFERS = [
     preview: "/previews-webcam/myukrainiangirls.png",
   },
 
+  /* 7️⃣ JERK-ROULETTE */
   {
- name: "Jerk-Roulette",
+    name: "Jerk-Roulette",
     rating: 4.1,
     bestFor: "random chat",
     usp: "Fast-paced random webcam chat with a modern, easy-to-use interface.",
@@ -102,6 +120,7 @@ const WEBCAM_OFFERS = [
     preview: "/previews-webcam/jerkroulette.png",
   },
 
+  /* 8️⃣ NORDFLIRT */
   {
     name: "NordFlirt",
     rating: 4.0,
