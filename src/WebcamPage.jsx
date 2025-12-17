@@ -34,17 +34,12 @@ function getStoredGclid() {
 
 /**
  * Get traffic source/sub-source (simple defaults).
- * If you later want, you can read these from:
- * - URL params (?source=..&sub_source=..)
- * - localStorage
- * - cookies
  */
 function getTrafficSource() {
   return "matchfinderguide";
 }
 
 function getSubSource() {
-  // You can set this to anything you want globally (ex: "search-traffic", "seo", "tiktok", etc.)
   return "search-traffic";
 }
 
@@ -65,11 +60,23 @@ function replacePartnerMacros(rawUrl, clickId, gclid, source, subSource) {
 }
 
 /**
- * Decide which param family to use (aff_sub* vs sub*).
- * - Prefer existing query keys if present.
- * - Otherwise, decide by hostname pattern.
+ * Decide which param family to use:
+ * - "aff" (cpamatica): aff_sub1/2/3/5
+ * - "sub" (vortex):    sub1/2/3/5
+ * - "affilitex":       s3/s5 + click_id
  */
 function detectParamFamily(u) {
+  // Affilitex signals
+  const hasAffilitex =
+    u.searchParams.has("s1") ||
+    u.searchParams.has("s2") ||
+    u.searchParams.has("s3") ||
+    u.searchParams.has("s5") ||
+    u.searchParams.has("token_1") ||
+    u.searchParams.has("token_2");
+
+  if (hasAffilitex) return "affilitex";
+
   const hasAff =
     u.searchParams.has("aff_sub1") ||
     u.searchParams.has("aff_sub2") ||
@@ -86,24 +93,19 @@ function detectParamFamily(u) {
   if (hasSub) return "sub";
 
   const host = (u.hostname || "").toLowerCase();
-  // Cpamatica style
   if (host.includes("cm-trk6.com")) return "aff";
-  // Vortex style
   if (host.includes(".today")) return "sub";
+  if (host.includes("afftrk06.com")) return "affilitex";
 
-  // fallback
   return "aff";
 }
 
 /**
  * Safe URL builder:
- * - Replaces partner macros in the URL string
- * - Adds UTMs if missing
- * - Ensures partner params are populated for BOTH patterns:
- *    Cpamatica: aff_sub1/2/3/5
- *    Vortex:    sub1/2/3/5
- * - Optional debug params: click_id, gclid
- * - Never throws (returns original url if parsing fails)
+ * - Replaces macros
+ * - Adds UTMs
+ * - Fills params for aff/sub/affilitex
+ * - Adds debug click_id + gclid
  */
 function withTracking(url) {
   try {
@@ -112,10 +114,7 @@ function withTracking(url) {
     const source = getTrafficSource();
     const subSource = getSubSource();
 
-    // 1) Replace placeholders in raw string (works for both partner URL styles)
     const replaced = replacePartnerMacros(url, clickId, gclid, source, subSource);
-
-    // 2) Parse and set query params safely
     const u = new URL(replaced);
 
     // default UTMs (keep existing if already present)
@@ -125,11 +124,12 @@ function withTracking(url) {
 
     const family = detectParamFamily(u);
 
-    // Helper: set param if missing/empty/placeholder
     const setIfMissing = (key, value) => {
-      if (!value) return;
+      if (value === undefined || value === null || String(value).trim() === "") return;
       const cur = u.searchParams.get(key);
-      if (!cur || cur.includes("{")) u.searchParams.set(key, value);
+      if (!cur || cur.includes("{") || cur === "FOR_SUB1" || cur === "FOR_SUB2" || cur === "FOR_CLICKID") {
+        u.searchParams.set(key, value);
+      }
     };
 
     if (family === "aff") {
@@ -137,14 +137,25 @@ function withTracking(url) {
       setIfMissing("aff_sub2", gclid);
       setIfMissing("aff_sub3", source);
       setIfMissing("aff_sub5", subSource);
-    } else {
+    } else if (family === "sub") {
       setIfMissing("sub1", clickId);
       setIfMissing("sub2", gclid);
       setIfMissing("sub3", source);
       setIfMissing("sub5", subSource);
+    } else {
+      // ✅ Affilitex:
+      // - click_id is their click id
+      // - s3 is "sub1"
+      // - s5 is "sub2"
+      setIfMissing("click_id", clickId);
+      setIfMissing("s3", clickId);
+      setIfMissing("s5", subSource);
+
+      // Optional: pass gclid too (partner can store/display if they support token_1/2)
+      setIfMissing("token_1", gclid);
     }
 
-    // Optional debug params (helpful when you inspect final URLs)
+    // Optional debug params (handy for inspecting final URLs)
     if (clickId && !u.searchParams.get("click_id")) u.searchParams.set("click_id", clickId);
     if (gclid && !u.searchParams.get("gclid")) u.searchParams.set("gclid", gclid);
 
