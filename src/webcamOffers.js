@@ -66,7 +66,7 @@ const WEBCAM_OFFERS = [
     affiliateUrl:
       "https://go.cm-trk6.com/aff_nl?offer_id=12909&aff_id=92400&lands=133&url_id=23334&aff_sub1={click_id}&aff_sub2={gclid}&aff_sub3={source}&aff_sub5={sub_source}",
     color: "from-red-600/30 to-black/20",
-    preview: "/previews-webcam/kukost.png",
+    preview: "/previews-webcam/kukost.png", 
   },
 
   /* 5️⃣ INSTACAMS */
