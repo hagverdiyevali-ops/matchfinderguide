@@ -16,24 +16,25 @@ const cn = (...c) => c.filter(Boolean).join(" ");
 const CLICK_ID_KEY = "mfg_click_id";
 const GCLID_KEY = "mfg_gclid";
 
-function getStoredClickId() {
+function getStored(key) {
   try {
-    return localStorage.getItem(CLICK_ID_KEY) || "";
+    return localStorage.getItem(key) || "";
   } catch {
     return "";
   }
 }
 
+function getStoredClickId() {
+  return getStored(CLICK_ID_KEY);
+}
+
 function getStoredGclid() {
-  try {
-    return localStorage.getItem(GCLID_KEY) || "";
-  } catch {
-    return "";
-  }
+  return getStored(GCLID_KEY);
 }
 
 /**
  * Get traffic source/sub-source (simple defaults).
+ * You can swap these later to be dynamic (e.g., from URL params, referrer, etc.)
  */
 function getTrafficSource() {
   return "matchfinderguide";
@@ -45,119 +46,192 @@ function getSubSource() {
 
 /**
  * Replace partner placeholders in any URL string.
- * Supports: {click_id}, {gclid}, {source}, {sub_source}
+ * Supports:
+ * - Your custom: {click_id}, {gclid}, {source}, {sub_source}
+ * - Vortex style: {sub1}..{sub5}
+ * - MyLead style: {ml_sub1}..{ml_sub5}
+ * - Affilitex style: {click_id2}..{click_id5}, {token_1}, {token_2}
  */
-function replacePartnerMacros(rawUrl, clickId, gclid, source, subSource) {
+function replacePartnerMacros(rawUrl, vars) {
   let out = String(rawUrl || "");
 
-  // Always replace, even if empty, so no placeholders remain
-  out = out.replaceAll("{click_id}", encodeURIComponent(clickId || ""));
-  out = out.replaceAll("{gclid}", encodeURIComponent(gclid || ""));
-  out = out.replaceAll("{source}", encodeURIComponent(source || ""));
-  out = out.replaceAll("{sub_source}", encodeURIComponent(subSource || ""));
+  const rep = (k, v) => {
+    out = out.replaceAll(k, encodeURIComponent(v ?? ""));
+  };
+
+  // Common
+  rep("{click_id}", vars.clickId);
+  rep("{gclid}", vars.gclid);
+  rep("{source}", vars.source);
+  rep("{sub_source}", vars.subSource);
+
+  // Vortex style (sub1..sub5)
+  rep("{sub1}", vars.clickId);
+  rep("{sub2}", vars.gclid);
+  rep("{sub3}", vars.source);
+  rep("{sub4}", vars.sub4 || "");
+  rep("{sub5}", vars.subSource);
+
+  // MyLead style (ml_sub1..ml_sub5)
+  rep("{ml_sub1}", vars.clickId);
+  rep("{ml_sub2}", vars.gclid);
+  rep("{ml_sub3}", vars.source);
+  rep("{ml_sub4}", vars.sub4 || "");
+  rep("{ml_sub5}", vars.subSource);
+
+  // Affilitex style (click_id2..5 + token_1/2)
+  rep("{click_id2}", vars.gclid);
+  rep("{click_id3}", vars.source);
+  rep("{click_id4}", vars.sub4 || "");
+  rep("{click_id5}", vars.subSource);
+  rep("{token_1}", vars.gclid);
+  rep("{token_2}", vars.subSource);
 
   return out;
 }
 
 /**
- * Decide which param family to use:
- * - "aff" (cpamatica): aff_sub1/2/3/5
- * - "sub" (vortex):    sub1/2/3/5
- * - "affilitex":       s3/s5 + click_id
+ * Helper: set param if missing OR still looks like a placeholder.
  */
-function detectParamFamily(u) {
-  // Affilitex signals
-  const hasAffilitex =
-    u.searchParams.has("s1") ||
-    u.searchParams.has("s2") ||
-    u.searchParams.has("s3") ||
-    u.searchParams.has("s5") ||
-    u.searchParams.has("token_1") ||
-    u.searchParams.has("token_2");
+function setIfMissing(u, key, value) {
+  if (value === undefined || value === null || String(value).trim() === "") return;
 
-  if (hasAffilitex) return "affilitex";
+  const cur = u.searchParams.get(key);
+  const looksPlaceholder =
+    !cur ||
+    cur.includes("{") ||
+    cur === "FOR_SUB1" ||
+    cur === "FOR_SUB2" ||
+    cur === "FOR_CLICKID";
 
-  const hasAff =
-    u.searchParams.has("aff_sub1") ||
-    u.searchParams.has("aff_sub2") ||
-    u.searchParams.has("aff_sub3") ||
-    u.searchParams.has("aff_sub5");
+  if (looksPlaceholder) u.searchParams.set(key, value);
+}
 
-  const hasSub =
-    u.searchParams.has("sub1") ||
-    u.searchParams.has("sub2") ||
-    u.searchParams.has("sub3") ||
-    u.searchParams.has("sub5");
+/**
+ * Detect partner scheme based on URL params/host.
+ * Schemes:
+ * - "vortex_sub"  => sub1..sub5
+ * - "cpamatica"   => click_id + source
+ * - "affilitex"   => click_id + click_id2..5 + token_1/2
+ * - "mylead"      => ml_sub1..ml_sub5
+ * - "aff_sub"     => aff_sub1..aff_sub5 (kept for backward compatibility)
+ */
+function detectPartnerScheme(u) {
+  const has = (k) => u.searchParams.has(k);
 
-  if (hasAff) return "aff";
-  if (hasSub) return "sub";
+  // MyLead
+  if (has("ml_sub1") || has("ml_sub2") || has("ml_sub3") || has("ml_sub4") || has("ml_sub5")) {
+    return "mylead";
+  }
 
+  // Affilitex
+  if (
+    has("click_id2") ||
+    has("click_id3") ||
+    has("click_id4") ||
+    has("click_id5") ||
+    has("token_1") ||
+    has("token_2")
+  ) {
+    return "affilitex";
+  }
+
+  // Vortex style
+  if (has("sub1") || has("sub2") || has("sub3") || has("sub4") || has("sub5")) {
+    return "vortex_sub";
+  }
+
+  // Old "aff_sub" style (kept)
+  if (has("aff_sub1") || has("aff_sub2") || has("aff_sub3") || has("aff_sub5")) {
+    return "aff_sub";
+  }
+
+  // Cpamatica-style params
+  if (has("click_id") || has("source")) {
+    return "cpamatica";
+  }
+
+  // Host heuristics (optional)
   const host = (u.hostname || "").toLowerCase();
-  if (host.includes("cm-trk6.com")) return "aff";
-  if (host.includes(".today")) return "sub";
   if (host.includes("afftrk06.com")) return "affilitex";
+  if (host.includes(".today")) return "vortex_sub";
+  if (host.includes("cm-trk6.com")) return "aff_sub";
 
-  return "aff";
+  // Default: cpamatica click_id + source
+  return "cpamatica";
 }
 
 /**
  * Safe URL builder:
  * - Replaces macros
  * - Adds UTMs
- * - Fills params for aff/sub/affilitex
- * - Adds debug click_id + gclid
+ * - Fills partner params based on detected scheme
  */
 function withTracking(url) {
   try {
-    const clickId = getStoredClickId();
-    const gclid = getStoredGclid();
-    const source = getTrafficSource();
-    const subSource = getSubSource();
-
-    const replaced = replacePartnerMacros(url, clickId, gclid, source, subSource);
-    const u = new URL(replaced);
-
-    // default UTMs (keep existing if already present)
-    if (!u.searchParams.get("utm_source")) u.searchParams.set("utm_source", "matchfinderguide");
-    if (!u.searchParams.get("utm_medium")) u.searchParams.set("utm_medium", "site");
-    if (!u.searchParams.get("utm_campaign")) u.searchParams.set("utm_campaign", "webcam_offers");
-
-    const family = detectParamFamily(u);
-
-    const setIfMissing = (key, value) => {
-      if (value === undefined || value === null || String(value).trim() === "") return;
-      const cur = u.searchParams.get(key);
-      if (!cur || cur.includes("{") || cur === "FOR_SUB1" || cur === "FOR_SUB2" || cur === "FOR_CLICKID") {
-        u.searchParams.set(key, value);
-      }
+    const vars = {
+      clickId: getStoredClickId(),
+      gclid: getStoredGclid(),
+      source: getTrafficSource(),
+      subSource: getSubSource(),
+      sub4: "", // optional extra slot if you later need it
     };
 
-    if (family === "aff") {
-      setIfMissing("aff_sub1", clickId);
-      setIfMissing("aff_sub2", gclid);
-      setIfMissing("aff_sub3", source);
-      setIfMissing("aff_sub5", subSource);
-    } else if (family === "sub") {
-      setIfMissing("sub1", clickId);
-      setIfMissing("sub2", gclid);
-      setIfMissing("sub3", source);
-      setIfMissing("sub5", subSource);
-    } else {
-      // ✅ Affilitex:
-      // - click_id is their click id
-      // - s3 is "sub1"
-      // - s5 is "sub2"
-      setIfMissing("click_id", clickId);
-      setIfMissing("s3", clickId);
-      setIfMissing("s5", subSource);
+    const replaced = replacePartnerMacros(url, vars);
+    const u = new URL(replaced);
 
-      // Optional: pass gclid too (partner can store/display if they support token_1/2)
-      setIfMissing("token_1", gclid);
+    // Default UTMs (keep existing if already present)
+    if (!u.searchParams.get("utm_source")) u.searchParams.set("utm_source", vars.source);
+    if (!u.searchParams.get("utm_medium")) u.searchParams.set("utm_medium", "site");
+    if (!u.searchParams.get("utm_campaign")) u.searchParams.set("utm_campaign", "offers");
+
+    const scheme = detectPartnerScheme(u);
+
+    if (scheme === "vortex_sub") {
+      // Vortex screenshot mapping:
+      // sub1 = click id, sub2 = sub-2, sub3 = source, sub5 = sub source
+      setIfMissing(u, "sub1", vars.clickId);
+      setIfMissing(u, "sub2", vars.gclid);
+      setIfMissing(u, "sub3", vars.source);
+      setIfMissing(u, "sub4", vars.sub4);
+      setIfMissing(u, "sub5", vars.subSource);
+    } else if (scheme === "mylead") {
+      // MyLead: ml_sub1..ml_sub5
+      setIfMissing(u, "ml_sub1", vars.clickId);
+      setIfMissing(u, "ml_sub2", vars.gclid);
+      setIfMissing(u, "ml_sub3", vars.source);
+      setIfMissing(u, "ml_sub4", vars.sub4);
+      setIfMissing(u, "ml_sub5", vars.subSource);
+    } else if (scheme === "affilitex") {
+      // Affilitex screenshot mapping:
+      // click_id2..5 exist, token_1/2 are visible in stats
+      setIfMissing(u, "click_id", vars.clickId);
+      setIfMissing(u, "click_id2", vars.gclid);
+      setIfMissing(u, "click_id3", vars.source);
+      setIfMissing(u, "click_id4", vars.sub4);
+      setIfMissing(u, "click_id5", vars.subSource);
+
+      setIfMissing(u, "token_1", vars.gclid);
+      setIfMissing(u, "token_2", vars.subSource);
+    } else if (scheme === "aff_sub") {
+      // Backward compatibility (your older networks)
+      setIfMissing(u, "aff_sub1", vars.clickId);
+      setIfMissing(u, "aff_sub2", vars.gclid);
+      setIfMissing(u, "aff_sub3", vars.source);
+      setIfMissing(u, "aff_sub5", vars.subSource);
+
+      // Also set Cpamatica style (harmless if ignored)
+      setIfMissing(u, "click_id", vars.clickId);
+      setIfMissing(u, "source", `${vars.source}:${vars.subSource}`);
+    } else {
+      // Cpamatica: click_id + source (traffic source should be stored inside source param)
+      setIfMissing(u, "click_id", vars.clickId);
+      setIfMissing(u, "source", `${vars.source}:${vars.subSource}`);
     }
 
-    // Optional debug params (handy for inspecting final URLs)
-    if (clickId && !u.searchParams.get("click_id")) u.searchParams.set("click_id", clickId);
-    if (gclid && !u.searchParams.get("gclid")) u.searchParams.set("gclid", gclid);
+    // Optional debug params (safe)
+    if (vars.clickId && !u.searchParams.get("dbg_click_id")) u.searchParams.set("dbg_click_id", vars.clickId);
+    if (vars.gclid && !u.searchParams.get("dbg_gclid")) u.searchParams.set("dbg_gclid", vars.gclid);
 
     return u.toString();
   } catch {
@@ -199,7 +273,7 @@ function isTopChoice(index) {
   return index === 0;
 }
 
-/* ---------- Webcam-specific offer card (wide logos) ---------- */
+/* ---------- Offer card (wide logos) ---------- */
 function WebcamOfferCard({ offer, index }) {
   const cleanName = (offer.name || "").replace(/\.com$/i, "");
   const shortFeatures = Array.isArray(offer.features) ? offer.features.slice(0, 2) : [];
@@ -248,7 +322,7 @@ function WebcamOfferCard({ offer, index }) {
                 />
               ) : (
                 <div className="flex h-full w-full items-center justify-center bg-slate-900">
-                  <span className="text-xs font-semibold text-slate-500">Webcam site logo</span>
+                  <span className="text-xs font-semibold text-slate-500">Partner logo</span>
                 </div>
               )}
             </div>
@@ -305,7 +379,7 @@ function WebcamOfferCard({ offer, index }) {
                 Visit site <span className="ml-2 text-xs">↗</span>
               </a>
 
-              <p className="text-[11px] text-slate-400 sm:ml-1">External partner site · 18+ only</p>
+              <p className="text-[11px] text-slate-400 sm:ml-1">External partner site</p>
             </div>
           </div>
         </div>
@@ -336,7 +410,7 @@ export default function WebcamPage() {
                 <span className="text-xs font-semibold text-slate-200">
                   MatchFinder<span className="text-pink-400">Guide</span>
                 </span>
-                <span className="text-[10px] text-slate-500">Live Webcam Sites</span>
+                <span className="text-[10px] text-slate-500">Partner offers</span>
               </div>
             </Link>
           </div>
@@ -344,13 +418,12 @@ export default function WebcamPage() {
 
         <section className="mx-auto max-w-6xl px-4 pt-4 pb-10">
           <div className="mb-4 space-y-1">
-            <p className="text-[11px] uppercase tracking-[0.22em] text-pink-400">Trusted webcam platforms · 18+ only</p>
+            <p className="text-[11px] uppercase tracking-[0.22em] text-pink-400">Trusted partners</p>
 
-            <h1 className="text-xl font-bold text-slate-50">Best Webcam Sites — Safe, Popular &amp; Easy to Explore</h1>
+            <h1 className="text-xl font-bold text-slate-50">Top Offers — Safe, Popular &amp; Easy to Explore</h1>
 
             <p className="text-xs text-slate-400 max-w-xl">
-              Browse reliable webcam platforms where you can connect, chat and enjoy live content safely. We highlight
-              easy-to-use sites with active performers, smooth streaming and friendly communities.
+              Browse trusted partner offers. We highlight easy-to-use platforms with smooth experiences and clear value.
             </p>
           </div>
 
@@ -361,8 +434,8 @@ export default function WebcamPage() {
           </div>
 
           <p className="mt-6 text-[11px] text-slate-500">
-            These platforms are intended for adults 18+ only. We may earn a commission when you create an account
-            through our links. Please review each platform’s safety, privacy and community guidelines before using.
+            We may earn a commission when you sign up through our links. Please review each partner’s terms and privacy
+            policy before using.
           </p>
         </section>
       </main>

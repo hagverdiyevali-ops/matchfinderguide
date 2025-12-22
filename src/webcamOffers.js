@@ -18,10 +18,10 @@ const WEBCAM_OFFERS = [
     preview: "/previews-webcam/nabomatch.png",
   },
 
-  /* 2️⃣ LYSTPASEX (AFFILITEX) */
+  /* 2️⃣ LYSTPASEX */
   {
     name: "LystPaSex",
-    rating: 4.8,
+    rating: 4.9,
     bestFor: "casual encounters",
     usp: "Fast signup dating platform focused on instant connections and nearby matches.",
     features: [
@@ -35,10 +35,61 @@ const WEBCAM_OFFERS = [
     preview: "/previews-webcam/lystpasex.png",
   },
 
-  /* 3️⃣ LUST STATION */
+  /* 3️⃣ FUCKFINDER */
+  {
+    name: "FuckFinder",
+    rating: 4.8,
+    bestFor: "casual hookups",
+    usp: "Direct and bold dating platform focused on fast, no-strings-attached matches.",
+    features: [
+      "Very fast signup",
+      "Explicit intent matching",
+      "Works well on mobile",
+    ],
+    affiliateUrl:
+      "https://trustedoffers.pro/a/o2KXjsvvm8IVQnJ?sub1={click_id}&sub2={gclid}&sub3={source}&sub5={sub_source}",
+    color: "from-red-500/30 to-rose-800/20",
+    preview: "/previews-webcam/fuckfinder.png",
+  },
+
+  /* 4️⃣ ONENIGHTFRIEND */
+  {
+    name: "OneNightFriend",
+    rating: 4.6,
+    bestFor: "one-night stands",
+    usp: "Casual dating site designed for spontaneous encounters and short-term fun.",
+    features: [
+      "Location-based matching",
+      "Quick profile setup",
+      "Discreet and user-friendly",
+    ],
+    affiliateUrl:
+      "https://top-deal.me/a/qx5LlTXzo2hQ8zg?sub1={click_id}&sub2={gclid}&sub3={source}&sub5={sub_source}",
+    color: "from-orange-400/30 to-red-700/20",
+    preview: "/previews-webcam/Onenightfriend.png",
+  },
+
+  /* 5️⃣ KUKOST */
+  {
+    name: "KuKost",
+    rating: 4.5,
+    bestFor: "free access",
+    usp: "Simple, straightforward webcam site offering quick access to live rooms.",
+    features: [
+      "Free basic access",
+      "24/7 online performers",
+      "Works smoothly on mobile",
+    ],
+    affiliateUrl:
+      "https://go.cm-trk6.com/aff_nl?offer_id=12909&aff_id=92400&lands=133&url_id=23334&aff_sub1={click_id}&aff_sub2={gclid}&aff_sub3={source}&aff_sub5={sub_source}",
+    color: "from-red-600/30 to-black/20",
+    preview: "/previews-webcam/kukost.png",
+  },
+
+  /* 6️⃣ LUST STATION */
   {
     name: "Lust Station",
-    rating: 4.7,
+    rating: 4.4,
     bestFor: "variety",
     usp: "A diverse webcam platform with many categories and live rooms to explore.",
     features: [
@@ -52,27 +103,44 @@ const WEBCAM_OFFERS = [
     preview: "/previews-webcam/lust-station.png",
   },
 
-  /* 4️⃣ KUKOST */
+  /* 7️⃣ BENaughty */
   {
-    name: "KuKost",
-    rating: 4.6,
-    bestFor: "free access",
-    usp: "Simple, straightforward webcam site offering quick access to live rooms.",
+    name: "BeNaughty",
+    rating: 4.3,
+    bestFor: "flirting & casual dating",
+    usp: "Playful dating platform with a large, active user base and instant matches.",
     features: [
-      "Free basic access",
-      "24/7 online performers",
-      "Works smoothly on mobile",
+      "Large global audience",
+      "Flirt-first matching",
+      "Strong mobile experience",
     ],
     affiliateUrl:
-      "https://go.cm-trk6.com/aff_nl?offer_id=12909&aff_id=92400&lands=133&url_id=23334&aff_sub1={click_id}&aff_sub2={gclid}&aff_sub3={source}&aff_sub5={sub_source}",
-    color: "from-red-600/30 to-black/20",
-    preview: "/previews-webcam/kukost.png", 
+      "https://top-deal.me/a/o2KXjsvB0MfVQnB?sub1={click_id}&sub2={gclid}&sub3={source}&sub5={sub_source}",
+    color: "from-pink-500/30 to-fuchsia-700/20",
+    preview: "/previews-webcam/BeNaughty.png",
   },
 
-  /* 5️⃣ INSTACAMS */
+  /* 8️⃣ SECRET DATING CLUB */
+  {
+    name: "SecretDatingClub",
+    rating: 4.2,
+    bestFor: "discreet affairs",
+    usp: "Privacy-focused dating site for discreet connections and anonymous browsing.",
+    features: [
+      "Discreet profiles",
+      "Privacy-first design",
+      "Anonymous browsing options",
+    ],
+    affiliateUrl:
+      "https://top-deal.me/a/68yKBhGp0BFmrE2?sub1={click_id}&sub2={gclid}&sub3={source}&sub5={sub_source}",
+    color: "from-slate-700/40 to-black/30",
+    preview: "/previews-webcam/SecretDatingClub.png",
+  },
+
+  /* 9️⃣ INSTACAMS */
   {
     name: "InstaCams",
-    rating: 4.5,
+    rating: 4.1,
     bestFor: "live chat",
     usp: "Friendly performers and smooth streams — great for live chatting anytime.",
     features: [
@@ -86,10 +154,10 @@ const WEBCAM_OFFERS = [
     preview: "/previews-webcam/instacams.png",
   },
 
-  /* 6️⃣ MYUKRAINIANGIRLS */
+  /* 🔟 MYUKRAINIANGIRLS */
   {
     name: "MyUkrainianGirls",
-    rating: 4.4,
+    rating: 3.9,
     bestFor: "international dating",
     usp: "International dating platform focused on meaningful connections with verified profiles.",
     features: [
@@ -103,10 +171,10 @@ const WEBCAM_OFFERS = [
     preview: "/previews-webcam/myukrainiangirls.png",
   },
 
-  /* 7️⃣ JERK-ROULETTE */
+  /* 1️⃣1️⃣ JERK-ROULETTE */
   {
     name: "Jerk-Roulette",
-    rating: 4.2,
+    rating: 3.8,
     bestFor: "random chat",
     usp: "Fast-paced random webcam chat with a modern, easy-to-use interface.",
     features: [
@@ -120,10 +188,10 @@ const WEBCAM_OFFERS = [
     preview: "/previews-webcam/jerkroulette.png",
   },
 
-  /* 8️⃣ NORDFLIRT */
+  /* 1️⃣2️⃣ NORDFLIRT */
   {
     name: "NordFlirt",
-    rating: 4.1,
+    rating: 3.7,
     bestFor: "nordic singles",
     usp: "Dating platform tailored for Nordic and European singles seeking genuine matches.",
     features: [
