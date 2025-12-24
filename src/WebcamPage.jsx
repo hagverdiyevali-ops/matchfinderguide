@@ -451,7 +451,7 @@ export default function WebcamPage() {
             {/* Top image (safe abstract) */}
             <div className="relative h-40 sm:h-52 md:h-56">
               <img
-                src="/hero-webcam.jpg"
+                src="/public/hero-webcam.jpg"
                 alt="Live video chat offers"
                 className="h-full w-full object-cover opacity-80"
                 loading="eager"
