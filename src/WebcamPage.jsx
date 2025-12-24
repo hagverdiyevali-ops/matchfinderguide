@@ -16,7 +16,7 @@ const COPY = {
   HERO_KICKER: "Live video chat offers",
   HERO_HEADLINE: "Compare top live chat platforms in minutes",
   HERO_SUBLINE: "Filter by ratings and features like random matching, instant start, and private rooms.",
-  CTA_LABEL: "Open offer", // <-- change to whatever you want in one place
+  CTA_LABEL: "Register here", // <-- change to whatever you want in one place
   SEARCH_PLACEHOLDER: "Search random match, private rooms, instant chat…",
   FEATURE_STRIP: "Random match • Private rooms • Instant start",
 };
