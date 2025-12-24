@@ -11,6 +11,16 @@ const cn = (...c) => c.filter(Boolean).join(" ");
 const CLICK_ID_KEY = "mfg_click_id";
 const GCLID_KEY = "mfg_gclid";
 
+/* ---------- COPY (edit freely) ---------- */
+const COPY = {
+  HERO_KICKER: "Live video chat offers",
+  HERO_HEADLINE: "Compare top live chat platforms in minutes",
+  HERO_SUBLINE: "Filter by ratings and features like random matching, instant start, and private rooms.",
+  CTA_LABEL: "Open offer", // <-- change to whatever you want in one place
+  SEARCH_PLACEHOLDER: "Search random match, private rooms, instant chat…",
+  FEATURE_STRIP: "Random match • Private rooms • Instant start",
+};
+
 function getStored(key) {
   try {
     return localStorage.getItem(key) || "";
@@ -76,14 +86,10 @@ function detectPartnerScheme(u) {
   const has = (k) => u.searchParams.has(k);
 
   if (has("ml_sub1") || has("ml_sub2") || has("ml_sub3") || has("ml_sub4") || has("ml_sub5")) return "mylead";
-
   if (has("click_id2") || has("click_id3") || has("click_id4") || has("click_id5") || has("token_1") || has("token_2"))
     return "affilitex";
-
   if (has("sub1") || has("sub2") || has("sub3") || has("sub4") || has("sub5")) return "vortex_sub";
-
   if (has("aff_sub1") || has("aff_sub2") || has("aff_sub3") || has("aff_sub5")) return "aff_sub";
-
   if (has("click_id") || has("source")) return "cpamatica";
 
   const host = (u.hostname || "").toLowerCase();
@@ -202,6 +208,31 @@ function isTopChoice(index) {
   return index === 0;
 }
 
+function FeatureIcons({ offer }) {
+  const items = [];
+
+  if (offer.randomChat) items.push({ key: "random", label: "Random Match", icon: "🎲" });
+  if (offer.freePrivateShows) items.push({ key: "private", label: "Private Rooms", icon: "🔒" });
+  if (offer.instantMatch) items.push({ key: "instant", label: "Instant Start", icon: "⚡" });
+
+  if (items.length === 0) return null;
+
+  return (
+    <div className="mt-3 flex flex-wrap items-center gap-2">
+      {items.map((it) => (
+        <span
+          key={it.key}
+          className="inline-flex items-center gap-2 rounded-full border border-slate-800 bg-slate-950/50 px-3 py-1 text-[11px] text-slate-200"
+          title={it.label}
+        >
+          <span className="text-[12px]">{it.icon}</span>
+          <span className="font-medium">{it.label}</span>
+        </span>
+      ))}
+    </div>
+  );
+}
+
 function OfferBadgeRow({ offer, index }) {
   const category = offer.bestFor ? offer.bestFor.charAt(0).toUpperCase() + offer.bestFor.slice(1) : null;
   const isTop = isTopChoice(index);
@@ -216,7 +247,6 @@ function OfferBadgeRow({ offer, index }) {
         </Pill>
       )}
       {Number(offer.rating) >= 4.5 && <Pill tone="amber">High rated</Pill>}
-      {/* removed: External partner tag */}
     </div>
   );
 }
@@ -268,8 +298,11 @@ function WebcamOfferCard({ offer, index }) {
                 <div className="min-w-0">
                   <h3 className="text-lg sm:text-xl font-extrabold text-slate-50 truncate">{cleanName}</h3>
                   <p className="mt-1 text-[13px] text-slate-300 max-w-2xl leading-relaxed">
-                    {offer.usp || "Compare this offer quickly using rating, best-for category, and key features."}
+                    {offer.usp || "Compare this offer quickly using rating, category, and key features."}
                   </p>
+
+                  {/* NEW: Feature icons */}
+                  <FeatureIcons offer={offer} />
                 </div>
 
                 <div className="hidden sm:flex flex-col items-end gap-2">
@@ -282,7 +315,7 @@ function WebcamOfferCard({ offer, index }) {
                                shadow-[0_18px_45px_-24px_rgba(0,0,0,0.9)]
                                hover:brightness-105 active:scale-95 transition"
                   >
-                    Visit site <span className="ml-2 text-xs">↗</span>
+                    {COPY.CTA_LABEL} <span className="ml-2 text-xs">↗</span>
                   </a>
                   <span className="text-[11px] text-slate-500">Opens partner website</span>
                 </div>
@@ -313,7 +346,7 @@ function WebcamOfferCard({ offer, index }) {
                              shadow-[0_18px_45px_-24px_rgba(0,0,0,0.9)]
                              hover:brightness-105 active:scale-95 transition"
                 >
-                  Visit site <span className="ml-2 text-xs">↗</span>
+                  {COPY.CTA_LABEL} <span className="ml-2 text-xs">↗</span>
                 </a>
                 <p className="mt-2 text-[11px] text-slate-500">Opens partner website</p>
               </div>
@@ -325,7 +358,7 @@ function WebcamOfferCard({ offer, index }) {
           <div className="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="text-[11px] text-slate-500">
               Tip: compare platforms by <span className="text-slate-300">rating</span>,{" "}
-              <span className="text-slate-300">best for</span>, and key features.
+              <span className="text-slate-300">category</span>, and icons.
             </div>
 
             <div className="text-[11px] text-slate-500">
@@ -360,7 +393,9 @@ export default function WebcamPage() {
 
     if (q) {
       list = list.filter((o) => {
-        const hay = `${o?.name || ""} ${o?.usp || ""} ${(o?.features || []).join(" ")}`.toLowerCase();
+        const hay = `${o?.name || ""} ${o?.usp || ""} ${(o?.features || []).join(" ")} ${
+          o?.randomChat ? "random match random chat roulette" : ""
+        } ${o?.freePrivateShows ? "private rooms private shows" : ""} ${o?.instantMatch ? "instant match" : ""}`.toLowerCase();
         return hay.includes(q);
       });
     }
@@ -398,14 +433,14 @@ export default function WebcamPage() {
                 <span className="text-xs font-semibold text-slate-200">
                   MatchFinder<span className="text-pink-400">Guide</span>
                 </span>
-                <span className="text-[10px] text-slate-500">Norway • Adult offers</span>
+                <span className="text-[10px] text-slate-500">Norway • Offers</span>
               </div>
             </Link>
 
             <div className="hidden sm:flex items-center gap-2">
-              <Pill tone="neutral">🔒 Safe browsing</Pill>
-              <Pill tone="neutral">⚡ Fast compare</Pill>
-              <Pill tone="neutral">🧾 Clear disclosure</Pill>
+              <Pill tone="neutral">🎲 Random match</Pill>
+              <Pill tone="neutral">🔒 Private rooms</Pill>
+              <Pill tone="neutral">⚡ Instant start</Pill>
             </div>
           </div>
         </header>
@@ -413,27 +448,28 @@ export default function WebcamPage() {
         {/* Hero */}
         <section className="mx-auto max-w-6xl px-4 pt-7 pb-6">
           <div className="relative overflow-hidden rounded-3xl border border-slate-800 bg-slate-950/60 backdrop-blur">
-            {/* TOP IMAGE (add this file in /public) */}
+            {/* Top image (safe abstract) */}
             <div className="relative h-40 sm:h-52 md:h-56">
-              {/* Put your hero image here: /public/hero-webcam.jpg */}
               <img
                 src="/hero-webcam.jpg"
-                alt="Adult dating & webcam offers"
+                alt="Live video chat offers"
                 className="h-full w-full object-cover opacity-80"
                 loading="eager"
               />
               <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/70 to-transparent" />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent" />
+              <div className="absolute bottom-4 left-6 right-6">
+                <div className="inline-flex items-center gap-2 rounded-full border border-slate-800 bg-slate-950/50 px-4 py-2 text-[11px] text-slate-200">
+                  <span className="text-[12px]">✨</span>
+                  <span className="uppercase tracking-[0.22em] text-slate-300">{COPY.FEATURE_STRIP}</span>
+                </div>
+              </div>
             </div>
 
             <div className="relative z-10 p-6 sm:p-8">
-              <p className="text-[11px] uppercase tracking-[0.22em] text-pink-400">Adult dating &amp; webcam offers</p>
-              <h1 className="mt-2 text-2xl sm:text-3xl font-extrabold text-slate-50">
-                Explore Norway’s adult dating &amp; webcam offers — compare top platforms in minutes
-              </h1>
-              <p className="mt-2 text-sm text-slate-300 max-w-2xl leading-relaxed">
-                Curated partner offers with ratings, “best for” categories, and key features — designed to help you pick fast.
-              </p>
+              <p className="text-[11px] uppercase tracking-[0.22em] text-pink-400">{COPY.HERO_KICKER}</p>
+              <h1 className="mt-2 text-2xl sm:text-3xl font-extrabold text-slate-50">{COPY.HERO_HEADLINE}</h1>
+              <p className="mt-2 text-sm text-slate-300 max-w-2xl leading-relaxed">{COPY.HERO_SUBLINE}</p>
 
               <div className="mt-5 flex flex-wrap gap-2">
                 <Pill tone="pink">✨ Curated list</Pill>
@@ -450,7 +486,7 @@ export default function WebcamPage() {
                     <input
                       value={query}
                       onChange={(e) => setQuery(e.target.value)}
-                      placeholder="Search offers, features, keywords…"
+                      placeholder={COPY.SEARCH_PLACEHOLDER}
                       className="w-full bg-transparent outline-none text-sm text-slate-100 placeholder:text-slate-600"
                     />
                   </div>
@@ -540,7 +576,7 @@ export default function WebcamPage() {
               </li>
               <li className="flex gap-2">
                 <span className="text-pink-400 mt-0.5">•</span>
-                Ratings are a quick indicator (not a guarantee). Always compare features that matter to you.
+                Ratings and icons are quick indicators (not a guarantee). Always compare features that matter to you.
               </li>
             </ul>
           </div>
