@@ -216,28 +216,11 @@ function OfferBadgeRow({ offer, index }) {
         </Pill>
       )}
       {Number(offer.rating) >= 4.5 && <Pill tone="amber">High rated</Pill>}
-      <Pill tone="green">External partner</Pill>
+      {/* removed: External partner tag */}
     </div>
   );
 }
 
-/**
- * Offer fields supported (recommended):
- * - preview: logo image (wide)
- * - cover: OPTIONAL decorative background image for the card (safe, non-explicit, abstract)
- *
- * Example in webcamOffers.js:
- * {
- *   name: "Example",
- *   rating: 4.8,
- *   usp: "...",
- *   preview: "/partners/example-logo.png",
- *   cover: "/covers/abstract-neon-1.jpg",
- *   bestFor: "chat",
- *   features: ["...", "..."],
- *   affiliateUrl: "https://..."
- * }
- */
 function WebcamOfferCard({ offer, index }) {
   const cleanName = (offer.name || "").replace(/\.com$/i, "");
   const shortFeatures = Array.isArray(offer.features) ? offer.features.slice(0, 3) : [];
@@ -254,7 +237,6 @@ function WebcamOfferCard({ offer, index }) {
       )}
     >
       <div className="relative rounded-3xl overflow-hidden bg-slate-950/92 border border-slate-800">
-        {/* cover (optional) */}
         {cover && (
           <div className="absolute inset-0">
             <img src={cover} alt="" className="h-full w-full object-cover opacity-25 scale-[1.02]" loading="lazy" />
@@ -262,12 +244,10 @@ function WebcamOfferCard({ offer, index }) {
           </div>
         )}
 
-        {/* top glow */}
         <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 h-48 w-[520px] rounded-full bg-pink-500/10 blur-3xl" />
 
         <div className="relative z-10 p-5 sm:p-6">
           <div className="flex flex-col lg:flex-row gap-5 lg:gap-6">
-            {/* logo */}
             <div className="flex-shrink-0 w-full lg:w-72">
               <div className="h-24 sm:h-28 rounded-2xl bg-slate-900/70 border border-slate-700/70 overflow-hidden shadow-inner flex items-center justify-center">
                 {logo ? (
@@ -283,17 +263,15 @@ function WebcamOfferCard({ offer, index }) {
               </div>
             </div>
 
-            {/* content */}
             <div className="min-w-0 flex-1">
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
                   <h3 className="text-lg sm:text-xl font-extrabold text-slate-50 truncate">{cleanName}</h3>
                   <p className="mt-1 text-[13px] text-slate-300 max-w-2xl leading-relaxed">
-                    {offer.usp || "Explore this partner offer with a smooth signup flow and clear value."}
+                    {offer.usp || "Compare this offer quickly using rating, best-for category, and key features."}
                   </p>
                 </div>
 
-                {/* mini CTA (desktop) */}
                 <div className="hidden sm:flex flex-col items-end gap-2">
                   <a
                     href={finalUrl}
@@ -325,7 +303,6 @@ function WebcamOfferCard({ offer, index }) {
                 </ul>
               )}
 
-              {/* mobile CTA */}
               <div className="mt-5 sm:hidden">
                 <a
                   href={finalUrl}
@@ -338,18 +315,17 @@ function WebcamOfferCard({ offer, index }) {
                 >
                   Visit site <span className="ml-2 text-xs">↗</span>
                 </a>
-                <p className="mt-2 text-[11px] text-slate-500">External partner site</p>
+                <p className="mt-2 text-[11px] text-slate-500">Opens partner website</p>
               </div>
             </div>
           </div>
 
-          {/* subtle bottom line */}
           <div className="mt-5 h-px w-full bg-gradient-to-r from-transparent via-slate-700/60 to-transparent" />
 
           <div className="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="text-[11px] text-slate-500">
               Tip: compare platforms by <span className="text-slate-300">rating</span>,{" "}
-              <span className="text-slate-300">best for</span>, and quick features.
+              <span className="text-slate-300">best for</span>, and key features.
             </div>
 
             <div className="text-[11px] text-slate-500">
@@ -368,7 +344,7 @@ export default function WebcamPage() {
   const [category, setCategory] = useState("all");
   const [onlyTop, setOnlyTop] = useState(false);
   const [minRating, setMinRating] = useState(0);
-  const [sortMode, setSortMode] = useState("rating_desc"); // rating_desc | name_asc
+  const [sortMode, setSortMode] = useState("rating_desc");
 
   const categories = useMemo(() => {
     const set = new Set();
@@ -380,8 +356,6 @@ export default function WebcamPage() {
 
   const filtered = useMemo(() => {
     let list = Array.isArray(WEBCAM_OFFERS) ? WEBCAM_OFFERS.slice(0) : [];
-
-    // normalize
     const q = query.trim().toLowerCase();
 
     if (q) {
@@ -391,30 +365,13 @@ export default function WebcamPage() {
       });
     }
 
-    if (category !== "all") {
-      list = list.filter((o) => String(o?.bestFor || "").toLowerCase() === category);
-    }
+    if (category !== "all") list = list.filter((o) => String(o?.bestFor || "").toLowerCase() === category);
+    if (minRating > 0) list = list.filter((o) => (Number(o?.rating) || 0) >= minRating);
 
-    if (onlyTop) {
-      // your current "top choice" is index 0 AFTER sorting;
-      // we treat "onlyTop" as: show only the single best item by rating.
-      // (If you later add offer.isTop=true, you can change this.)
-      // We'll apply after sort below by slicing.
-    }
-
-    if (minRating > 0) {
-      list = list.filter((o) => (Number(o?.rating) || 0) >= minRating);
-    }
-
-    // sort
-    if (sortMode === "name_asc") {
-      list.sort((a, b) => String(a?.name || "").localeCompare(String(b?.name || "")));
-    } else {
-      list.sort((a, b) => (Number(b?.rating) || 0) - (Number(a?.rating) || 0));
-    }
+    if (sortMode === "name_asc") list.sort((a, b) => String(a?.name || "").localeCompare(String(b?.name || "")));
+    else list.sort((a, b) => (Number(b?.rating) || 0) - (Number(a?.rating) || 0));
 
     if (onlyTop) list = list.slice(0, 1);
-
     return list;
   }, [query, category, onlyTop, minRating, sortMode]);
 
@@ -441,7 +398,7 @@ export default function WebcamPage() {
                 <span className="text-xs font-semibold text-slate-200">
                   MatchFinder<span className="text-pink-400">Guide</span>
                 </span>
-                <span className="text-[10px] text-slate-500">Norway • Partner offers</span>
+                <span className="text-[10px] text-slate-500">Norway • Adult offers</span>
               </div>
             </Link>
 
@@ -456,20 +413,26 @@ export default function WebcamPage() {
         {/* Hero */}
         <section className="mx-auto max-w-6xl px-4 pt-7 pb-6">
           <div className="relative overflow-hidden rounded-3xl border border-slate-800 bg-slate-950/60 backdrop-blur">
-            <div className="absolute inset-0">
-              <div className="absolute -top-28 left-10 h-72 w-72 rounded-full bg-pink-500/15 blur-3xl" />
-              <div className="absolute -bottom-24 right-10 h-72 w-72 rounded-full bg-amber-400/10 blur-3xl" />
-              <div className="absolute inset-0 bg-gradient-to-r from-slate-950/40 via-slate-950/70 to-slate-950/40" />
+            {/* TOP IMAGE (add this file in /public) */}
+            <div className="relative h-40 sm:h-52 md:h-56">
+              {/* Put your hero image here: /public/hero-webcam.jpg */}
+              <img
+                src="/hero-webcam.jpg"
+                alt="Adult dating & webcam offers"
+                className="h-full w-full object-cover opacity-80"
+                loading="eager"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/70 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent" />
             </div>
 
             <div className="relative z-10 p-6 sm:p-8">
-              <p className="text-[11px] uppercase tracking-[0.22em] text-pink-400">Webcam &amp; live chat offers</p>
+              <p className="text-[11px] uppercase tracking-[0.22em] text-pink-400">Adult dating &amp; webcam offers</p>
               <h1 className="mt-2 text-2xl sm:text-3xl font-extrabold text-slate-50">
-                Compare top platforms — clean design, fast signup, trusted partners
+                Explore Norway’s adult dating &amp; webcam offers — compare top platforms in minutes
               </h1>
               <p className="mt-2 text-sm text-slate-300 max-w-2xl leading-relaxed">
-                This page helps you quickly compare partner platforms by rating, “best for”, and a few key features —
-                so you can pick what fits you.
+                Curated partner offers with ratings, “best for” categories, and key features — designed to help you pick fast.
               </p>
 
               <div className="mt-5 flex flex-wrap gap-2">
@@ -564,13 +527,12 @@ export default function WebcamPage() {
             ))}
           </div>
 
-          {/* Trust + Disclosure */}
           <div className="mt-8 rounded-3xl border border-slate-800 bg-slate-950/60 backdrop-blur p-6">
             <h2 className="text-base font-bold text-slate-50">Transparency &amp; safety notes</h2>
             <ul className="mt-3 grid gap-2 text-[13px] text-slate-300">
               <li className="flex gap-2">
                 <span className="text-pink-400 mt-0.5">•</span>
-                Partner links open external websites. Review each partner’s terms and privacy policy before signing up.
+                Links open external partner websites. Review each partner’s terms and privacy policy before signing up.
               </li>
               <li className="flex gap-2">
                 <span className="text-pink-400 mt-0.5">•</span>
@@ -581,25 +543,6 @@ export default function WebcamPage() {
                 Ratings are a quick indicator (not a guarantee). Always compare features that matter to you.
               </li>
             </ul>
-          </div>
-
-          {/* FAQ */}
-          <div className="mt-6 rounded-3xl border border-slate-800 bg-slate-950/60 backdrop-blur p-6">
-            <h2 className="text-base font-bold text-slate-50">FAQ</h2>
-            <div className="mt-4 grid gap-4 sm:grid-cols-2">
-              <div className="rounded-2xl border border-slate-800 bg-slate-950/40 p-4">
-                <p className="text-sm font-semibold text-slate-100">How are offers ranked?</p>
-                <p className="mt-1 text-[13px] text-slate-300">
-                  By default we sort by rating. You can switch sorting, filter by “best for”, and set a minimum rating.
-                </p>
-              </div>
-              <div className="rounded-2xl border border-slate-800 bg-slate-950/40 p-4">
-                <p className="text-sm font-semibold text-slate-100">Do you store personal data?</p>
-                <p className="mt-1 text-[13px] text-slate-300">
-                  This page mainly redirects to partner sites. Check the partner’s policies for account and payment details.
-                </p>
-              </div>
-            </div>
           </div>
 
           <p className="mt-6 text-[11px] text-slate-600">
