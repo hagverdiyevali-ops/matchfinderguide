@@ -16,7 +16,7 @@ const COPY = {
   HERO_KICKER: "Live video chat offers",
   HERO_HEADLINE: "Compare top live chat platforms in minutes",
   HERO_SUBLINE: "Filter by ratings and features like random matching, instant start, and private rooms.",
-  CTA_LABEL: "Register here", // <-- change to whatever you want in one place
+  CTA_LABEL: "Register here",
   SEARCH_PLACEHOLDER: "Search random match, private rooms, instant chat…",
   FEATURE_STRIP: "Random match • Private rooms • Instant start",
 };
@@ -86,7 +86,14 @@ function detectPartnerScheme(u) {
   const has = (k) => u.searchParams.has(k);
 
   if (has("ml_sub1") || has("ml_sub2") || has("ml_sub3") || has("ml_sub4") || has("ml_sub5")) return "mylead";
-  if (has("click_id2") || has("click_id3") || has("click_id4") || has("click_id5") || has("token_1") || has("token_2"))
+  if (
+    has("click_id2") ||
+    has("click_id3") ||
+    has("click_id4") ||
+    has("click_id5") ||
+    has("token_1") ||
+    has("token_2")
+  )
     return "affilitex";
   if (has("sub1") || has("sub2") || has("sub3") || has("sub4") || has("sub5")) return "vortex_sub";
   if (has("aff_sub1") || has("aff_sub2") || has("aff_sub3") || has("aff_sub5")) return "aff_sub";
@@ -171,7 +178,12 @@ function Pill({ children, tone = "neutral" }) {
     green: "bg-emerald-400/10 border-emerald-300/30 text-emerald-100",
   };
   return (
-    <span className={cn("inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[11px]", tones[tone] || tones.neutral)}>
+    <span
+      className={cn(
+        "inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[11px]",
+        tones[tone] || tones.neutral
+      )}
+    >
       {children}
     </span>
   );
@@ -210,11 +222,9 @@ function isTopChoice(index) {
 
 function FeatureIcons({ offer }) {
   const items = [];
-
   if (offer.randomChat) items.push({ key: "random", label: "Random Match", icon: "🎲" });
   if (offer.freePrivateShows) items.push({ key: "private", label: "Private Rooms", icon: "🔒" });
   if (offer.instantMatch) items.push({ key: "instant", label: "Instant Start", icon: "⚡" });
-
   if (items.length === 0) return null;
 
   return (
@@ -263,7 +273,9 @@ function WebcamOfferCard({ offer, index }) {
     <div
       className={cn(
         "group relative rounded-3xl p-[1px] bg-gradient-to-br",
-        isTop ? "from-pink-500/60 via-rose-400/50 to-amber-400/40" : offer.color || "from-slate-800/80 to-slate-900/80"
+        isTop
+          ? "from-pink-500/60 via-rose-400/50 to-amber-400/40"
+          : offer.color || "from-slate-800/80 to-slate-900/80"
       )}
     >
       <div className="relative rounded-3xl overflow-hidden bg-slate-950/92 border border-slate-800">
@@ -281,7 +293,12 @@ function WebcamOfferCard({ offer, index }) {
             <div className="flex-shrink-0 w-full lg:w-72">
               <div className="h-24 sm:h-28 rounded-2xl bg-slate-900/70 border border-slate-700/70 overflow-hidden shadow-inner flex items-center justify-center">
                 {logo ? (
-                  <img src={logo} alt={`${cleanName} logo`} className="max-h-full max-w-full object-contain px-4 py-2" loading="lazy" />
+                  <img
+                    src={logo}
+                    alt={`${cleanName} logo`}
+                    className="max-h-full max-w-full object-contain px-4 py-2"
+                    loading="lazy"
+                  />
                 ) : (
                   <span className="text-xs font-semibold text-slate-500">Partner logo</span>
                 )}
@@ -301,7 +318,6 @@ function WebcamOfferCard({ offer, index }) {
                     {offer.usp || "Compare this offer quickly using rating, category, and key features."}
                   </p>
 
-                  {/* NEW: Feature icons */}
                   <FeatureIcons offer={offer} />
                 </div>
 
@@ -360,10 +376,7 @@ function WebcamOfferCard({ offer, index }) {
               Tip: compare platforms by <span className="text-slate-300">rating</span>,{" "}
               <span className="text-slate-300">category</span>, and icons.
             </div>
-
-            <div className="text-[11px] text-slate-500">
-              Disclosure: we may earn a commission from partner links.
-            </div>
+            <div className="text-[11px] text-slate-500">Disclosure: we may earn a commission from partner links.</div>
           </div>
         </div>
       </div>
@@ -378,6 +391,9 @@ export default function WebcamPage() {
   const [onlyTop, setOnlyTop] = useState(false);
   const [minRating, setMinRating] = useState(0);
   const [sortMode, setSortMode] = useState("rating_desc");
+  const [heroOk, setHeroOk] = useState(true);
+
+  const heroSrc = `${import.meta.env.BASE_URL}hero-webcam.jpg`; // ✅ correct for /public + Vite base paths
 
   const categories = useMemo(() => {
     const set = new Set();
@@ -428,7 +444,6 @@ export default function WebcamPage() {
               <div className="h-9 w-9 rounded-2xl bg-slate-900 border border-slate-700 flex items-center justify-center">
                 <img src="/logo.svg" className="h-5 w-5" alt="MatchFinderGuide" />
               </div>
-
               <div className="flex flex-col leading-tight">
                 <span className="text-xs font-semibold text-slate-200">
                   MatchFinder<span className="text-pink-400">Guide</span>
@@ -448,18 +463,25 @@ export default function WebcamPage() {
         {/* Hero */}
         <section className="mx-auto max-w-6xl px-4 pt-7 pb-6">
           <div className="relative overflow-hidden rounded-3xl border border-slate-800 bg-slate-950/60 backdrop-blur">
-            {/* Top image (safe abstract) */}
-            <div className="relative h-40 sm:h-52 md:h-56">
-              <img
-                src="/public/hero-webcam.jpg"
-                alt="Live video chat offers"
-                className="h-full w-full object-cover opacity-80"
-                loading="eager"
-              />
-              <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/70 to-transparent" />
+            <div className="relative h-40 sm:h-52 md:h-56 min-h-[180px]">
+              {heroOk ? (
+                <img
+                  src={heroSrc}
+                  alt="Hero"
+                  className="h-full w-full object-cover opacity-85"
+                  loading="eager"
+                  onError={() => setHeroOk(false)}
+                />
+              ) : (
+                <div className="h-full w-full bg-gradient-to-r from-slate-950 via-purple-900/30 to-pink-900/20" />
+              )}
+
+              {/* Softer overlays so the image doesn’t look “blank” */}
+              <div className="absolute inset-0 bg-gradient-to-r from-slate-950/75 via-slate-950/35 to-transparent" />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent" />
+
               <div className="absolute bottom-4 left-6 right-6">
-                <div className="inline-flex items-center gap-2 rounded-full border border-slate-800 bg-slate-950/50 px-4 py-2 text-[11px] text-slate-200">
+                <div className="inline-flex items-center gap-2 rounded-full border border-slate-800 bg-slate-950/55 px-4 py-2 text-[11px] text-slate-200">
                   <span className="text-[12px]">✨</span>
                   <span className="uppercase tracking-[0.22em] text-slate-300">{COPY.FEATURE_STRIP}</span>
                 </div>
