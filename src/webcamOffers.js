@@ -4,7 +4,7 @@ const WEBCAM_OFFERS = [
   /* 1️⃣ NABO MATCH */
   {
     name: "Nabo Match",
-    rating: 5.0,
+    rating: 4.9,
     bestFor: "serious dating",
     usp: "A clean and focused dating platform designed for long-term connections.",
     features: ["Relationship-focused community", "Easy onboarding process", "Optimized for desktop and mobile"],
@@ -22,7 +22,7 @@ const WEBCAM_OFFERS = [
   /* 2️⃣ LYSTPASEX */
   {
     name: "LystPaSex",
-    rating: 4.9,
+    rating: 4.8,
     bestFor: "casual encounters",
     usp: "Fast signup dating platform focused on instant connections and nearby matches.",
     features: ["Quick registration", "Location-based matches", "Mobile-optimized experience"],
@@ -188,7 +188,7 @@ const WEBCAM_OFFERS = [
   /* 1️⃣2️⃣ NORDFLIRT */
   {
     name: "NordFlirt",
-    rating: 3.7,
+    rating: 5.0,
     bestFor: "nordic singles",
     usp: "Dating platform tailored for Nordic and European singles seeking genuine matches.",
     features: ["Nordic-focused audience", "Simple and intuitive UI", "Secure communication tools"],
