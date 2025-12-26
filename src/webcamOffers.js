@@ -4,7 +4,7 @@ const WEBCAM_OFFERS = [
   /* 1️⃣ NABO MATCH */
   {
     name: "Nabo Match",
-    rating: 4.9,
+    rating: 5.0,
     bestFor: "serious dating",
     usp: "A clean and focused dating platform designed for long-term connections.",
     features: ["Relationship-focused community", "Easy onboarding process", "Optimized for desktop and mobile"],
@@ -188,7 +188,7 @@ const WEBCAM_OFFERS = [
   /* 1️⃣2️⃣ NORDFLIRT */
   {
     name: "NordFlirt",
-    rating: 5.0,
+    rating: 4.9,
     bestFor: "nordic singles",
     usp: "Dating platform tailored for Nordic and European singles seeking genuine matches.",
     features: ["Nordic-focused audience", "Simple and intuitive UI", "Secure communication tools"],
