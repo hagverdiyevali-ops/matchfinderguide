@@ -15,10 +15,14 @@ const GCLID_KEY = "mfg_gclid";
 const COPY = {
   HERO_KICKER: "Tilbud på live videochat",
   HERO_HEADLINE: "Sammenlign de beste live chat-plattformene på få minutter",
-  HERO_SUBLINE: "Filtrer etter vurderinger og funksjoner som tilfeldig matching, umiddelbar start og private rom.",
+  HERO_SUBLINE:
+    "Filtrer etter vurderinger og funksjoner som tilfeldig matching, umiddelbar start og private rom.",
   CTA_LABEL: "Registrer deg her",
   SEARCH_PLACEHOLDER: "Søk etter tilfeldige matcher, private rom, direktechat…",
   FEATURE_STRIP: "Tilfeldig match • Private rom • Øyeblikkelig start",
+
+  BLOG_TITLE: "Slik velger du riktig live chat-plattform: en trygg og smart guide",
+  BLOG_KICKER: "En liten guide før du klikker deg videre",
 };
 
 function getStored(key) {
@@ -85,7 +89,8 @@ function setIfMissing(u, key, value) {
 function detectPartnerScheme(u) {
   const has = (k) => u.searchParams.has(k);
 
-  if (has("ml_sub1") || has("ml_sub2") || has("ml_sub3") || has("ml_sub4") || has("ml_sub5")) return "mylead";
+  if (has("ml_sub1") || has("ml_sub2") || has("ml_sub3") || has("ml_sub4") || has("ml_sub5"))
+    return "mylead";
   if (
     has("click_id2") ||
     has("click_id3") ||
@@ -160,7 +165,8 @@ function withTracking(url) {
       setIfMissing(u, "source", `${vars.source}:${vars.subSource}`);
     }
 
-    if (vars.clickId && !u.searchParams.get("dbg_click_id")) u.searchParams.set("dbg_click_id", vars.clickId);
+    if (vars.clickId && !u.searchParams.get("dbg_click_id"))
+      u.searchParams.set("dbg_click_id", vars.clickId);
     if (vars.gclid && !u.searchParams.get("dbg_gclid")) u.searchParams.set("dbg_gclid", vars.gclid);
 
     return u.toString();
@@ -333,7 +339,8 @@ function WebcamOfferCard({ offer, index }) {
                 <div className="min-w-0">
                   <h3 className="text-lg sm:text-xl font-extrabold text-slate-50 truncate">{cleanName}</h3>
                   <p className="mt-1 text-[13px] text-slate-300 max-w-2xl leading-relaxed">
-                    {offer.usp || "Sammenlign dette tilbudet raskt ved hjelp av vurdering, kategori og nøkkelfunksjoner."}
+                    {offer.usp ||
+                      "Sammenlign dette tilbudet raskt ved hjelp av vurdering, kategori og nøkkelfunksjoner."}
                   </p>
 
                   <FeatureIcons offer={offer} />
@@ -413,6 +420,11 @@ export default function WebcamPage() {
 
   const heroSrc = `${import.meta.env.BASE_URL}hero-webcam.jpg`; // ✅ correct for /public + Vite base paths
 
+  // ✨ Romantic visual (place this file in /public so it works on Vercel)
+  // e.g. /public/blog-romantic.jpg
+  const blogVisualSrc = `${import.meta.env.BASE_URL}blog-romantic.jpg`;
+  const [blogImgOk, setBlogImgOk] = useState(true);
+
   const categories = useMemo(() => {
     const set = new Set();
     (Array.isArray(WEBCAM_OFFERS) ? WEBCAM_OFFERS : []).forEach((o) => {
@@ -436,10 +448,12 @@ export default function WebcamPage() {
       });
     }
 
-    if (category !== "all") list = list.filter((o) => String(o?.bestFor || "").toLowerCase() === category);
+    if (category !== "all")
+      list = list.filter((o) => String(o?.bestFor || "").toLowerCase() === category);
     if (minRating > 0) list = list.filter((o) => (Number(o?.rating) || 0) >= minRating);
 
-    if (sortMode === "name_asc") list.sort((a, b) => String(a?.name || "").localeCompare(String(b?.name || "")));
+    if (sortMode === "name_asc")
+      list.sort((a, b) => String(a?.name || "").localeCompare(String(b?.name || "")));
     else list.sort((a, b) => (Number(b?.rating) || 0) - (Number(a?.rating) || 0));
 
     if (onlyTop) list = list.slice(0, 1);
@@ -510,7 +524,9 @@ export default function WebcamPage() {
 
             <div className="relative z-10 p-6 sm:p-8">
               <p className="text-[11px] uppercase tracking-[0.22em] text-pink-400">{COPY.HERO_KICKER}</p>
-              <h1 className="mt-2 text-2xl sm:text-3xl font-extrabold text-slate-50">{COPY.HERO_HEADLINE}</h1>
+              <h1 className="mt-2 text-2xl sm:text-3xl font-extrabold text-slate-50">
+                {COPY.HERO_HEADLINE}
+              </h1>
               <p className="mt-2 text-sm text-slate-300 max-w-2xl leading-relaxed">{COPY.HERO_SUBLINE}</p>
 
               <div className="mt-5 flex flex-wrap gap-2">
@@ -625,6 +641,121 @@ export default function WebcamPage() {
               </li>
             </ul>
           </div>
+
+          {/* ✅ Blog / guide content + romantic visual */}
+          <article className="mt-6 rounded-3xl border border-slate-800 bg-slate-950/60 backdrop-blur overflow-hidden">
+            {/* Visual header */}
+            <div className="relative h-44 sm:h-56">
+              {blogImgOk ? (
+                <img
+                  src={blogVisualSrc}
+                  alt="Romantisk stemning"
+                  className="h-full w-full object-cover opacity-90"
+                  loading="lazy"
+                  onError={() => setBlogImgOk(false)}
+                />
+              ) : (
+                <div className="h-full w-full bg-gradient-to-r from-slate-950 via-rose-900/25 to-pink-900/25" />
+              )}
+              <div className="absolute inset-0 bg-gradient-to-r from-slate-950/85 via-slate-950/45 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-transparent to-transparent" />
+
+              <div className="absolute bottom-4 left-6 right-6">
+                <div className="inline-flex items-center gap-2 rounded-full border border-slate-800 bg-slate-950/55 px-4 py-2 text-[11px] text-slate-200">
+                  <span className="text-[12px]">💞</span>
+                  <span className="uppercase tracking-[0.22em] text-slate-300">{COPY.BLOG_KICKER}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Text content */}
+            <div className="p-6">
+              <h2 className="text-lg sm:text-xl font-extrabold text-slate-50">{COPY.BLOG_TITLE}</h2>
+
+              <p className="mt-3 text-[13px] sm:text-sm text-slate-300 leading-relaxed">
+                Live chat- og videochat-plattformer kan være en rask måte å møte nye mennesker på, men kvaliteten
+                varierer mye. Noen tjenester har gode filtre, klare vilkår og en ryddig brukeropplevelse – mens andre kan
+                føles rotete eller utrygge. Her er en enkel guide som hjelper deg å sammenligne plattformer basert på
+                funksjoner, vurderinger og personvern.
+              </p>
+
+              <div className="mt-5 space-y-4">
+                <section>
+                  <h3 className="text-sm font-bold text-slate-100">1) Start med hva du faktisk vil ha</h3>
+                  <p className="mt-1 text-[13px] text-slate-300 leading-relaxed">
+                    Før du registrerer deg, bestem deg for én ting: hva er målet ditt?{" "}
+                    <span className="text-slate-200">Tilfeldig chat</span> passer hvis du vil møte nye personer raskt,{" "}
+                    <span className="text-slate-200">private rom</span> passer hvis du vil ha mer kontroll, og{" "}
+                    <span className="text-slate-200">øyeblikkelig start</span> er best når du vil komme i gang uten mye
+                    oppsett.
+                  </p>
+                </section>
+
+                <section>
+                  <h3 className="text-sm font-bold text-slate-100">2) Se etter tydelige tegn på kvalitet</h3>
+                  <ul className="mt-2 grid gap-2 text-[13px] text-slate-300">
+                    <li className="flex gap-2">
+                      <span className="text-pink-400 mt-0.5">•</span>
+                      Tydelige vilkår og personvernpolicy
+                    </li>
+                    <li className="flex gap-2">
+                      <span className="text-pink-400 mt-0.5">•</span>
+                      Stabil opplevelse på mobil
+                    </li>
+                    <li className="flex gap-2">
+                      <span className="text-pink-400 mt-0.5">•</span>
+                      Klare beskrivelser av funksjoner og kostnader
+                    </li>
+                    <li className="flex gap-2">
+                      <span className="text-pink-400 mt-0.5">•</span>
+                      Innstillinger for blokkering/rapportering
+                    </li>
+                  </ul>
+                </section>
+
+                <section>
+                  <h3 className="text-sm font-bold text-slate-100">3) Vurdering er nyttig – men ikke hele sannheten</h3>
+                  <p className="mt-1 text-[13px] text-slate-300 leading-relaxed">
+                    Vurderinger kan gi en rask pekepinn, men to plattformer kan ha lik score og likevel være ulike.
+                    Kombiner derfor vurderingen med kategori (“best for”) og funksjoner som faktisk betyr noe for deg.
+                  </p>
+                </section>
+
+                <section>
+                  <h3 className="text-sm font-bold text-slate-100">4) Personvern og sikkerhet: små vaner som hjelper</h3>
+                  <ul className="mt-2 grid gap-2 text-[13px] text-slate-300">
+                    <li className="flex gap-2">
+                      <span className="text-pink-400 mt-0.5">•</span>
+                      Bruk et sterkt passord (ikke samme som andre steder)
+                    </li>
+                    <li className="flex gap-2">
+                      <span className="text-pink-400 mt-0.5">•</span>
+                      Les vilkår før betaling/oppgradering
+                    </li>
+                    <li className="flex gap-2">
+                      <span className="text-pink-400 mt-0.5">•</span>
+                      Del ikke privat info tidlig (adresse, privat e-post osv.)
+                    </li>
+                    <li className="flex gap-2">
+                      <span className="text-pink-400 mt-0.5">•</span>
+                      Vær skeptisk til press eller “for gode” tilbud
+                    </li>
+                  </ul>
+                </section>
+
+                <section>
+                  <h3 className="text-sm font-bold text-slate-100">Kort oppsummering</h3>
+                  <p className="mt-1 text-[13px] text-slate-300 leading-relaxed">
+                    Velg live chat-plattform etter behov, sjekk kvalitetssignaler, bruk vurderinger smart, og ha
+                    kontroll på personverninnstillinger. Da får du en bedre og tryggere opplevelse.
+                  </p>
+                </section>
+              </div>
+
+              <div className="mt-5 h-px w-full bg-gradient-to-r from-transparent via-slate-700/60 to-transparent" />
+
+            </div>
+          </article>
 
           <p className="mt-6 text-[11px] text-slate-600">
             MatchFinderGuide er en plattform for å finne tilbud. Alle varemerker tilhører sine respektive eiere.
