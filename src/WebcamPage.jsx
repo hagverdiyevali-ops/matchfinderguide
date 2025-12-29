@@ -269,10 +269,28 @@ function WebcamOfferCard({ offer, index }) {
   const cover = offer.cover || null;
   const isTop = isTopChoice(index);
 
+  // ✅ Full-card click behavior (safe: doesn't hijack clicks on buttons/links/inputs)
+  function onCardClick(e) {
+    const interactive = e.target.closest?.("a, button, input, select, textarea, label");
+    if (interactive) return;
+    window.open(finalUrl, "_blank", "noopener,noreferrer");
+  }
+  function onCardKeyDown(e) {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      window.open(finalUrl, "_blank", "noopener,noreferrer");
+    }
+  }
+
   return (
     <div
+      role="link"
+      tabIndex={0}
+      aria-label={`${cleanName} – åpne tilbud`}
+      onClick={onCardClick}
+      onKeyDown={onCardKeyDown}
       className={cn(
-        "group relative rounded-3xl p-[1px] bg-gradient-to-br",
+        "group relative rounded-3xl p-[1px] bg-gradient-to-br cursor-pointer",
         isTop
           ? "from-pink-500/60 via-rose-400/50 to-amber-400/40"
           : offer.color || "from-slate-800/80 to-slate-900/80"
@@ -411,7 +429,9 @@ export default function WebcamPage() {
       list = list.filter((o) => {
         const hay = `${o?.name || ""} ${o?.usp || ""} ${(o?.features || []).join(" ")} ${
           o?.randomChat ? "tilfeldig match tilfeldig chat rulett" : ""
-        } ${o?.freePrivateShows ? "private rom private forestillinger" : ""} ${o?.instantMatch ? "øyeblikkelig match" : ""}`.toLowerCase();
+        } ${o?.freePrivateShows ? "private rom private forestillinger" : ""} ${
+          o?.instantMatch ? "øyeblikkelig match" : ""
+        }`.toLowerCase();
         return hay.includes(q);
       });
     }
@@ -590,15 +610,18 @@ export default function WebcamPage() {
             <ul className="mt-3 grid gap-2 text-[13px] text-slate-300">
               <li className="flex gap-2">
                 <span className="text-pink-400 mt-0.5">•</span>
-               Lenker åpner eksterne partnernettsteder. Les gjennom hver partners vilkår og personvernregler før du registrerer deg.
+                Lenker åpner eksterne partnernettsteder. Les gjennom hver partners vilkår og personvernregler før du
+                registrerer deg.
               </li>
               <li className="flex gap-2">
                 <span className="text-pink-400 mt-0.5">•</span>
-                Vi kan tjene en provisjon når du blir medlem via lenkene våre. Dette bidrar til å vedlikeholde plattformen.
+                Vi kan tjene en provisjon når du blir medlem via lenkene våre. Dette bidrar til å vedlikeholde
+                plattformen.
               </li>
               <li className="flex gap-2">
                 <span className="text-pink-400 mt-0.5">•</span>
-                Vurderinger og ikoner er raske indikatorer (ikke en garanti). Sammenlign alltid funksjoner som er viktige for deg.
+                Vurderinger og ikoner er raske indikatorer (ikke en garanti). Sammenlign alltid funksjoner som er
+                viktige for deg.
               </li>
             </ul>
           </div>
