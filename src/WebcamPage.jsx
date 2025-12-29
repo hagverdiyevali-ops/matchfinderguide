@@ -13,12 +13,12 @@ const GCLID_KEY = "mfg_gclid";
 
 /* ---------- COPY (edit freely) ---------- */
 const COPY = {
-  HERO_KICKER: "Live video chat offers",
-  HERO_HEADLINE: "Compare top live chat platforms in minutes",
-  HERO_SUBLINE: "Filter by ratings and features like random matching, instant start, and private rooms.",
-  CTA_LABEL: "Register here",
-  SEARCH_PLACEHOLDER: "Search random match, private rooms, instant chat…",
-  FEATURE_STRIP: "Random match • Private rooms • Instant start",
+  HERO_KICKER: "Tilbud på live videochat",
+  HERO_HEADLINE: "Sammenlign de beste live chat-plattformene på få minutter",
+  HERO_SUBLINE: "Filtrer etter vurderinger og funksjoner som tilfeldig matching, umiddelbar start og private rom.",
+  CTA_LABEL: "Registrer deg her",
+  SEARCH_PLACEHOLDER: "Søk etter tilfeldige matcher, private rom, direktechat…",
+  FEATURE_STRIP: "Tilfeldig match • Private rom • Øyeblikkelig start",
 };
 
 function getStored(key) {
@@ -222,9 +222,9 @@ function isTopChoice(index) {
 
 function FeatureIcons({ offer }) {
   const items = [];
-  if (offer.randomChat) items.push({ key: "random", label: "Random Match", icon: "🎲" });
-  if (offer.freePrivateShows) items.push({ key: "private", label: "Private Rooms", icon: "🔒" });
-  if (offer.instantMatch) items.push({ key: "instant", label: "Instant Start", icon: "⚡" });
+  if (offer.randomChat) items.push({ key: "tilfeldig", label: "Tilfeldig Treff", icon: "🎲" });
+  if (offer.freePrivateShows) items.push({ key: "privat", label: "Private Rom", icon: "🔒" });
+  if (offer.instantMatch) items.push({ key: "øyeblikkelig", label: "Øyeblikkelig Start", icon: "⚡" });
   if (items.length === 0) return null;
 
   return (
@@ -249,14 +249,14 @@ function OfferBadgeRow({ offer, index }) {
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      {isTop && <Pill tone="pink">🔥 Top choice</Pill>}
+      {isTop && <Pill tone="pink">🔥 Toppvalg</Pill>}
       {category && (
         <Pill tone="neutral">
           <span className="h-1.5 w-1.5 rounded-full bg-pink-400" />
           Best for: <span className="font-medium">{category}</span>
         </Pill>
       )}
-      {Number(offer.rating) >= 4.5 && <Pill tone="amber">High rated</Pill>}
+      {Number(offer.rating) >= 4.5 && <Pill tone="amber">Høyt vurdert</Pill>}
     </div>
   );
 }
@@ -315,7 +315,7 @@ function WebcamOfferCard({ offer, index }) {
                 <div className="min-w-0">
                   <h3 className="text-lg sm:text-xl font-extrabold text-slate-50 truncate">{cleanName}</h3>
                   <p className="mt-1 text-[13px] text-slate-300 max-w-2xl leading-relaxed">
-                    {offer.usp || "Compare this offer quickly using rating, category, and key features."}
+                    {offer.usp || "Sammenlign dette tilbudet raskt ved hjelp av vurdering, kategori og nøkkelfunksjoner."}
                   </p>
 
                   <FeatureIcons offer={offer} />
@@ -333,7 +333,7 @@ function WebcamOfferCard({ offer, index }) {
                   >
                     {COPY.CTA_LABEL} <span className="ml-2 text-xs">↗</span>
                   </a>
-                  <span className="text-[11px] text-slate-500">Opens partner website</span>
+                  <span className="text-[11px] text-slate-500">Åpner partnernettsted</span>
                 </div>
               </div>
 
@@ -364,7 +364,7 @@ function WebcamOfferCard({ offer, index }) {
                 >
                   {COPY.CTA_LABEL} <span className="ml-2 text-xs">↗</span>
                 </a>
-                <p className="mt-2 text-[11px] text-slate-500">Opens partner website</p>
+                <p className="mt-2 text-[11px] text-slate-500">Åpner partnernettsted</p>
               </div>
             </div>
           </div>
@@ -373,10 +373,10 @@ function WebcamOfferCard({ offer, index }) {
 
           <div className="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="text-[11px] text-slate-500">
-              Tip: compare platforms by <span className="text-slate-300">rating</span>,{" "}
-              <span className="text-slate-300">category</span>, and icons.
+              Tips: sammenlign plattformer etter <span className="text-slate-300">vurdering</span>,{" "}
+              <span className="text-slate-300">kategori</span>, og ikoner.
             </div>
-            <div className="text-[11px] text-slate-500">Disclosure: we may earn a commission from partner links.</div>
+            <div className="text-[11px] text-slate-500">Opplysning: Vi kan tjene provisjon fra partnerlenker.</div>
           </div>
         </div>
       </div>
@@ -410,8 +410,8 @@ export default function WebcamPage() {
     if (q) {
       list = list.filter((o) => {
         const hay = `${o?.name || ""} ${o?.usp || ""} ${(o?.features || []).join(" ")} ${
-          o?.randomChat ? "random match random chat roulette" : ""
-        } ${o?.freePrivateShows ? "private rooms private shows" : ""} ${o?.instantMatch ? "instant match" : ""}`.toLowerCase();
+          o?.randomChat ? "tilfeldig match tilfeldig chat rulett" : ""
+        } ${o?.freePrivateShows ? "private rom private forestillinger" : ""} ${o?.instantMatch ? "øyeblikkelig match" : ""}`.toLowerCase();
         return hay.includes(q);
       });
     }
@@ -454,8 +454,8 @@ export default function WebcamPage() {
 
             <div className="hidden sm:flex items-center gap-2">
               <Pill tone="neutral">🎲 Random match</Pill>
-              <Pill tone="neutral">🔒 Private rooms</Pill>
-              <Pill tone="neutral">⚡ Instant start</Pill>
+              <Pill tone="neutral">🔒 Private rom</Pill>
+              <Pill tone="neutral">⚡ Øyeblikkelig start</Pill>
             </div>
           </div>
         </header>
@@ -494,9 +494,9 @@ export default function WebcamPage() {
               <p className="mt-2 text-sm text-slate-300 max-w-2xl leading-relaxed">{COPY.HERO_SUBLINE}</p>
 
               <div className="mt-5 flex flex-wrap gap-2">
-                <Pill tone="pink">✨ Curated list</Pill>
-                <Pill tone="amber">⭐ Sorted by rating</Pill>
-                <Pill tone="neutral">🇳🇴 Norway-focused</Pill>
+                <Pill tone="pink">✨ Kuratert liste</Pill>
+                <Pill tone="amber">⭐ Sortert etter vurdering</Pill>
+                <Pill tone="neutral">🇳🇴 Norge-fokusert</Pill>
               </div>
 
               {/* Controls */}
@@ -515,7 +515,7 @@ export default function WebcamPage() {
                 </div>
 
                 <div className="lg:col-span-3">
-                  <label className="block text-[11px] text-slate-500 mb-1">Category</label>
+                  <label className="block text-[11px] text-slate-500 mb-1">Kategori</label>
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
@@ -530,7 +530,7 @@ export default function WebcamPage() {
                 </div>
 
                 <div className="lg:col-span-2">
-                  <label className="block text-[11px] text-slate-500 mb-1">Min rating</label>
+                  <label className="block text-[11px] text-slate-500 mb-1">Minimumsvurdering</label>
                   <select
                     value={minRating}
                     onChange={(e) => setMinRating(Number(e.target.value))}
@@ -545,14 +545,14 @@ export default function WebcamPage() {
                 </div>
 
                 <div className="lg:col-span-2">
-                  <label className="block text-[11px] text-slate-500 mb-1">Sort</label>
+                  <label className="block text-[11px] text-slate-500 mb-1">Sortere</label>
                   <select
                     value={sortMode}
                     onChange={(e) => setSortMode(e.target.value)}
                     className="w-full rounded-2xl border border-slate-800 bg-slate-950/60 px-3 py-2 text-sm text-slate-100 outline-none"
                   >
-                    <option value="rating_desc">Rating (high → low)</option>
-                    <option value="name_asc">Name (A → Z)</option>
+                    <option value="rating_desc">Vurdering (høy → lav)</option>
+                    <option value="name_asc">Navn (A → Å)</option>
                   </select>
                 </div>
 
@@ -569,7 +569,7 @@ export default function WebcamPage() {
 
                   <div className="text-[12px] text-slate-500">
                     Showing <span className="text-slate-200 font-semibold">{filtered.length}</span>{" "}
-                    {filtered.length === 1 ? "offer" : "offers"}
+                    {filtered.length === 1 ? "tilby" : "tilbud"}
                   </div>
                 </div>
               </div>
@@ -586,25 +586,25 @@ export default function WebcamPage() {
           </div>
 
           <div className="mt-8 rounded-3xl border border-slate-800 bg-slate-950/60 backdrop-blur p-6">
-            <h2 className="text-base font-bold text-slate-50">Transparency &amp; safety notes</h2>
+            <h2 className="text-base font-bold text-slate-50">Åpenhet &amp; sikkerhetsmerknader</h2>
             <ul className="mt-3 grid gap-2 text-[13px] text-slate-300">
               <li className="flex gap-2">
                 <span className="text-pink-400 mt-0.5">•</span>
-                Links open external partner websites. Review each partner’s terms and privacy policy before signing up.
+               Lenker åpner eksterne partnernettsteder. Les gjennom hver partners vilkår og personvernregler før du registrerer deg.
               </li>
               <li className="flex gap-2">
                 <span className="text-pink-400 mt-0.5">•</span>
-                We may earn a commission when you join through our links. This helps maintain the platform.
+                Vi kan tjene en provisjon når du blir medlem via lenkene våre. Dette bidrar til å vedlikeholde plattformen.
               </li>
               <li className="flex gap-2">
                 <span className="text-pink-400 mt-0.5">•</span>
-                Ratings and icons are quick indicators (not a guarantee). Always compare features that matter to you.
+                Vurderinger og ikoner er raske indikatorer (ikke en garanti). Sammenlign alltid funksjoner som er viktige for deg.
               </li>
             </ul>
           </div>
 
           <p className="mt-6 text-[11px] text-slate-600">
-            MatchFinderGuide is an offer discovery platform. All trademarks belong to their respective owners.
+            MatchFinderGuide er en plattform for å finne tilbud. Alle varemerker tilhører sine respektive eiere.
           </p>
         </section>
       </main>

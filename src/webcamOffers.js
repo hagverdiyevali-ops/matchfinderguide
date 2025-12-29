@@ -5,9 +5,9 @@ const WEBCAM_OFFERS = [
   {
     name: "Nabo Match",
     rating: 5.0,
-    bestFor: "serious dating",
-    usp: "A clean and focused dating platform designed for long-term connections.",
-    features: ["Relationship-focused community", "Easy onboarding process", "Optimized for desktop and mobile"],
+    bestFor: "seriøs dating",
+    usp: "En ren og fokusert datingplattform designet for langsiktige forbindelser.",
+    features: ["Relasjonsfokusert fellesskap", "Enkel onboarding-prosess", "Optimalisert for desktop og mobil"],
     affiliateUrl:
       "https://find.sereneromance.today/click?affid=16096&offerid=9283&sub1={click_id}&sub2={gclid}&sub3={source}&sub5={sub_source}&lp=8f47617c6f",
     color: "from-rose-400/25 to-pink-700/20",
@@ -23,9 +23,9 @@ const WEBCAM_OFFERS = [
   {
     name: "LystPaSex",
     rating: 4.8,
-    bestFor: "casual encounters",
-    usp: "Fast signup dating platform focused on instant connections and nearby matches.",
-    features: ["Quick registration", "Location-based matches", "Mobile-optimized experience"],
+    bestFor: "tilfeldige møter",
+    usp: "Rask registreringsplattform for dating med fokus på umiddelbare forbindelser og matcher i nærheten.",
+    features: ["Rask registrering", "Stedsbaserte treff", "Mobiloptimalisert opplevelse"],
     affiliateUrl:
       "https://jndabb.afftrk06.com/?utm_source=2b9d283c183e14fc&s1=235083&s2=229745&s3={click_id}&s5={sub_source}&click_id={click_id}",
     color: "from-fuchsia-500/25 to-purple-800/20",
@@ -40,9 +40,9 @@ const WEBCAM_OFFERS = [
   {
     name: "FuckFinder",
     rating: 4.8,
-    bestFor: "casual hookups",
-    usp: "Direct and bold dating platform focused on fast, no-strings-attached matches.",
-    features: ["Very fast signup", "Explicit intent matching", "Works well on mobile"],
+    bestFor: "uformelle møter",
+    usp: "Direkte og dristig datingplattform fokusert på raske matcher uten forpliktelser.",
+    features: ["Svært rask registrering", "Eksplisitt intensjonsmatching", "Fungerer bra på mobil"],
     affiliateUrl: "https://trustedoffers.pro/a/o2KXjsvvm8IVQnJ?sub1={click_id}&sub2={gclid}&sub3={source}&sub5={sub_source}",
     color: "from-red-500/30 to-rose-800/20",
     preview: "/previews-webcam/fuckfinder.png",
@@ -56,9 +56,9 @@ const WEBCAM_OFFERS = [
   {
     name: "OneNightFriend",
     rating: 4.6,
-    bestFor: "one-night stands",
-    usp: "Casual dating site designed for spontaneous encounters and short-term fun.",
-    features: ["Location-based matching", "Quick profile setup", "Discreet and user-friendly"],
+    bestFor: "engangsstand",
+    usp: "Uformell datingside designet for spontane møter og kortvarig moro.",
+    features: ["Stedsbasert matching", "Rask profiloppsett", "Diskret og brukervennlig"],
     affiliateUrl: "https://top-deal.me/a/qx5LlTXzo2hQ8zg?sub1={click_id}&sub2={gclid}&sub3={source}&sub5={sub_source}",
     color: "from-orange-400/30 to-red-700/20",
     preview: "/previews-webcam/Onenightfriend.png",
@@ -72,13 +72,13 @@ const WEBCAM_OFFERS = [
   {
     name: "KuKost",
     rating: 4.5,
-    bestFor: "free access",
-    usp: "Simple, straightforward webcam site offering quick access to live rooms.",
-    features: ["Free basic access", "24/7 online performers", "Works smoothly on mobile"],
+    bestFor: "fri tilgang",
+    usp: "Enkel og grei webkameraside som tilbyr rask tilgang til liverom.",
+    features: ["Gratis grunnleggende tilgang", "Utøvere på nett døgnet rundt", "Fungerer problemfritt på mobil"],
     affiliateUrl:
       "https://go.cm-trk6.com/aff_nl?offer_id=12909&aff_id=92400&lands=133&url_id=23334&aff_sub1={click_id}&aff_sub2={gclid}&aff_sub3={source}&aff_sub5={sub_source}",
     color: "from-red-600/30 to-black/20",
-    preview: "/public/previews-webcam/kukost.png",
+    preview: "/previews-webcam/kukost.png",
 
     randomChat: false,
     freePrivateShows: true,
@@ -89,9 +89,9 @@ const WEBCAM_OFFERS = [
   {
     name: "Lust Station",
     rating: 4.4,
-    bestFor: "variety",
-    usp: "A diverse webcam platform with many categories and live rooms to explore.",
-    features: ["Wide selection of performers", "Group & private chat options", "Beginner-friendly layout"],
+    bestFor: "variasjon",
+    usp: "En mangfoldig webkameraplattform med mange kategorier og liverom å utforske.",
+    features: ["Bredt utvalg av utøvere", "Alternativer for gruppe- og privatchat", "Nybegynnervennlig layout"],
     affiliateUrl:
       "https://go.cm-trk6.com/aff_nl?offer_id=13670&aff_id=92400&lands=123&aff_sub1={click_id}&aff_sub2={gclid}&aff_sub3={source}&aff_sub5={sub_source}",
     color: "from-emerald-300/25 to-blue-800/20",
@@ -106,9 +106,9 @@ const WEBCAM_OFFERS = [
   {
     name: "BeNaughty",
     rating: 4.3,
-    bestFor: "flirting & casual dating",
-    usp: "Playful dating platform with a large, active user base and instant matches.",
-    features: ["Large global audience", "Flirt-first matching", "Strong mobile experience"],
+    bestFor: "flørting og uformell dating",
+    usp: "Leken datingplattform med en stor, aktiv brukerbase og umiddelbare matcher.",
+    features: ["Stort globalt publikum", "Flørt-først-matching", "Sterk mobilopplevelse"],
     affiliateUrl: "https://top-deal.me/a/o2KXjsvB0MfVQnB?sub1={click_id}&sub2={gclid}&sub3={source}&sub5={sub_source}",
     color: "from-pink-500/30 to-fuchsia-700/20",
     preview: "/previews-webcam/BeNaughty.png",
@@ -122,9 +122,9 @@ const WEBCAM_OFFERS = [
   {
     name: "SecretDatingClub",
     rating: 4.2,
-    bestFor: "discreet affairs",
-    usp: "Privacy-focused dating site for discreet connections and anonymous browsing.",
-    features: ["Discreet profiles", "Privacy-first design", "Anonymous browsing options"],
+    bestFor: "diskrete affærer",
+    usp: "Personvernfokusert datingside for diskrete forbindelser og anonym surfing.",
+    features: ["Diskré profiler", "Personvern først", "Anonyme nettleseralternativer"],
     affiliateUrl: "https://top-deal.me/a/68yKBhGp0BFmrE2?sub1={click_id}&sub2={gclid}&sub3={source}&sub5={sub_source}",
     color: "from-slate-700/40 to-black/30",
     preview: "/previews-webcam/SecretDatingClub.png",
@@ -139,8 +139,8 @@ const WEBCAM_OFFERS = [
     name: "InstaCams",
     rating: 4.1,
     bestFor: "live chat",
-    usp: "Reliable streams and smooth experience — great for live chatting anytime.",
-    features: ["HD streams & reliable quality", "Easy navigation for beginners", "Private rooms available anytime"],
+    usp: "Pålitelige strømmer og en smidig opplevelse – flott for livechat når som helst.",
+    features: ["HD-strømmer og pålitelig kvalitet", "Enkel navigering for nybegynnere", "Private rom tilgjengelig når som helst"],
     affiliateUrl:
       "https://go.cm-trk6.com/aff_c?offer_id=12348&aff_id=92400&url_id=21759&aff_sub1={click_id}&aff_sub2={gclid}&aff_sub3={source}&aff_sub5={sub_source}",
     color: "from-purple-500/30 to-pink-500/20",
@@ -155,9 +155,9 @@ const WEBCAM_OFFERS = [
   {
     name: "MyUkrainianGirls",
     rating: 3.9,
-    bestFor: "international dating",
-    usp: "International dating platform focused on meaningful connections with verified profiles.",
-    features: ["Profile-based matching", "International user base", "Private messaging & live interaction"],
+    bestFor: "internasjonal dating",
+    usp: "Internasjonal datingplattform fokusert på meningsfulle forbindelser med verifiserte profiler.",
+    features: ["Profilbasert matching", "Internasjonal brukerbase", "Private meldinger og live-interaksjon"],
     affiliateUrl:
       "https://find.gentletouch.today/click?affid=16096&offerid=9297&sub1={click_id}&sub2={gclid}&sub3={source}&sub5={sub_source}&lp=0e8cbef5c5",
     color: "from-sky-500/25 to-indigo-700/20",
@@ -172,9 +172,9 @@ const WEBCAM_OFFERS = [
   {
     name: "Jerk-Roulette",
     rating: 3.8,
-    bestFor: "random chat",
-    usp: "Fast-paced random webcam chat with a modern, easy-to-use interface.",
-    features: ["Instant random matching", "Large, active user base", "Simple signup — start chatting quickly"],
+    bestFor: "tilfeldig chat",
+    usp: "Rask og tilfeldig webkamerachat med et moderne og brukervennlig grensesnitt.",
+    features: ["Øyeblikkelig tilfeldig matching", "Stor, aktiv brukerbase", "Enkel registrering – begynn å chatte raskt"],
     affiliateUrl:
       "https://go.cm-trk6.com/aff_c?offer_id=13753&aff_id=92400&url_id=25740&aff_sub1={click_id}&aff_sub2={gclid}&aff_sub3={source}&aff_sub5={sub_source}",
     color: "from-slate-800/40 to-slate-900/20",
@@ -189,9 +189,9 @@ const WEBCAM_OFFERS = [
   {
     name: "NordFlirt",
     rating: 4.9,
-    bestFor: "nordic singles",
-    usp: "Dating platform tailored for Nordic and European singles seeking genuine matches.",
-    features: ["Nordic-focused audience", "Simple and intuitive UI", "Secure communication tools"],
+    bestFor: "nordiske singler",
+    usp: "Datingplattform skreddersydd for nordiske og europeiske single som søker ekte matches.",
+    features: ["Nordisk fokusert målgruppe", "Enkelt og intuitivt brukergrensesnitt", "Sikre kommunikasjonsverktøy"],
     affiliateUrl:
       "https://find.sereneromance.today/click?affid=16096&offerid=9032&sub1={click_id}&sub2={gclid}&sub3={source}&sub5={sub_source}&lp=a3481aed61",
     color: "from-cyan-400/25 to-blue-900/20",
