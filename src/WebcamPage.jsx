@@ -453,7 +453,7 @@ export default function WebcamPage() {
             </Link>
 
             <div className="hidden sm:flex items-center gap-2">
-              <Pill tone="neutral">🎲 Random match</Pill>
+              <Pill tone="neutral">🎲 Tilfeldig treff</Pill>
               <Pill tone="neutral">🔒 Private rom</Pill>
               <Pill tone="neutral">⚡ Øyeblikkelig start</Pill>
             </div>
