@@ -1,14 +1,15 @@
+// src/offers.js
 const OFFERS = [
   /* 1) SingleSlavic */
   {
     name: "SingleSlavic",
     rating: 4.7,
-    bestFor: "serious international dating",
-    usp: "Meet genuine Slavic singles looking for real, long-term connections.",
+    bestFor: "seriøs internasjonal dating",
+    usp: "Møt ekte slaviske single som søker en seriøs, langsiktig relasjon.",
     features: [
-      "Focused on Slavic singles",
-      "Profile verification & safety tools",
-      "Easy messaging & photo sharing",
+      "Fokus på slaviske single",
+      "Profilverifisering og sikkerhetsverktøy",
+      "Enkel chat, meldinger og bildedeling",
     ],
     affiliateUrl: "https://www.ds88trk.com/3RKF314/77MZF3C/",
     color: "from-rose-400/30 to-pink-300/20",
@@ -19,12 +20,12 @@ const OFFERS = [
   {
     name: "iDates",
     rating: 4.3,
-    bestFor: "casual dating",
-    usp: "Fun and modern app for relaxed, low-pressure dates and chats.",
+    bestFor: "uformell dating",
+    usp: "En morsom og moderne datingapp for avslappet nettdating og uforpliktende samtaler.",
     features: [
-      "Quick signup & swipe-style matching",
-      "In-app messaging & likes",
-      "Great for local casual connections",
+      "Rask registrering og swipe-lignende matching",
+      "Meldinger i appen og likes",
+      "Passer for lokale, uformelle møter",
     ],
     affiliateUrl:
       "https://go.cm-trk6.com/aff_c?offer_id=7375&aff_id=92400&url_id=12219&aff_sub5=search-traffic&source=matchfinderguide.com",
@@ -36,12 +37,12 @@ const OFFERS = [
   {
     name: "MeetSlavicGirls",
     rating: 4.4,
-    bestFor: "international dating",
-    usp: "Discover and connect with Slavic singles from different countries.",
+    bestFor: "internasjonal dating",
+    usp: "Oppdag og bli kjent med slaviske single fra flere land på en trygg og enkel måte.",
     features: [
-      "Global access to Slavic profiles",
-      "Secure messaging environment",
-      "Search filters by country & interests",
+      "Global tilgang til profiler",
+      "Trygt meldingsmiljø",
+      "Søkefiltre etter land og interesser",
     ],
     affiliateUrl:
       "https://go.cm-trk6.com/aff_c?offer_id=8312&aff_id=92400&aff_sub5=search-traffic&source=matchfinderguide.com",
@@ -53,12 +54,12 @@ const OFFERS = [
   {
     name: "Victoria Milan",
     rating: 4.2,
-    bestFor: "casual & discreet dating",
-    usp: "A discreet platform for users seeking confidential, no-strings-attached connections.",
+    bestFor: "uformell og diskret dating",
+    usp: "En diskret plattform for voksne som ønsker privat og uforpliktende kontakt.",
     features: [
-      "Privacy-focused features",
-      "Anonymous browsing options",
-      "Large, active member base",
+      "Personvern-fokusert funksjonalitet",
+      "Anonym surf og beskyttede profiler",
+      "Stor og aktiv medlemsbase",
     ],
     affiliateUrl:
       "https://jndabb.afftrk06.com/?utm_source=69a825858f71fec3&s1=235083&s2=228523&s3=FOR_SUB1&s5=FOR_SUB2&click_id=CLICK_ID",
@@ -70,12 +71,12 @@ const OFFERS = [
   {
     name: "BeHappy2Day",
     rating: 4.5,
-    bestFor: "international dating",
-    usp: "Connect with verified singles from around the world, safely and easily.",
+    bestFor: "internasjonal dating",
+    usp: "Koble deg med verifiserte single fra hele verden — med fokus på trygghet og kvalitet.",
     features: [
-      "Verified profiles & photo verification",
-      "Private messaging & video chat",
-      "Translation support for global matches",
+      "Verifiserte profiler og fotokontroll",
+      "Private meldinger og video-funksjoner (der tilgjengelig)",
+      "Støtte for språk / oversettelse ved behov",
     ],
     affiliateUrl: "https://www.affiliate2day.com/idevaffiliate.php?id=30088_4",
     color: "from-pink-400/30 to-rose-300/20",
@@ -86,12 +87,12 @@ const OFFERS = [
   {
     name: "AsianSingles2day",
     rating: 4.3,
-    bestFor: "asian dating",
-    usp: "Meet sincere singles from across Asia seeking meaningful connections.",
+    bestFor: "asiatisk dating",
+    usp: "Møt seriøse single fra Asia som ønsker ekte kontakt og relasjoner.",
     features: [
-      "100 % verified members",
-      "Live chat & call features",
-      "Advanced matching filters",
+      "Fokus på kvalitet og verifisering",
+      "Chat- og samtalefunksjoner (der tilgjengelig)",
+      "Avanserte matching-filtre",
     ],
     affiliateUrl: "https://www.affiliate2day.com/idevaffiliate.php?id=30088_10",
     color: "from-rose-400/30 to-pink-400/20",
@@ -102,12 +103,12 @@ const OFFERS = [
   {
     name: "OneWife",
     rating: 4.2,
-    bestFor: "serious relationships",
-    usp: "Find a lifelong partner through trusted matchmaking tools.",
+    bestFor: "seriøse forhold",
+    usp: "Finn en langsiktig partner med matchmaking-verktøy og fokus på ekte profiler.",
     features: [
-      "Long-term relationship focus",
-      "Verified & authentic profiles",
-      "Real success stories from users",
+      "Fokus på seriøse mål",
+      "Verifiserte og autentiske profiler",
+      "Historier og erfaringer fra brukere",
     ],
     affiliateUrl: "https://www.affiliate2day.com/idevaffiliate.php?id=30088_9",
     color: "from-rose-400/30 to-pink-400/20",
@@ -118,12 +119,12 @@ const OFFERS = [
   {
     name: "AllTverladies",
     rating: 4.0,
-    bestFor: "international connections",
-    usp: "Chat with genuine singles and explore global dating opportunities.",
+    bestFor: "internasjonale forbindelser",
+    usp: "Chat med ekte single og utforsk internasjonal dating med fokus på sikkerhet.",
     features: [
-      "Profile verification & anti-scam protection",
-      "Private video chats",
-      "Global dating network",
+      "Verifisering og anti-svindel tiltak",
+      "Private videoalternativer (der tilgjengelig)",
+      "Bredt internasjonalt nettverk",
     ],
     affiliateUrl: "https://www.affiliate2day.com/idevaffiliate.php?id=30088_15",
     color: "from-rose-400/30 to-pink-400/20",

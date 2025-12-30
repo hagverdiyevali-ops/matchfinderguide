@@ -126,7 +126,7 @@ function RatingStars({ rating }) {
         </span>
       </div>
       <span className="text-[10px] text-slate-400 uppercase tracking-[0.16em]">
-        Trust score
+        Tillitsscore
       </span>
     </div>
   );
@@ -192,7 +192,7 @@ export function OfferCard({ o, index }) {
             "
           >
             <span className="h-2 w-2 rounded-full bg-black/30" />
-            Top Choice
+            Toppvalg
           </div>
         </div>
       )}
@@ -212,14 +212,14 @@ export function OfferCard({ o, index }) {
               {previewSrc ? (
                 <img
                   src={previewSrc}
-                  alt={`${cleanName} preview`}
+                  alt={`${cleanName} forhåndsvisning`}
                   className="h-full w-full object-cover"
                   loading="lazy"
                 />
               ) : (
                 <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-rose-50 via-slate-50 to-sky-50">
                   <span className="text-xs font-semibold text-slate-500">
-                    Site preview
+                    Forhåndsvisning
                   </span>
                 </div>
               )}
@@ -242,7 +242,8 @@ export function OfferCard({ o, index }) {
                   <div className="mt-2">
                     <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-50 border border-slate-200 px-3 py-1 text-[11px] text-slate-700">
                       <span className="h-1.5 w-1.5 rounded-full bg-rose-300" />
-                      Best for: <span className="font-medium">{category}</span>
+                      Passer best for{" "}
+                      <span className="font-medium">{category}</span>
                     </span>
                   </div>
                 )}
@@ -280,11 +281,11 @@ export function OfferCard({ o, index }) {
                          shadow-[0_18px_45px_-24px_rgba(15,23,42,0.8)]
                          hover:brightness-105 active:scale-95 transition"
               >
-                Visit Site <span className="ml-2 text-xs">↗</span>
+                Besøk datingside <span className="ml-2 text-xs">↗</span>
               </a>
 
               <p className="text-[11px] text-slate-500 sm:ml-1">
-                External partner site · 18+ only
+                Ekstern partnerside · Kun 18+
               </p>
             </div>
           </div>
@@ -301,7 +302,7 @@ function TopStripCard({ o, index }) {
   const tagline =
     o.usp ||
     o.shortDescription ||
-    "Trusted platform with active members and modern features.";
+    "En trygg plattform med aktive medlemmer og moderne funksjoner.";
   const score = Number(o.rating) || 0;
 
   const previewSrc = o.preview || o.heroImage || o.hero || null;
@@ -311,7 +312,7 @@ function TopStripCard({ o, index }) {
       {index === 0 && (
         <div className="absolute -top-4 left-0 z-10 rounded-md bg-slate-900 text-white text-[11px] px-3 py-1 flex items-center gap-1 shadow-sm">
           <span>👍</span>
-          <span className="font-semibold">Our recommendation</span>
+          <span className="font-semibold">Vår anbefaling</span>
         </div>
       )}
 
@@ -322,7 +323,7 @@ function TopStripCard({ o, index }) {
               {previewSrc ? (
                 <img
                   src={previewSrc}
-                  alt={`${cleanName} preview`}
+                  alt={`${cleanName} forhåndsvisning`}
                   className="h-full w-full object-cover"
                   loading="lazy"
                 />
@@ -358,7 +359,7 @@ function TopStripCard({ o, index }) {
                 rel="noopener noreferrer"
                 className="text-[12px] font-semibold text-rose-600 hover:text-rose-700 whitespace-nowrap"
               >
-                Visit site&nbsp;→
+                Besøk → 
               </a>
             </div>
           </div>
@@ -370,10 +371,10 @@ function TopStripCard({ o, index }) {
 
 /* ----------------- Filters ----------------- */
 const FILTERS = [
-  { key: "all", label: "All" },
-  { key: "serious", label: "Serious" },
-  { key: "casual", label: "Casual" },
-  { key: "international", label: "International" },
+  { key: "all", label: "Alle" },
+  { key: "serious", label: "Seriøs" },
+  { key: "casual", label: "Uformell" },
+  { key: "international", label: "Internasjonal" },
 ];
 
 /* ------------------------------------------------
@@ -399,11 +400,13 @@ function MainDatingPage() {
 
   const filtered = useMemo(() => {
     if (filter === "serious")
-      return sortedByRating.filter((o) => /serious/i.test(o.bestFor));
+      return sortedByRating.filter((o) => /seriøs|serious/i.test(o.bestFor));
     if (filter === "casual")
-      return sortedByRating.filter((o) => /casual/i.test(o.bestFor));
+      return sortedByRating.filter((o) =>
+        /uformell|casual|diskret/i.test(o.bestFor)
+      );
     if (filter === "international")
-      return sortedByRating.filter((o) => /international/i.test(o.bestFor));
+      return sortedByRating.filter((o) => /internasjonal|international/i.test(o.bestFor));
     return sortedByRating;
   }, [filter, sortedByRating]);
 
@@ -447,7 +450,7 @@ function MainDatingPage() {
                 type="button"
                 className="inline-flex items-center gap-2 rounded-full px-4 py-2 bg-slate-50 border border-slate-200 hover:bg-slate-100 text-xs font-semibold tracking-wide text-slate-700"
               >
-                <span>Categories</span>
+                <span>Kategorier</span>
                 <span className="text-[10px]">▾</span>
               </button>
 
@@ -462,28 +465,28 @@ function MainDatingPage() {
                   onClick={() => goToOffersWithFilter("all")}
                   className="w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 hover:text-slate-900"
                 >
-                  All / General
+                  Alle datingsider
                 </button>
                 <button
                   type="button"
                   onClick={() => goToOffersWithFilter("serious")}
                   className="w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 hover:text-slate-900"
                 >
-                  Serious Dating
+                  Seriøs dating
                 </button>
                 <button
                   type="button"
                   onClick={() => goToOffersWithFilter("international")}
                   className="w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 hover:text-slate-900"
                 >
-                  International Dating
+                  Internasjonal dating
                 </button>
                 <button
                   type="button"
                   onClick={() => goToOffersWithFilter("casual")}
                   className="w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 hover:text-slate-900"
                 >
-                  Casual Dating
+                  Uformell / diskret
                 </button>
               </div>
             </div>
@@ -497,23 +500,29 @@ function MainDatingPage() {
               FAQ
             </a>
             <a
+              href="#blog"
+              className="hover:text-slate-900 text-slate-600 hover:underline"
+            >
+              Blogg
+            </a>
+            <a
               href="/privacy.html"
               className="hover:text-slate-900 text-slate-600 hover:underline"
             >
-              Privacy
+              Personvern
             </a>
             <a
               href="/terms.html"
               className="hover:text-slate-900 text-slate-600 hover:underline"
             >
-              Terms
+              Vilkår
             </a>
             <button
               onClick={() => window.openCookieSettings?.()}
               className="hover:text-slate-900 text-slate-600 hover:underline"
               type="button"
             >
-              Cookie Settings
+              Cookie-innstillinger
             </button>
           </nav>
 
@@ -523,7 +532,7 @@ function MainDatingPage() {
             className="sm:hidden inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-3 py-2 text-xs text-slate-700"
             onClick={() => setMobileOpen((v) => !v)}
           >
-            {mobileOpen ? "Close" : "Menu"}
+            {mobileOpen ? "Lukk" : "Meny"}
           </button>
         </div>
 
@@ -531,35 +540,35 @@ function MainDatingPage() {
           <div className="sm:hidden border-t border-slate-200 bg-white px-4 py-4 text-sm space-y-4">
             <div className="space-y-2">
               <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">
-                Categories
+                Kategorier
               </p>
               <button
                 type="button"
                 onClick={() => goToOffersWithFilter("all")}
                 className="block w-full text-left text-slate-700 hover:text-slate-900"
               >
-                All / General
+                Alle datingsider
               </button>
               <button
                 type="button"
                 onClick={() => goToOffersWithFilter("serious")}
                 className="block w-full text-left text-slate-700 hover:text-slate-900"
               >
-                Serious Dating
+                Seriøs dating
               </button>
               <button
                 type="button"
                 onClick={() => goToOffersWithFilter("international")}
                 className="block w-full text-left text-slate-700 hover:text-slate-900"
               >
-                International Dating
+                Internasjonal dating
               </button>
               <button
                 type="button"
                 onClick={() => goToOffersWithFilter("casual")}
                 className="block w-full text-left text-slate-700 hover:text-slate-900"
               >
-                Casual Dating
+                Uformell / diskret
               </button>
             </div>
 
@@ -574,18 +583,25 @@ function MainDatingPage() {
                 FAQ
               </a>
               <a
+                href="#blog"
+                onClick={closeMobileMenu}
+                className="block text-slate-600 hover:text-slate-900"
+              >
+                Blogg
+              </a>
+              <a
                 href="/privacy.html"
                 onClick={closeMobileMenu}
                 className="block text-slate-600 hover:text-slate-900"
               >
-                Privacy Policy
+                Personvern
               </a>
               <a
                 href="/terms.html"
                 onClick={closeMobileMenu}
                 className="block text-slate-600 hover:text-slate-900"
               >
-                Terms
+                Vilkår
               </a>
               <button
                 type="button"
@@ -595,7 +611,7 @@ function MainDatingPage() {
                 }}
                 className="block text-left text-slate-600 hover:text-slate-900"
               >
-                Cookie Settings
+                Cookie-innstillinger
               </button>
             </div>
           </div>
@@ -617,24 +633,28 @@ function MainDatingPage() {
                     18+
                   </span>
                   <span className="text-[11px] sm:text-xs font-medium tracking-[0.18em] uppercase text-rose-700/80">
-                    Adult-only dating comparisons
+                    Nettdating og datingsider (kun for voksne)
                   </span>
                 </div>
 
                 <div className="mt-1 space-y-3">
                   <h1 className="text-2xl sm:text-4xl md:text-[2.6rem] font-extrabold leading-snug sm:leading-tight tracking-tight text-slate-900">
-                    Find Better Matches —{" "}
+                    Finn riktig datingside i Norge —{" "}
                     <span className="bg-gradient-to-r from-rose-500 via-pink-500 to-amber-500 bg-clip-text text-transparent">
-                      Safely &amp; Confidently
+                      trygt, enkelt og effektivt
                     </span>
                   </h1>
                   <p className="max-w-xl text-slate-600 text-sm sm:text-base md:text-[0.98rem] leading-relaxed mt-1.5">
-                    <span className="font-semibold text-slate-900">
-                      Independent, policy-compliant comparisons.
-                    </span>{" "}
-                    We highlight trusted dating apps and filter out low-quality,
-                    spammy platforms so you can focus on real connections that fit
-                    what you&apos;re looking for.
+                    Leter du etter <span className="font-semibold text-slate-900">online dating i Norge</span>,{" "}
+                    <span className="font-semibold text-slate-900">beste datingsider</span> eller{" "}
+                    <span className="font-semibold text-slate-900">seriøs dating</span>? Vi sammenligner datingsider og
+                    dating-apper med fokus på sikkerhet, kvalitet, verifisering og brukeropplevelse — så du kan velge det
+                    som passer deg (seriøst, uformelt eller internasjonalt).
+                  </p>
+
+                  <p className="max-w-xl text-slate-600 text-[13px] leading-relaxed">
+                    Tips: Mange datingsider tilbyr gratis registrering. Bruk filtrene under for å finne{" "}
+                    <span className="font-semibold text-slate-900">dating nettsider i Norge</span> som matcher målet ditt.
                   </p>
                 </div>
 
@@ -647,7 +667,7 @@ function MainDatingPage() {
                          shadow-[0_18px_45px_-24px_rgba(15,23,42,0.9)]
                          hover:brightness-105 active:scale-95 transition"
                   >
-                    See Top Picks
+                    Se topp datingsider
                     <span className="ml-2 text-xs">↗</span>
                   </a>
                   <a
@@ -657,7 +677,7 @@ function MainDatingPage() {
                          text-sm sm:text-base font-semibold
                          hover:bg-white active:scale-95 transition"
                   >
-                    How We Compare
+                    Hvordan vi sammenligner
                   </a>
                 </div>
               </div>
@@ -666,18 +686,44 @@ function MainDatingPage() {
                 <div className="h-44 sm:h-48 md:h-52 rounded-[24px] bg-rose-50 border border-rose-100 overflow-hidden shadow-[0_16px_40px_-28px_rgba(15,23,42,0.8)]">
                   <img
                     src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1600&q=80"
-                    alt="Romantic couple enjoying time together"
+                    alt="Nettdating: et par som nyter tiden sammen"
                     className="h-full w-full object-cover"
                     loading="lazy"
                   />
                   <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/45 via-black/10 to-transparent" />
                   <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between text-[11px] text-white/90">
-                    <p className="font-medium">Real people. Real connections.</p>
+                    <p className="font-medium">Ekte mennesker. Ekte forbindelser.</p>
                     <span className="inline-flex items-center gap-1 rounded-full bg-white/15 px-3 py-1 border border-white/30 text-[10px] uppercase tracking-[0.18em]">
-                      Curated Matches
+                      Utvalgte datingsider
                     </span>
                   </div>
                 </div>
+
+                <div className="mt-4 grid grid-cols-2 gap-3">
+                  <div className="rounded-2xl bg-white border border-slate-200 p-4 shadow-sm">
+                    <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">
+                      Populært i Norge
+                    </p>
+                    <p className="mt-2 text-sm font-semibold text-slate-900">
+                      Nettdating · datingsider · dating-apper
+                    </p>
+                    <p className="mt-1 text-[12px] text-slate-600">
+                      Finn plattform etter mål: seriøs, uformell eller internasjonal.
+                    </p>
+                  </div>
+                  <div className="rounded-2xl bg-white border border-slate-200 p-4 shadow-sm">
+                    <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">
+                      Video-funksjoner
+                    </p>
+                    <p className="mt-2 text-sm font-semibold text-slate-900">
+                      Videodating · videochat · cam-to-cam
+                    </p>
+                    <p className="mt-1 text-[12px] text-slate-600">
+                      Velg datingsider som tilbyr video for tryggere første inntrykk.
+                    </p>
+                  </div>
+                </div>
+
               </div>
             </div>
           </div>
@@ -690,10 +736,10 @@ function MainDatingPage() {
           <div className="mx-auto max-w-6xl px-4 py-6">
             <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
               <h2 className="text-[11px] sm:text-xs font-semibold text-rose-700 uppercase tracking-[0.18em]">
-                Our top 3 picks
+                Våre topp 3 datingsider
               </h2>
               <p className="text-[11px] sm:text-xs text-slate-500">
-                Selected by trust score, safety &amp; overall quality.
+                Valgt etter tillitsscore, sikkerhet og total kvalitet.
               </p>
             </div>
 
@@ -716,7 +762,7 @@ function MainDatingPage() {
           <div className="rounded-3xl bg-white border border-slate-200 backdrop-blur-xl px-4 sm:px-6 py-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between shadow-sm">
             <div className="flex flex-col gap-2">
               <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">
-                Filter offers
+                Filtrer datingsider
               </p>
               <div className="flex flex-wrap justify-start gap-2">
                 {FILTERS.map((f) => (
@@ -748,14 +794,16 @@ function MainDatingPage() {
                   ✓
                 </span>
                 <span className="text-slate-700 font-medium">
-                  Verified Reviews
+                  Verifiseringsfokus
                 </span>
               </span>
               <span className="inline-flex items-center gap-2 rounded-full border border-sky-200 bg-sky-50 px-3 py-1.5">
                 <span className="flex h-4 w-4 items-center justify-center rounded-full bg-sky-500 text-[9px] text-white font-bold">
                   ✺
                 </span>
-                <span className="text-slate-700 font-medium">No Spam</span>
+                <span className="text-slate-700 font-medium">
+                  Anti-spam filter
+                </span>
               </span>
             </div>
           </div>
@@ -783,24 +831,27 @@ function MainDatingPage() {
             <div>
               <div className="inline-flex items-center gap-2 rounded-full bg-slate-50 border border-slate-200 px-3 py-1 text-[10px] uppercase tracking-[0.22em] text-slate-500">
                 <span className="h-1.5 w-1.5 rounded-full bg-rose-300" />
-                Editor’s Top Picks
+                Kuraterte toppvalg
               </div>
               <h2 className="mt-3 text-3xl sm:text-4xl font-extrabold text-slate-900">
-                Curated Dating Platforms We Trust
+                Beste datingsider og dating-apper (utvalg)
               </h2>
               <p className="mt-2 text-slate-600 text-sm sm:text-base max-w-xl">
-                Ranked by safety, features, user success, privacy, and overall
-                transparency of each platform&apos;s experience.
+                Rangert etter sikkerhet, funksjoner, brukererfaring, personvern og
+                hvor “ekte” plattformen føles. Perfekt for deg som søker{" "}
+                <span className="font-semibold text-slate-900">dating sites Norway</span>,{" "}
+                <span className="font-semibold text-slate-900">norwegian dating site</span> eller{" "}
+                <span className="font-semibold text-slate-900">anmeldelser av datingsider</span>.
               </p>
             </div>
 
             <div className="text-xs sm:text-sm text-slate-600 md:text-right">
               <p className="font-semibold text-slate-800">
-                Sorted by Trust Score{" "}
-                <span className="text-slate-400">(highest → lowest)</span>
+                Sortert etter tillitsscore{" "}
+                <span className="text-slate-400">(høyest → lavest)</span>
               </p>
               <p className="mt-1 text-slate-500">
-                #1 is the strongest overall balance of safety, quality and value.
+                #1 er best total balanse av trygghet, kvalitet og verdi.
               </p>
             </div>
           </div>
@@ -814,40 +865,160 @@ function MainDatingPage() {
       </section>
 
       {/* FAQ */}
-      <section id="faq" className="px-4 pb-14">
+      <section id="faq" className="px-4 pb-10">
         <div className="mx-auto max-w-7xl">
           <div className="rounded-3xl bg-white/95 backdrop-blur-lg border border-slate-200 p-6 shadow-sm">
             <h3 className="text-2xl font-extrabold text-slate-900">
-              Frequently Asked Questions
+              Ofte stilte spørsmål (nettdating)
             </h3>
             <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6 text-slate-900">
               <div>
-                <h4 className="font-bold">Are these platforms free?</h4>
+                <h4 className="font-bold">Finnes det datingsider som er gratis?</h4>
                 <p className="text-slate-600">
-                  Many offer free signup with optional upgrades.
+                  Mange datingsider har gratis registrering og grunnfunksjoner, med valgfrie oppgraderinger.
                 </p>
               </div>
               <div>
-                <h4 className="font-bold">
-                  Which is the best for serious dating?
+                <h4 className="font-bold">Hvilken datingside er best for seriøs dating i Norge?</h4>
+                <p className="text-slate-600">
+                  Bruk filteret “Seriøs” for å se datingsider som passer bedre for langvarige forhold.
+                </p>
+              </div>
+              <div>
+                <h4 className="font-bold">Hvordan rangerer dere datingsider?</h4>
+                <p className="text-slate-600">
+                  Vi ser på sikkerhet, verifisering, spam-nivå, funksjoner, prisstruktur, og generell brukeropplevelse.
+                </p>
+              </div>
+              <div>
+                <h4 className="font-bold">Hva med videodating / videochat?</h4>
+                <p className="text-slate-600">
+                  Video kan gi tryggere første møte. Se etter videochat- eller cam-to-cam-funksjoner når det er relevant.
+                </p>
+              </div>
+              <div>
+                <h4 className="font-bold">Er dette en datingside?</h4>
+                <p className="text-slate-600">
+                  Nei — dette er en sammenligningsside (dating sites in Norway / online dating Norway). Vi peker videre til eksterne plattformer.
+                </p>
+              </div>
+              <div>
+                <h4 className="font-bold">Er siden kun for voksne?</h4>
+                <p className="text-slate-600">
+                  Ja — innholdet er ment for 18+.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* BLOG (bottom of page) */}
+      <section id="blog" className="px-4 pb-14">
+        <div className="mx-auto max-w-7xl">
+          <div className="rounded-3xl bg-white/95 backdrop-blur-lg border border-slate-200 p-6 shadow-sm">
+            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+              <div>
+                <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">
+                  Blogg
+                </p>
+                <h3 className="mt-2 text-2xl sm:text-3xl font-extrabold text-slate-900">
+                  Tips om datingsider i Norge, nettdating og videodating
+                </h3>
+                <p className="mt-2 text-slate-600 text-sm sm:text-base max-w-2xl">
+                  Korte guider som matcher vanlige søk som{" "}
+                  <span className="font-semibold text-slate-900">beste datingsider</span>,{" "}
+                  <span className="font-semibold text-slate-900">dating nettsider Norge</span>,{" "}
+                  <span className="font-semibold text-slate-900">seriøs dating Norge</span> og{" "}
+                  <span className="font-semibold text-slate-900">videochat / videodating</span>.
+                </p>
+              </div>
+
+              <a
+                href="#offers"
+                className="inline-flex items-center justify-center rounded-2xl px-6 py-3 text-sm font-semibold
+                         bg-slate-900 text-white border border-slate-900
+                         hover:brightness-110 active:scale-95 transition"
+              >
+                Se datingsider
+              </a>
+            </div>
+
+            <div className="mt-6 grid gap-4 md:grid-cols-2">
+              {/* Post 1 */}
+              <article className="rounded-2xl border border-slate-200 bg-white p-5">
+                <h4 className="text-lg font-extrabold text-slate-900">
+                  Beste datingsider i Norge: hva bør du se etter?
                 </h4>
-                <p className="text-slate-600">
-                  Use the “Serious” filter to view long-term focused apps.
+                <p className="mt-2 text-slate-600 text-sm">
+                  Når du søker “best dating sites Norway” eller “beste datingsider”, se etter verifisering, tydelige regler,
+                  og aktive medlemmer. Ikke bare designet — trygghet og kvalitet gir bedre matcher.
                 </p>
-              </div>
-              <div>
-                <h4 className="font-bold">How do you rank apps?</h4>
-                <p className="text-slate-600">
-                  We analyze safety, verification, features, pricing, and user
-                  feedback.
+                <ul className="mt-3 text-[13px] text-slate-700 grid gap-1.5">
+                  <li className="flex items-start gap-2">
+                    <span className="mt-1 h-1.5 w-1.5 rounded-full bg-rose-300" />
+                    <span>Verifiserte profiler og anti-spam</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="mt-1 h-1.5 w-1.5 rounded-full bg-rose-300" />
+                    <span>Gode filtre (alder, sted, interesser)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="mt-1 h-1.5 w-1.5 rounded-full bg-rose-300" />
+                    <span>Klare priser og enkel avmelding</span>
+                  </li>
+                </ul>
+              </article>
+
+              {/* Post 2 */}
+              <article className="rounded-2xl border border-slate-200 bg-white p-5">
+                <h4 className="text-lg font-extrabold text-slate-900">
+                  Seriøs vs. uformell nettdating: velg riktig kategori
+                </h4>
+                <p className="mt-2 text-slate-600 text-sm">
+                  “Seriøs dating Norge” handler ofte om langsiktige mål og bedre profilkvalitet. “Uformell dating” passer
+                  for deg som vil ta det rolig, prate, og se an kjemi uten press.
                 </p>
-              </div>
-              <div>
-                <h4 className="font-bold">Is this site for adults?</h4>
-                <p className="text-slate-600">
-                  Yes — intended for adults 18+ only.
+                <p className="mt-3 text-[13px] text-slate-700">
+                  Bruk filtrene våre for å sammenligne datingsider som passer ditt mål — seriøst, uformelt eller internasjonalt.
                 </p>
-              </div>
+              </article>
+
+              {/* Post 3 */}
+              <article className="rounded-2xl border border-slate-200 bg-white p-5">
+                <h4 className="text-lg font-extrabold text-slate-900">
+                  Videodating og videochat: tryggere første møte
+                </h4>
+                <p className="mt-2 text-slate-600 text-sm">
+                  Søk som “videodating”, “beste videochat” og “cam to cam chat” viser at mange vil se og høre personen før
+                  de møtes. Video kan redusere falske profiler og skape bedre førsteinntrykk.
+                </p>
+                <p className="mt-3 text-[13px] text-slate-700">
+                  Tips: Start med en kort videosamtale på plattformen, og del aldri sensitiv informasjon tidlig.
+                </p>
+              </article>
+
+              {/* Post 4 */}
+              <article className="rounded-2xl border border-slate-200 bg-white p-5">
+                <h4 className="text-lg font-extrabold text-slate-900">
+                  Anmeldelser av datingsider: slik leser du dem smart
+                </h4>
+                <p className="mt-2 text-slate-600 text-sm">
+                  Ikke se kun på “stjerner”. Les etter mønstre: spam-problemer, kundestøtte, prisstruktur, og om folk faktisk
+                  finner matcher. Det er ofte mer nyttig enn én enkelt score.
+                </p>
+                <p className="mt-3 text-[13px] text-slate-700">
+                  Vi rangerer plattformer etter flere faktorer — spesielt trygghet og kvalitet — ikke bare popularitet.
+                </p>
+              </article>
+            </div>
+
+            <div className="mt-6 rounded-2xl bg-slate-50 border border-slate-200 p-5">
+              <p className="text-sm text-slate-700">
+                <span className="font-semibold text-slate-900">Affiliate-disclaimer:</span>{" "}
+                Vi kan tjene provisjon hvis du registrerer deg via lenkene våre. Det påvirker ikke hvordan vi skriver tekstene,
+                men hjelper oss å holde siden i gang.
+              </p>
             </div>
           </div>
         </div>
@@ -864,14 +1035,12 @@ function MainDatingPage() {
             <span className="rounded-full bg-rose-50 px-2 py-1 border border-rose-200 text-rose-700">
               18+
             </span>
-            Adult-only content
+            Kun for voksne
           </p>
 
-          <p className="mt-4 font-bold text-slate-900">
-            Affiliate Disclosure
-          </p>
+          <p className="mt-4 font-bold text-slate-900">Affiliate-informasjon</p>
           <p className="mt-1 text-slate-600">
-            We may earn a commission when you sign up through our links.
+            Vi kan tjene provisjon når du registrerer deg via lenkene våre.
           </p>
 
           <div className="mt-6 flex flex-wrap gap-4">
@@ -879,26 +1048,26 @@ function MainDatingPage() {
               className="hover:text-slate-900 underline underline-offset-4"
               href="/privacy.html"
             >
-              Privacy Policy
+              Personvern
             </a>
             <a
               className="hover:text-slate-900 underline underline-offset-4"
               href="/terms.html"
             >
-              Terms
+              Vilkår
             </a>
             <a
               className="hover:text-slate-900 underline underline-offset-4"
               href="/cookie.html"
             >
-              Cookie Policy
+              Cookie-policy
             </a>
             <button
               type="button"
               onClick={() => window.openCookieSettings?.()}
               className="hover:text-slate-900 underline underline-offset-4"
             >
-              Cookie Settings
+              Cookie-innstillinger
             </button>
           </div>
 
