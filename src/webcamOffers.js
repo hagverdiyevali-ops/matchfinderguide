@@ -201,6 +201,57 @@ const WEBCAM_OFFERS = [
     freePrivateShows: false,
     instantMatch: false,
   },
+
+    /* 1️⃣3 Stripchat */
+  {
+    name: "Stripchat",
+    rating: 4.2,
+    bestFor: "+18 sendinger",
+    usp: "Stripchat er stedet hvor du finner live sexkameraer. Denne tjenesten inneholder tusenvis av kategorier, slik at alle vil finne noe som passer for seg selv.",
+    features: ["videochat", "tusenvis av kategorier", "live sexcams"],
+    affiliateUrl:
+      "https://top-deal.me/a/VOrn7CPWMjIJkGK?sub1={click_id}&sub2={gclid}&sub3={source}&sub5={sub_source}",
+    color: "from-red-600/30 to-black/20",
+    preview: "/previews-webcam/stripchat.png",
+
+    randomChat: false,
+    freePrivateShows: true,
+    instantMatch: true,
+},
+
+    /* 1️⃣4 Noordzeemeisjes */
+  {
+    name: "Noordzeemeisjes",
+    rating: 4.4,
+    bestFor: "live chat",
+    usp: "Rask og tilfeldig webkamerachat med et moderne og brukervennlig grensesnitt.",
+    features: ["Bredt utvalg av utøvere", "Alternativer for gruppe- og privatchat", "Nybegynnervennlig layout"],
+    affiliateUrl:
+      "https://top-deal.me/a/pYKLki9AqHG2PM?sub1={click_id}&sub2={gclid}&sub3={source}&sub5={sub_source}",
+    color: "from-purple-500/30 to-pink-500/20",
+    preview: "/previews-webcam/Noordzeemeisjes.png",
+
+    randomChat: true,
+    freePrivateShows: true,
+    instantMatch: false,
+},
+
+    /* 1️⃣4 xxxflirting */
+  {
+    name: "xxxflirting",
+    rating: 4.7,
+    bestFor: "tilfeldig chat",
+    usp: "Leken datingplattform med en stor, aktiv brukerbase og umiddelbare matcher.",
+    features: ["Stedsbasert matching", "Rask profiloppsett", "Diskret og brukervennlig"],
+    affiliateUrl:
+      "https://top-deal.me/a/L9DWvcYzBCmgBV?sub1={click_id}&sub2={gclid}&sub3={source}&sub5={sub_source}",
+    color: "from-pink-500/30 to-fuchsia-700/20",
+    preview: "/previews-webcam/xxxflirting.png",
+
+    randomChat: true,
+    freePrivateShows: true,
+    instantMatch: true,
+}
 ];
 
 export default WEBCAM_OFFERS;
