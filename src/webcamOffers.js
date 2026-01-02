@@ -251,7 +251,25 @@ const WEBCAM_OFFERS = [
     randomChat: true,
     freePrivateShows: true,
     instantMatch: true,
-}
+},
+
+  /* 1️⃣5 NABO MATCH */
+  {
+    name: "JessieDates",
+    rating: 4.7,
+    bestFor: "diskrete affærer",
+    usp: "Personvernfokusert datingside for diskrete forbindelser og anonym surfing.",
+    features: ["Øyeblikkelig tilfeldig matching", "Stor, aktiv brukerbase", "Enkel registrering – begynn å chatte raskt"],
+    affiliateUrl:
+      "https://find.truelovepath.online/click?affid=16096&offerid=8601&sub1={click_id}&sub2={gclid}&sub3={source}&sub5={sub_source}&lp=e6af6bd262",
+    color: "from-rose-400/25 to-pink-700/20",
+    preview: "/previews-webcam/JessieDates.png",
+
+    // NEW FLAGS
+    randomChat: true,
+    freePrivateShows: false,
+    instantMatch: true,
+  }
 ];
 
 export default WEBCAM_OFFERS;
