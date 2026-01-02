@@ -48,7 +48,8 @@ const WEBCAM_OFFERS = [
     bestFor: "uformelle møter",
     usp: "Direkte og dristig datingplattform fokusert på raske matcher uten forpliktelser.",
     features: ["Svært rask registrering", "Eksplisitt intensjonsmatching", "Fungerer bra på mobil"],
-    affiliateUrl: "https://trustedoffers.pro/a/o2KXjsvvm8IVQnJ?sub1={click_id}&sub2={gclid}&sub3={source}&sub5={sub_source}",
+    affiliateUrl:
+      "https://trustedoffers.pro/a/o2KXjsvvm8IVQnJ?sub1={click_id}&sub2={gclid}&sub3={source}&sub5={sub_source}",
     color: "from-red-500/30 to-rose-800/20",
     preview: "/previews-webcam/fuckfinder.png",
 
@@ -56,7 +57,7 @@ const WEBCAM_OFFERS = [
     freePrivateShows: false,
     instantMatch: true,
 
-    optInType: "soi",
+    optInType: "doi",
   },
 
   /* 4️⃣ ONENIGHTFRIEND */
@@ -66,7 +67,8 @@ const WEBCAM_OFFERS = [
     bestFor: "engangsstand",
     usp: "Uformell datingside designet for spontane møter og kortvarig moro.",
     features: ["Stedsbasert matching", "Rask profiloppsett", "Diskret og brukervennlig"],
-    affiliateUrl: "https://top-deal.me/a/qx5LlTXzo2hQ8zg?sub1={click_id}&sub2={gclid}&sub3={source}&sub5={sub_source}",
+    affiliateUrl:
+      "https://top-deal.me/a/qx5LlTXzo2hQ8zg?sub1={click_id}&sub2={gclid}&sub3={source}&sub5={sub_source}",
     color: "from-orange-400/30 to-red-700/20",
     preview: "/previews-webcam/Onenightfriend.png",
 
@@ -74,7 +76,7 @@ const WEBCAM_OFFERS = [
     freePrivateShows: false,
     instantMatch: true,
 
-    optInType: "soi",
+    optInType: "doi",
   },
 
   /* 5️⃣ KUKOST */
@@ -122,7 +124,8 @@ const WEBCAM_OFFERS = [
     bestFor: "flørting og uformell dating",
     usp: "Leken datingplattform med en stor, aktiv brukerbase og umiddelbare matcher.",
     features: ["Stort globalt publikum", "Flørt-først-matching", "Sterk mobilopplevelse"],
-    affiliateUrl: "https://top-deal.me/a/o2KXjsvB0MfVQnB?sub1={click_id}&sub2={gclid}&sub3={source}&sub5={sub_source}",
+    affiliateUrl:
+      "https://top-deal.me/a/o2KXjsvB0MfVQnB?sub1={click_id}&sub2={gclid}&sub3={source}&sub5={sub_source}",
     color: "from-pink-500/30 to-fuchsia-700/20",
     preview: "/previews-webcam/BeNaughty.png",
 
@@ -130,7 +133,7 @@ const WEBCAM_OFFERS = [
     freePrivateShows: false,
     instantMatch: true,
 
-    optInType: "soi",
+    optInType: "doi",
   },
 
   /* 8️⃣ SECRET DATING CLUB */
@@ -140,7 +143,8 @@ const WEBCAM_OFFERS = [
     bestFor: "diskrete affærer",
     usp: "Personvernfokusert datingside for diskrete forbindelser og anonym surfing.",
     features: ["Diskré profiler", "Personvern først", "Anonyme nettleseralternativer"],
-    affiliateUrl: "https://top-deal.me/a/68yKBhGp0BFmrE2?sub1={click_id}&sub2={gclid}&sub3={source}&sub5={sub_source}",
+    affiliateUrl:
+      "https://top-deal.me/a/68yKBhGp0BFmrE2?sub1={click_id}&sub2={gclid}&sub3={source}&sub5={sub_source}",
     color: "from-slate-700/40 to-black/30",
     preview: "/previews-webcam/SecretDatingClub.png",
 
@@ -157,7 +161,11 @@ const WEBCAM_OFFERS = [
     rating: 4.1,
     bestFor: "live chat",
     usp: "Pålitelige strømmer og en smidig opplevelse – flott for livechat når som helst.",
-    features: ["HD-strømmer og pålitelig kvalitet", "Enkel navigering for nybegynnere", "Private rom tilgjengelig når som helst"],
+    features: [
+      "HD-strømmer og pålitelig kvalitet",
+      "Enkel navigering for nybegynnere",
+      "Private rom tilgjengelig når som helst",
+    ],
     affiliateUrl:
       "https://go.cm-trk6.com/aff_c?offer_id=12348&aff_id=92400&url_id=21759&aff_sub1={click_id}&aff_sub2={gclid}&aff_sub3={source}&aff_sub5={sub_source}",
     color: "from-purple-500/30 to-pink-500/20",
@@ -186,7 +194,7 @@ const WEBCAM_OFFERS = [
     freePrivateShows: false,
     instantMatch: true,
 
-    optInType: "doi",
+    optInType: "soi",
   },
 
   /* 1️⃣1️⃣ JERK-ROULETTE */
@@ -227,7 +235,7 @@ const WEBCAM_OFFERS = [
     optInType: "doi",
   },
 
-    /* 1️⃣3 Stripchat */
+  /* 1️⃣3 Stripchat */
   {
     name: "Stripchat",
     rating: 4.2,
@@ -243,10 +251,10 @@ const WEBCAM_OFFERS = [
     freePrivateShows: true,
     instantMatch: true,
 
-    optInType: "soi",
-},
+    optInType: "doi",
+  },
 
-    /* 1️⃣4 Noordzeemeisjes */
+  /* 1️⃣4 Noordzeemeisjes */
   {
     name: "Noordzeemeisjes",
     rating: 4.4,
@@ -262,10 +270,10 @@ const WEBCAM_OFFERS = [
     freePrivateShows: true,
     instantMatch: false,
 
-    optInType: "soi",
-},
+    optInType: "doi",
+  },
 
-    /* 1️⃣4 xxxflirting */
+  /* 1️⃣4 xxxflirting */
   {
     name: "xxxflirting",
     rating: 4.7,
@@ -281,8 +289,8 @@ const WEBCAM_OFFERS = [
     freePrivateShows: true,
     instantMatch: true,
 
-    optInType: "soi",
-},
+    optInType: "doi",
+  },
 
   /* 1️⃣5 NABO MATCH */
   {
@@ -301,33 +309,27 @@ const WEBCAM_OFFERS = [
     freePrivateShows: false,
     instantMatch: true,
 
-    optInType: "doi",
+    optInType: "soi",
   },
 
   /* 16 GRANNIESTOMEET */
-{
-  name: "GranniesToMeet",
-  rating: 4.6,
-  bestFor: "moden dating & webcam",
-  usp: "Dating- og webcamplattform fokusert på modne kvinner og brukere som søker direkte og uformelle forbindelser.",
-  features: [
-    "Modne profiler (40+)",
-    "Direkte chat og webcam",
-    "Rask registrering",
-    "Private meldinger"
-  ],
-  affiliateUrl:
-    "https://go.cm-trk6.com/aff_nl?offer_id=10566&aff_id=92400&lands=123&aff_sub1={click_id}&aff_sub2={gclid}&aff_sub3={source}&aff_sub5=search-traffic&source=matchfinderguide.com",
-  color: "from-rose-500/25 to-orange-600/20",
-  preview: "/previews-webcam/GranniesToMeet.png",
+  {
+    name: "GranniesToMeet",
+    rating: 4.6,
+    bestFor: "moden dating & webcam",
+    usp: "Dating- og webcamplattform fokusert på modne kvinner og brukere som søker direkte og uformelle forbindelser.",
+    features: ["Modne profiler (40+)", "Direkte chat og webcam", "Rask registrering", "Private meldinger"],
+    affiliateUrl:
+      "https://go.cm-trk6.com/aff_nl?offer_id=10566&aff_id=92400&lands=123&aff_sub1={click_id}&aff_sub2={gclid}&aff_sub3={source}&aff_sub5=search-traffic&source=matchfinderguide.com",
+    color: "from-rose-500/25 to-orange-600/20",
+    preview: "/previews-webcam/GranniesToMeet.png",
 
-  randomChat: false,
-  freePrivateShows: false,
-  instantMatch: true,
+    randomChat: false,
+    freePrivateShows: false,
+    instantMatch: true,
 
-  optInType: "soi",
-}
-
+    optInType: "soi",
+  },
 ];
 
 export default WEBCAM_OFFERS;
