@@ -179,7 +179,7 @@ const WEBCAM_OFFERS = [
   /* 🔟 MYUKRAINIANGIRLS */
   {
     name: "MyUkrainianGirls",
-    rating: 5.0,
+    rating: 4.7,
     bestFor: "internasjonal dating",
     usp: "Internasjonal datingplattform fokusert på meningsfulle forbindelser med verifiserte profiler.",
     features: ["Profilbasert matching", "Internasjonal brukerbase", "Private meldinger og live-interaksjon"],
@@ -356,7 +356,7 @@ const WEBCAM_OFFERS = [
     features: ["Chat-først opplevelse", "Enkel onboarding", "Aktive brukere", "Fungerer bra på mobil"],
     affiliateUrl: "https://cdsecure-dt.com/?a=289714&c=417811&co=353021&mt=4",
     color: "from-fuchsia-500/25 to-purple-800/20",
-    preview: "/previews-webcam/eromatch.png",
+    preview: "/previews-webcam/euromatch.png",
 
     randomChat: true,
     freePrivateShows: false,
