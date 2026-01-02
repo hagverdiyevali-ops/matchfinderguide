@@ -4,7 +4,7 @@ const WEBCAM_OFFERS = [
   /* 1️⃣ NABO MATCH */
   {
     name: "Nabo Match",
-    rating: 5.0,
+    rating: 4.8,
     bestFor: "seriøs dating",
     usp: "En ren og fokusert datingplattform designet for langsiktige forbindelser.",
     features: ["Relasjonsfokusert fellesskap", "Enkel onboarding-prosess", "Optimalisert for desktop og mobil"],
@@ -22,7 +22,7 @@ const WEBCAM_OFFERS = [
   /* 2️⃣ LYSTPASEX */
   {
     name: "LystPaSex",
-    rating: 4.8,
+    rating: 4.9,
     bestFor: "tilfeldige møter",
     usp: "Rask registreringsplattform for dating med fokus på umiddelbare forbindelser og matcher i nærheten.",
     features: ["Rask registrering", "Stedsbaserte treff", "Mobiloptimalisert opplevelse"],
@@ -154,7 +154,7 @@ const WEBCAM_OFFERS = [
   /* 🔟 MYUKRAINIANGIRLS */
   {
     name: "MyUkrainianGirls",
-    rating: 4.9,
+    rating: 5.0,
     bestFor: "internasjonal dating",
     usp: "Internasjonal datingplattform fokusert på meningsfulle forbindelser med verifiserte profiler.",
     features: ["Profilbasert matching", "Internasjonal brukerbase", "Private meldinger og live-interaksjon"],
@@ -188,7 +188,7 @@ const WEBCAM_OFFERS = [
   /* 1️⃣2️⃣ NORDFLIRT */
   {
     name: "NordFlirt",
-    rating: 4.9,
+    rating: 4.6,
     bestFor: "nordiske singler",
     usp: "Datingplattform skreddersydd for nordiske og europeiske single som søker ekte matches.",
     features: ["Nordisk fokusert målgruppe", "Enkelt og intuitivt brukergrensesnitt", "Sikre kommunikasjonsverktøy"],
@@ -256,7 +256,7 @@ const WEBCAM_OFFERS = [
   /* 1️⃣5 NABO MATCH */
   {
     name: "JessieDates",
-    rating: 4.7,
+    rating: 4.8,
     bestFor: "diskrete affærer",
     usp: "Personvernfokusert datingside for diskrete forbindelser og anonym surfing.",
     features: ["Øyeblikkelig tilfeldig matching", "Stor, aktiv brukerbase", "Enkel registrering – begynn å chatte raskt"],
