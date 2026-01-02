@@ -1,5 +1,5 @@
 // src/WebcamPage.jsx
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import CookieConsent from "./CookieConsent.jsx";
 import { Analytics } from "@vercel/analytics/react";
@@ -175,6 +175,75 @@ function withTracking(url) {
   }
 }
 
+/* ---------- Opt-in popup (non-blocking guide) ---------- */
+function OptInPopup({ open, variant = "doi", onClose, autoCloseMs = 6500 }) {
+  useEffect(() => {
+    if (!open) return;
+    const t = setTimeout(() => onClose?.(), autoCloseMs);
+    return () => clearTimeout(t);
+  }, [open, autoCloseMs, onClose]);
+
+  if (!open) return null;
+
+  const content =
+    variant === "doi"
+      ? {
+          title: "One more step to unlock your matches ✅",
+          body:
+            "On the next page, you’ll be asked to enter your email and confirm it. This confirmation step is required to activate your profile and see matches.",
+          hint: "If you don’t see the confirmation email, check Spam or Promotions.",
+        }
+      : {
+          title: "Almost there ✅",
+          body:
+            "On the next page, simply enter your email to unlock your matches. No confirmation step is required.",
+          hint: "Tip: Use your real email so you don’t miss messages.",
+        };
+
+  return (
+    <div
+      className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-4"
+      role="dialog"
+      aria-modal="false"
+      aria-label="Next steps"
+    >
+      <div className="absolute inset-0 bg-black/30" onClick={onClose} aria-hidden="true" />
+
+      <div className="relative w-full max-w-md rounded-2xl bg-white shadow-xl border border-black/10 overflow-hidden">
+        <div className="p-4 sm:p-5">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <div className="text-base sm:text-lg font-semibold text-slate-900">{content.title}</div>
+              <div className="mt-2 text-sm sm:text-[15px] leading-relaxed text-slate-700">
+                {content.body}
+              </div>
+              <div className="mt-3 text-xs sm:text-sm text-slate-600">{content.hint}</div>
+            </div>
+
+            <button
+              onClick={onClose}
+              className="shrink-0 rounded-xl px-3 py-1.5 text-sm font-medium bg-slate-100 hover:bg-slate-200 text-slate-800"
+              aria-label="Close"
+            >
+              Close
+            </button>
+          </div>
+
+          <div className="mt-4 flex items-center justify-between">
+            <div className="text-xs text-slate-500">You can continue in the new tab.</div>
+            <button
+              onClick={onClose}
+              className="rounded-xl px-4 py-2 text-sm font-semibold bg-slate-900 text-white hover:bg-slate-800"
+            >
+              Got it
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ---------- UI bits ---------- */
 function Pill({ children, tone = "neutral" }) {
   const tones = {
@@ -267,7 +336,7 @@ function OfferBadgeRow({ offer, index }) {
   );
 }
 
-function WebcamOfferCard({ offer, index }) {
+function WebcamOfferCard({ offer, index, onOfferOpen }) {
   const cleanName = (offer.name || "").replace(/\.com$/i, "");
   const shortFeatures = Array.isArray(offer.features) ? offer.features.slice(0, 3) : [];
   const finalUrl = withTracking(offer.affiliateUrl || "");
@@ -279,12 +348,12 @@ function WebcamOfferCard({ offer, index }) {
   function onCardClick(e) {
     const interactive = e.target.closest?.("a, button, input, select, textarea, label");
     if (interactive) return;
-    window.open(finalUrl, "_blank", "noopener,noreferrer");
+    onOfferOpen?.({ offer, finalUrl });
   }
   function onCardKeyDown(e) {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
-      window.open(finalUrl, "_blank", "noopener,noreferrer");
+      onOfferOpen?.({ offer, finalUrl });
     }
   }
 
@@ -351,6 +420,7 @@ function WebcamOfferCard({ offer, index }) {
                     href={finalUrl}
                     target="_blank"
                     rel="noopener noreferrer"
+                    onClick={() => onOfferOpen?.({ offer, finalUrl })}
                     className="inline-flex items-center justify-center rounded-2xl px-5 py-2.5 text-sm font-semibold
                                bg-gradient-to-r from-pink-500 via-rose-500 to-amber-400 text-white
                                shadow-[0_18px_45px_-24px_rgba(0,0,0,0.9)]
@@ -382,6 +452,7 @@ function WebcamOfferCard({ offer, index }) {
                   href={finalUrl}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => onOfferOpen?.({ offer, finalUrl })}
                   className="w-full inline-flex items-center justify-center rounded-2xl px-6 py-3 text-sm font-semibold
                              bg-gradient-to-r from-pink-500 via-rose-500 to-amber-400 text-white
                              shadow-[0_18px_45px_-24px_rgba(0,0,0,0.9)]
@@ -425,6 +496,9 @@ export default function WebcamPage() {
   const blogVisualSrc = `${import.meta.env.BASE_URL}blog-romantic.jpg`;
   const [blogImgOk, setBlogImgOk] = useState(true);
 
+  // ✅ popup state
+  const [optInPopup, setOptInPopup] = useState({ open: false, variant: "doi" });
+
   const categories = useMemo(() => {
     const set = new Set();
     (Array.isArray(WEBCAM_OFFERS) ? WEBCAM_OFFERS : []).forEach((o) => {
@@ -459,6 +533,12 @@ export default function WebcamPage() {
     if (onlyTop) list = list.slice(0, 1);
     return list;
   }, [query, category, onlyTop, minRating, sortMode]);
+
+  // ✅ This is called after the click happens (anchors already open new tab)
+  function onOfferOpen({ offer }) {
+    const t = (offer?.optInType || "soi").toLowerCase() === "doi" ? "doi" : "soi";
+    setOptInPopup({ open: true, variant: t });
+  }
 
   return (
     <>
@@ -617,7 +697,17 @@ export default function WebcamPage() {
         <section className="mx-auto max-w-6xl px-4 pb-10">
           <div className="space-y-5">
             {filtered.map((offer, index) => (
-              <WebcamOfferCard key={offer.name || index} offer={offer} index={index} />
+              <WebcamOfferCard
+                key={offer.name || index}
+                offer={offer}
+                index={index}
+                onOfferOpen={({ offer, finalUrl }) => {
+                  // ✅ Ensure clickout opens in NEW TAB and popup does NOT block.
+                  // For card click, we open tab ourselves; for anchor click, anchor opens the tab.
+                  if (finalUrl) window.open(finalUrl, "_blank", "noopener,noreferrer");
+                  onOfferOpen({ offer, finalUrl });
+                }}
+              />
             ))}
           </div>
 
@@ -762,6 +852,14 @@ export default function WebcamPage() {
           </p>
         </section>
       </main>
+
+      {/* ✅ Popup rendered once; does not block clickout since new tab is opened first */}
+      <OptInPopup
+        open={optInPopup.open}
+        variant={optInPopup.variant}
+        onClose={() => setOptInPopup((s) => ({ ...s, open: false }))}
+        autoCloseMs={6500}
+      />
 
       <CookieConsent />
       <Analytics />

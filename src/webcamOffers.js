@@ -17,6 +17,9 @@ const WEBCAM_OFFERS = [
     randomChat: false,
     freePrivateShows: false,
     instantMatch: false,
+
+    // NEW: opt-in type for popup guidance
+    optInType: "doi",
   },
 
   /* 2️⃣ LYSTPASEX */
@@ -34,6 +37,8 @@ const WEBCAM_OFFERS = [
     randomChat: false,
     freePrivateShows: false,
     instantMatch: true,
+
+    optInType: "soi",
   },
 
   /* 3️⃣ FUCKFINDER */
@@ -50,6 +55,8 @@ const WEBCAM_OFFERS = [
     randomChat: false,
     freePrivateShows: false,
     instantMatch: true,
+
+    optInType: "soi",
   },
 
   /* 4️⃣ ONENIGHTFRIEND */
@@ -66,6 +73,8 @@ const WEBCAM_OFFERS = [
     randomChat: false,
     freePrivateShows: false,
     instantMatch: true,
+
+    optInType: "soi",
   },
 
   /* 5️⃣ KUKOST */
@@ -83,6 +92,8 @@ const WEBCAM_OFFERS = [
     randomChat: false,
     freePrivateShows: true,
     instantMatch: true,
+
+    optInType: "soi",
   },
 
   /* 6️⃣ LUST STATION */
@@ -100,6 +111,8 @@ const WEBCAM_OFFERS = [
     randomChat: false,
     freePrivateShows: true,
     instantMatch: false,
+
+    optInType: "soi",
   },
 
   /* 7️⃣ BENaughty */
@@ -116,6 +129,8 @@ const WEBCAM_OFFERS = [
     randomChat: false,
     freePrivateShows: false,
     instantMatch: true,
+
+    optInType: "soi",
   },
 
   /* 8️⃣ SECRET DATING CLUB */
@@ -132,6 +147,8 @@ const WEBCAM_OFFERS = [
     randomChat: false,
     freePrivateShows: false,
     instantMatch: false,
+
+    optInType: "soi",
   },
 
   /* 9️⃣ INSTACAMS */
@@ -149,6 +166,8 @@ const WEBCAM_OFFERS = [
     randomChat: false,
     freePrivateShows: true,
     instantMatch: false,
+
+    optInType: "soi",
   },
 
   /* 🔟 MYUKRAINIANGIRLS */
@@ -166,6 +185,8 @@ const WEBCAM_OFFERS = [
     randomChat: true,
     freePrivateShows: false,
     instantMatch: true,
+
+    optInType: "doi",
   },
 
   /* 1️⃣1️⃣ JERK-ROULETTE */
@@ -183,6 +204,8 @@ const WEBCAM_OFFERS = [
     randomChat: true,
     freePrivateShows: true,
     instantMatch: true,
+
+    optInType: "soi",
   },
 
   /* 1️⃣2️⃣ NORDFLIRT */
@@ -200,6 +223,8 @@ const WEBCAM_OFFERS = [
     randomChat: false,
     freePrivateShows: false,
     instantMatch: false,
+
+    optInType: "doi",
   },
 
     /* 1️⃣3 Stripchat */
@@ -217,6 +242,8 @@ const WEBCAM_OFFERS = [
     randomChat: false,
     freePrivateShows: true,
     instantMatch: true,
+
+    optInType: "soi",
 },
 
     /* 1️⃣4 Noordzeemeisjes */
@@ -234,6 +261,8 @@ const WEBCAM_OFFERS = [
     randomChat: true,
     freePrivateShows: true,
     instantMatch: false,
+
+    optInType: "soi",
 },
 
     /* 1️⃣4 xxxflirting */
@@ -251,6 +280,8 @@ const WEBCAM_OFFERS = [
     randomChat: true,
     freePrivateShows: true,
     instantMatch: true,
+
+    optInType: "soi",
 },
 
   /* 1️⃣5 NABO MATCH */
@@ -269,6 +300,8 @@ const WEBCAM_OFFERS = [
     randomChat: true,
     freePrivateShows: false,
     instantMatch: true,
+
+    optInType: "doi",
   },
 
   /* 16 GRANNIESTOMEET */
@@ -291,6 +324,8 @@ const WEBCAM_OFFERS = [
   randomChat: false,
   freePrivateShows: false,
   instantMatch: true,
+
+  optInType: "soi",
 }
 
 ];
