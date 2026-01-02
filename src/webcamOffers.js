@@ -154,7 +154,7 @@ const WEBCAM_OFFERS = [
   /* 🔟 MYUKRAINIANGIRLS */
   {
     name: "MyUkrainianGirls",
-    rating: 3.9,
+    rating: 4.9,
     bestFor: "internasjonal dating",
     usp: "Internasjonal datingplattform fokusert på meningsfulle forbindelser med verifiserte profiler.",
     features: ["Profilbasert matching", "Internasjonal brukerbase", "Private meldinger og live-interaksjon"],
@@ -163,9 +163,9 @@ const WEBCAM_OFFERS = [
     color: "from-sky-500/25 to-indigo-700/20",
     preview: "/previews-webcam/myukrainiangirls.png",
 
-    randomChat: false,
+    randomChat: true,
     freePrivateShows: false,
-    instantMatch: false,
+    instantMatch: true,
   },
 
   /* 1️⃣1️⃣ JERK-ROULETTE */
