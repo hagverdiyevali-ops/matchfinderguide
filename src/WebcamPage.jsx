@@ -18,12 +18,14 @@ const TTCLID_KEY = "mfg_ttclid";
 /* ---------- COPY (edit freely) ---------- */
 const COPY = {
   HERO_KICKER: "Tilbud på live videochat",
-  HERO_HEADLINE: "Sammenlign de beste live chat-plattformene på få minutter",
-  HERO_SUBLINE:
-    "Filtrer etter vurderinger og funksjoner som tilfeldig matching, umiddelbar start og private rom.",
-  CTA_LABEL: "Registrer deg her",
-  SEARCH_PLACEHOLDER: "Søk etter tilfeldige matcher, private rom, direktechat…",
-  FEATURE_STRIP: "Tilfeldig match • Private rom • Øyeblikkelig start",
+  HERO_HEADLINE: "Sammenlign live chat-plattformer",
+  HERO_SUBLINE: "Sorter etter vurdering og funksjoner. Åpnes i ny fane.",
+  CTA_LABEL: "Registrer deg",
+  CTA_LABEL_MOBILE: "Registrer",
+  SEARCH_PLACEHOLDER: "Søk etter privat rom, tilfeldig chat, direkte…",
+
+  MOBILE_FILTER_OPEN: "Vis filtre",
+  MOBILE_FILTER_CLOSE: "Skjul filtre",
 
   BLOG_TITLE: "Slik velger du riktig live chat-plattform: en trygg og smart guide",
   BLOG_KICKER: "En liten guide før du klikker deg videre",
@@ -60,8 +62,6 @@ function getSubSource() {
  * Supports both:
  * - {click_id}/{sub1} style macros (your existing partners)
  * - #leadid#/#s1#/#utm_source# style tokens (new partner token system)
- *
- * Replacement is performed BEFORE URL parsing so #...# tokens won't break URL().
  */
 function replacePartnerMacros(rawUrl, vars) {
   let out = String(rawUrl || "");
@@ -92,7 +92,7 @@ function replacePartnerMacros(rawUrl, vars) {
   rep("{token_1}", vars.gclid);
   rep("{token_2}", vars.subSource);
 
-  // Hash token system (complete list you sent)
+  // Hash token system
   rep("#leadid#", vars.clickId);
   rep("#affid#", vars.affid || "");
   rep("#oid#", vars.oid || "");
@@ -106,20 +106,10 @@ function replacePartnerMacros(rawUrl, vars) {
   rep("#s4#", vars.sub4 || "");
   rep("#s5#", vars.subSource);
 
-  rep("#price#", vars.price || "");
-  rep("#udid#", vars.udid || "");
-
-  rep("#currency#", vars.currency || "");
-  rep("#price_usd#", vars.priceUsd || "");
-  rep("#disposition#", vars.disposition || "");
-  rep("#utcunixtime#", vars.utcUnixTime || "");
-  rep("#sourcedate#", vars.sourceDate || "");
-
   rep("#fbclid#", vars.fbclid || "");
   rep("#ttclid#", vars.ttclid || "");
   rep("#gclid#", vars.gclid || "");
   rep("#xclid#", vars.xclid || vars.clickId || "");
-  rep("#action_type#", vars.actionType || "");
 
   rep("#utm_source#", vars.utmSource || vars.source);
   rep("#utm_medium#", vars.utmMedium || "site");
@@ -164,7 +154,7 @@ function detectPartnerScheme(u) {
   if (has("click_id") || has("source")) return "cpamatica";
 
   const host = (u.hostname || "").toLowerCase();
-  if (host.includes("cdsecure-dt.com")) return "cdsecure"; // ✅ NEW partner
+  if (host.includes("cdsecure-dt.com")) return "cdsecure";
   if (host.includes("afftrk06.com")) return "affilitex";
   if (host.includes(".today")) return "vortex_sub";
   if (host.includes("cm-trk6.com")) return "aff_sub";
@@ -185,26 +175,16 @@ function withTracking(url) {
       subSource: getSubSource(),
       sub4: "",
 
-      // UTM defaults (also used for #utm_*# tokens if ever needed)
       utmSource: getTrafficSource(),
       utmMedium: "site",
       utmCampaign: "webcam_offers",
       utmTerm: "",
       utmContent: "",
-
-      // optional token fields (only used if partner link contains those placeholders)
-      affid: "",
-      oid: "",
-      campid: "",
-      cid: "",
-      tid: "",
     };
 
-    // Replace any macros/tokens BEFORE parsing as URL
     const replaced = replacePartnerMacros(url, vars);
     const u = new URL(replaced);
 
-    // Standard UTMs for analytics (even if partner ignores them)
     if (!u.searchParams.get("utm_source")) u.searchParams.set("utm_source", vars.utmSource);
     if (!u.searchParams.get("utm_medium")) u.searchParams.set("utm_medium", vars.utmMedium);
     if (!u.searchParams.get("utm_campaign")) u.searchParams.set("utm_campaign", vars.utmCampaign);
@@ -241,7 +221,6 @@ function withTracking(url) {
       setIfMissing(u, "click_id", vars.clickId);
       setIfMissing(u, "source", `${vars.source}:${vars.subSource}`);
     } else if (scheme === "cdsecure") {
-      // ✅ cdsecure-dt.com partner: supports Sub IDs + gclid + utm tokens
       setIfMissing(u, "s1", vars.clickId);
       setIfMissing(u, "s2", vars.gclid);
       setIfMissing(u, "s3", vars.source);
@@ -256,15 +235,11 @@ function withTracking(url) {
       setIfMissing(u, "utm_source", vars.utmSource);
       setIfMissing(u, "utm_medium", vars.utmMedium);
       setIfMissing(u, "utm_campaign", vars.utmCampaign);
-      // optional (only if you want later)
-      // setIfMissing(u, "utm_term", vars.utmTerm);
-      // setIfMissing(u, "utm_content", vars.utmContent);
     } else {
       setIfMissing(u, "click_id", vars.clickId);
       setIfMissing(u, "source", `${vars.source}:${vars.subSource}`);
     }
 
-    // Debug params (safe)
     if (vars.clickId && !u.searchParams.get("dbg_click_id")) u.searchParams.set("dbg_click_id", vars.clickId);
     if (vars.gclid && !u.searchParams.get("dbg_gclid")) u.searchParams.set("dbg_gclid", vars.gclid);
 
@@ -274,7 +249,7 @@ function withTracking(url) {
   }
 }
 
-/* ---------- Opt-in popup (non-blocking guide) ---------- */
+/* ---------- Opt-in popup ---------- */
 function OptInPopup({ open, variant = "doi", onClose, autoCloseMs = 30000 }) {
   useEffect(() => {
     if (!open) return;
@@ -287,38 +262,27 @@ function OptInPopup({ open, variant = "doi", onClose, autoCloseMs = 30000 }) {
   const content =
     variant === "doi"
       ? {
-          title: "Én siste ting før du kan se matcher ✅",
-          body:
-            "På neste side må du skrive inn e-posten din og bekrefte den. Bekreftelsen kreves for å aktivere profilen og låse opp matcher.",
-          hint: "Finner du ikke e-posten? Sjekk Søppelpost eller Kampanjer.",
+          title: "Én siste ting ✅",
+          body: "På neste side må du skrive inn e-post og bekrefte den for å aktivere profilen.",
+          hint: "Sjekk Søppelpost/Kampanjer hvis du ikke finner e-posten.",
         }
       : {
           title: "Nesten i mål ✅",
-          body:
-            "På neste side skriver du bare inn e-posten din for å låse opp matcher. Ingen bekreftelse er nødvendig.",
+          body: "På neste side skriver du bare inn e-posten din. Ingen bekreftelse nødvendig.",
           hint: "Tips: Bruk en ekte e-post så du ikke går glipp av meldinger.",
         };
 
   return (
-    <div
-      className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-4"
-      role="dialog"
-      aria-modal="false"
-      aria-label="Neste steg"
-    >
+    <div className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-4" role="dialog">
       <div className="absolute inset-0 bg-black/30" onClick={onClose} aria-hidden="true" />
-
       <div className="relative w-full max-w-md rounded-2xl bg-white shadow-xl border border-black/10 overflow-hidden">
         <div className="p-4 sm:p-5">
           <div className="flex items-start justify-between gap-3">
             <div>
               <div className="text-base sm:text-lg font-semibold text-slate-900">{content.title}</div>
-              <div className="mt-2 text-sm sm:text-[15px] leading-relaxed text-slate-700">
-                {content.body}
-              </div>
+              <div className="mt-2 text-sm sm:text-[15px] leading-relaxed text-slate-700">{content.body}</div>
               <div className="mt-3 text-xs sm:text-sm text-slate-600">{content.hint}</div>
             </div>
-
             <button
               onClick={onClose}
               className="shrink-0 rounded-xl px-3 py-1.5 text-sm font-medium bg-slate-100 hover:bg-slate-200 text-slate-800"
@@ -344,26 +308,7 @@ function OptInPopup({ open, variant = "doi", onClose, autoCloseMs = 30000 }) {
 }
 
 /* ---------- UI bits ---------- */
-function Pill({ children, tone = "neutral" }) {
-  const tones = {
-    neutral: "bg-slate-900/70 border-slate-700 text-slate-100",
-    pink: "bg-pink-500/10 border-pink-500/30 text-pink-200",
-    amber: "bg-amber-400/10 border-amber-300/30 text-amber-100",
-    green: "bg-emerald-400/10 border-emerald-300/30 text-emerald-100",
-  };
-  return (
-    <span
-      className={cn(
-        "inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[11px]",
-        tones[tone] || tones.neutral
-      )}
-    >
-      {children}
-    </span>
-  );
-}
-
-function RatingStars({ rating }) {
+function RatingStars({ rating, compact = false }) {
   const raw = Number(rating) || 0;
   const value = Math.max(0, Math.min(5, raw));
   const full = Math.floor(value);
@@ -375,18 +320,145 @@ function RatingStars({ rating }) {
     if (i < full) cls = "text-amber-400";
     else if (i === full && hasHalf) cls = "text-amber-300";
     stars.push(
-      <span key={i} className={cn("text-base leading-none", cls)}>
+      <span key={i} className={cn(compact ? "text-[12px]" : "text-base", "leading-none", cls)}>
         ★
       </span>
     );
   }
 
   return (
-    <div className="inline-flex items-center gap-2">
+    <div className="inline-flex items-center gap-1.5">
       <div className="flex items-center gap-0.5">{stars}</div>
-      <span className="text-[12px] font-semibold text-slate-100">{value.toFixed(1)}</span>
-      <span className="text-[11px] text-slate-500">/ 5</span>
+      <span className={cn(compact ? "text-[11px]" : "text-[12px]", "font-semibold text-slate-100")}>
+        {value.toFixed(1)}
+      </span>
     </div>
+  );
+}
+
+function MobileMiniFeatures({ offer }) {
+  const chips = [];
+  if (offer.randomChat) chips.push({ key: "tilf", label: "🎲" });
+  if (offer.freePrivateShows) chips.push({ key: "priv", label: "🔒" });
+  if (offer.instantMatch) chips.push({ key: "inst", label: "⚡" });
+  if (chips.length === 0) return null;
+
+  return (
+    <div className="mt-1 flex items-center gap-1.5">
+      {chips.slice(0, 2).map((c) => (
+        <span
+          key={c.key}
+          className="inline-flex items-center justify-center rounded-full border border-slate-800 bg-slate-950/40 h-5 w-6 text-[11px] text-slate-200"
+          title="Funksjon"
+        >
+          {c.label}
+        </span>
+      ))}
+      <span className="text-[10px] text-slate-500">Funksjoner</span>
+    </div>
+  );
+}
+
+/* ✅ Mobile row: compact + CTA visible (NO DOI/SOI LABELS) */
+function MobileOfferRow({ offer, index, onOfferGuide }) {
+  const cleanName = (offer.name || "").replace(/\.com$/i, "");
+  const finalUrl = withTracking(offer.affiliateUrl || "");
+  const logo = offer.preview || null;
+
+  function openOffer() {
+    window.open(finalUrl, "_blank", "noopener,noreferrer");
+    onOfferGuide?.(offer);
+  }
+  function onRowKeyDown(e) {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      openOffer();
+    }
+  }
+
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={openOffer}
+      onKeyDown={onRowKeyDown}
+      className={cn(
+        "w-full rounded-2xl border border-slate-800 bg-slate-950/60 backdrop-blur",
+        "px-3 py-2.5 active:scale-[0.99] transition cursor-pointer"
+      )}
+      aria-label={`${cleanName} – åpne tilbud`}
+    >
+      <div className="flex items-center gap-3">
+        <div className="h-11 w-11 rounded-xl bg-slate-900/70 border border-slate-800 flex items-center justify-center overflow-hidden shrink-0">
+          {logo ? (
+            <img src={logo} alt={`${cleanName} logo`} className="h-full w-full object-contain p-1" loading="lazy" />
+          ) : (
+            <span className="text-[10px] text-slate-500">Logo</span>
+          )}
+        </div>
+
+        <div className="min-w-0 flex-1">
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0">
+              <div className="text-[13px] font-extrabold text-slate-50 truncate">
+                #{index + 1} {cleanName}
+              </div>
+
+              {offer.bestFor ? (
+                <div className="mt-0.5 text-[11px] text-slate-400 truncate">{offer.bestFor}</div>
+              ) : null}
+
+              <div className="mt-1 flex items-center gap-2">
+                <RatingStars rating={offer.rating} compact />
+                <MobileMiniFeatures offer={offer} />
+              </div>
+
+              {/* keep 1 line only to save height */}
+              {offer.usp ? <div className="mt-1 text-[11px] text-slate-500 truncate">{offer.usp}</div> : null}
+            </div>
+
+            {/* ✅ CTA always visible */}
+            <div className="shrink-0 flex flex-col items-end gap-1">
+              <a
+                href={finalUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onOfferGuide?.(offer);
+                }}
+                className="inline-flex items-center justify-center rounded-xl px-3 py-2 text-[11px] font-extrabold
+                           bg-gradient-to-r from-pink-500 via-rose-500 to-amber-400 text-white
+                           shadow-[0_16px_40px_-26px_rgba(0,0,0,0.95)]
+                           active:scale-95 transition"
+              >
+                {COPY.CTA_LABEL_MOBILE} <span className="ml-1 text-[11px]">↗</span>
+              </a>
+              <span className="text-[10px] text-slate-500">Ny fane</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- Desktop UI ---------- */
+function Pill({ children, tone = "neutral" }) {
+  const tones = {
+    neutral: "bg-slate-900/70 border-slate-700 text-slate-100",
+    pink: "bg-pink-500/10 border-pink-500/30 text-pink-200",
+    amber: "bg-amber-400/10 border-amber-300/30 text-amber-100",
+  };
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[11px]",
+        tones[tone] || tones.neutral
+      )}
+    >
+      {children}
+    </span>
   );
 }
 
@@ -449,7 +521,6 @@ function WebcamOfferCard({ offer, index, onOfferGuide }) {
       ? "Skriv inn e-post og bekreft for å låse opp matcher."
       : "Skriv inn e-post for å låse opp matcher.";
 
-  // ✅ Full-card click behavior (safe: doesn't hijack clicks on buttons/links/inputs)
   function onCardClick(e) {
     const interactive = e.target.closest?.("a, button, input, select, textarea, label");
     if (interactive) return;
@@ -535,6 +606,7 @@ function WebcamOfferCard({ offer, index, onOfferGuide }) {
                   >
                     {COPY.CTA_LABEL} <span className="ml-2 text-xs">↗</span>
                   </a>
+                  {/* ✅ keep guidance text, but no DOI/SOI words */}
                   <span className="text-[11px] text-slate-500">{ctaHint}</span>
                 </div>
               </div>
@@ -567,6 +639,7 @@ function WebcamOfferCard({ offer, index, onOfferGuide }) {
                 >
                   {COPY.CTA_LABEL} <span className="ml-2 text-xs">↗</span>
                 </a>
+                {/* ✅ keep guidance text, but no DOI/SOI words */}
                 <p className="mt-2 text-[11px] text-slate-500">{ctaHint}</p>
               </div>
             </div>
@@ -594,17 +667,29 @@ export default function WebcamPage() {
   const [onlyTop, setOnlyTop] = useState(false);
   const [minRating, setMinRating] = useState(0);
   const [sortMode, setSortMode] = useState("rating_desc");
-  const [heroOk, setHeroOk] = useState(true);
 
-  const heroSrc = `${import.meta.env.BASE_URL}hero-webcam.jpg`; // ✅ correct for /public + Vite base paths
+  // ✅ mobile-only filters toggle (keeps offers visible first)
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
 
-  // ✨ Romantic visual (place this file in /public so it works on Vercel)
-  // e.g. /public/blog-romantic.jpg
-  const blogVisualSrc = `${import.meta.env.BASE_URL}blog-romantic.jpg`;
-  const [blogImgOk, setBlogImgOk] = useState(true);
+  // ✅ match Tailwind sm breakpoint
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 639px)");
+    const onChange = () => setIsMobile(!!mq.matches);
+    onChange();
+    mq.addEventListener?.("change", onChange);
+    return () => mq.removeEventListener?.("change", onChange);
+  }, []);
 
   // ✅ popup state
   const [optInPopup, setOptInPopup] = useState({ open: false, variant: "doi" });
+
+  // Hero/blog visuals
+  const heroSrc = `${import.meta.env.BASE_URL}hero-webcam.jpg`;
+  const [heroOk, setHeroOk] = useState(true);
+
+  const blogVisualSrc = `${import.meta.env.BASE_URL}blog-romantic.jpg`;
+  const [blogImgOk, setBlogImgOk] = useState(true);
 
   const categories = useMemo(() => {
     const set = new Set();
@@ -640,7 +725,6 @@ export default function WebcamPage() {
     return list;
   }, [query, category, onlyTop, minRating, sortMode]);
 
-  // ✅ Shows popup only (does NOT open a tab)
   function onOfferGuide(offer) {
     const t = (offer?.optInType || "soi").toLowerCase() === "doi" ? "doi" : "soi";
     setOptInPopup({ open: true, variant: t });
@@ -658,8 +742,8 @@ export default function WebcamPage() {
         </div>
 
         {/* Header */}
-        <header className="sticky top-0 z-30 bg-slate-950/70 border-b border-slate-800/80 backdrop-blur">
-          <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between gap-3">
+        <header className="sticky top-0 z-30 bg-slate-950/85 border-b border-slate-800/80 backdrop-blur">
+          <div className="mx-auto max-w-6xl px-4 py-2 sm:py-3 flex items-center justify-between gap-3">
             <Link to="/" className="inline-flex items-center gap-2">
               <div className="h-9 w-9 rounded-2xl bg-slate-900 border border-slate-700 flex items-center justify-center">
                 <img src="/logo.svg" className="h-5 w-5" alt="MatchFinderGuide" />
@@ -677,13 +761,23 @@ export default function WebcamPage() {
               <Pill tone="neutral">🔒 Private rom</Pill>
               <Pill tone="neutral">⚡ Øyeblikkelig start</Pill>
             </div>
+
+            {isMobile && (
+              <button
+                type="button"
+                onClick={() => setShowMobileFilters((s) => !s)}
+                className="rounded-xl border border-slate-800 bg-slate-950/60 px-3 py-2 text-[11px] font-semibold text-slate-200"
+              >
+                {showMobileFilters ? COPY.MOBILE_FILTER_CLOSE : COPY.MOBILE_FILTER_OPEN}
+              </button>
+            )}
           </div>
         </header>
 
-        {/* Hero */}
-        <section className="mx-auto max-w-6xl px-4 pt-7 pb-6">
+        {/* Hero (slim on mobile so 3 offers fit) */}
+        <section className="mx-auto max-w-6xl px-4 pt-2 sm:pt-7 pb-2 sm:pb-6">
           <div className="relative overflow-hidden rounded-3xl border border-slate-800 bg-slate-950/60 backdrop-blur">
-            <div className="relative h-40 sm:h-52 md:h-56 min-h-[180px]">
+            <div className="relative h-20 sm:h-52 md:h-56">
               {heroOk ? (
                 <img
                   src={heroSrc}
@@ -695,101 +789,89 @@ export default function WebcamPage() {
               ) : (
                 <div className="h-full w-full bg-gradient-to-r from-slate-950 via-purple-900/30 to-pink-900/20" />
               )}
-
-              {/* Softer overlays so the image doesn’t look “blank” */}
-              <div className="absolute inset-0 bg-gradient-to-r from-slate-950/75 via-slate-950/35 to-transparent" />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent" />
-
-              <div className="absolute bottom-4 left-6 right-6">
-                <div className="inline-flex items-center gap-2 rounded-full border border-slate-800 bg-slate-950/55 px-4 py-2 text-[11px] text-slate-200">
-                  <span className="text-[12px]">✨</span>
-                  <span className="uppercase tracking-[0.22em] text-slate-300">{COPY.FEATURE_STRIP}</span>
-                </div>
-              </div>
+              <div className="absolute inset-0 bg-gradient-to-r from-slate-950/80 via-slate-950/40 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/55 via-transparent to-transparent" />
             </div>
 
-            <div className="relative z-10 p-6 sm:p-8">
-              <p className="text-[11px] uppercase tracking-[0.22em] text-pink-400">{COPY.HERO_KICKER}</p>
-              <h1 className="mt-2 text-2xl sm:text-3xl font-extrabold text-slate-50">{COPY.HERO_HEADLINE}</h1>
-              <p className="mt-2 text-sm text-slate-300 max-w-2xl leading-relaxed">{COPY.HERO_SUBLINE}</p>
+            <div className="relative z-10 p-4 sm:p-8">
+              <p className="text-[10px] sm:text-[11px] uppercase tracking-[0.22em] text-pink-400">{COPY.HERO_KICKER}</p>
+              <h1 className="mt-1 text-[17px] sm:text-3xl font-extrabold text-slate-50 leading-snug">
+                {COPY.HERO_HEADLINE}
+              </h1>
+              <p className="mt-1 hidden sm:block text-sm text-slate-300 max-w-2xl leading-relaxed">{COPY.HERO_SUBLINE}</p>
 
-              <div className="mt-5 flex flex-wrap gap-2">
-                <Pill tone="pink">✨ Kuratert liste</Pill>
-                <Pill tone="amber">⭐ Sortert etter vurdering</Pill>
-                <Pill tone="neutral">🇳🇴 Norge-fokusert</Pill>
-              </div>
-
-              {/* Controls */}
-              <div className="mt-6 grid gap-3 lg:grid-cols-12">
-                <div className="lg:col-span-5">
-                  <label className="block text-[11px] text-slate-500 mb-1">Search</label>
-                  <div className="flex items-center rounded-2xl border border-slate-800 bg-slate-950/60 px-3 py-2">
-                    <span className="text-slate-500 mr-2">⌕</span>
-                    <input
-                      value={query}
-                      onChange={(e) => setQuery(e.target.value)}
-                      placeholder={COPY.SEARCH_PLACEHOLDER}
-                      className="w-full bg-transparent outline-none text-sm text-slate-100 placeholder:text-slate-600"
-                    />
+              <div className={cn("mt-3 sm:mt-6", isMobile ? (showMobileFilters ? "block" : "hidden") : "block")}>
+                <div className="grid gap-3 lg:grid-cols-12">
+                  <div className="lg:col-span-5">
+                    <label className="block text-[11px] text-slate-500 mb-1">Search</label>
+                    <div className="flex items-center rounded-2xl border border-slate-800 bg-slate-950/60 px-3 py-2">
+                      <span className="text-slate-500 mr-2">⌕</span>
+                      <input
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        placeholder={COPY.SEARCH_PLACEHOLDER}
+                        className="w-full bg-transparent outline-none text-sm text-slate-100 placeholder:text-slate-600"
+                      />
+                    </div>
                   </div>
-                </div>
 
-                <div className="lg:col-span-3">
-                  <label className="block text-[11px] text-slate-500 mb-1">Kategori</label>
-                  <select
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
-                    className="w-full rounded-2xl border border-slate-800 bg-slate-950/60 px-3 py-2 text-sm text-slate-100 outline-none"
-                  >
-                    {categories.map((c) => (
-                      <option key={c} value={c}>
-                        {c === "all" ? "All" : c.charAt(0).toUpperCase() + c.slice(1)}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                  <div className="lg:col-span-3">
+                    <label className="block text-[11px] text-slate-500 mb-1">Kategori</label>
+                    <select
+                      value={category}
+                      onChange={(e) => setCategory(e.target.value)}
+                      className="w-full rounded-2xl border border-slate-800 bg-slate-950/60 px-3 py-2 text-sm text-slate-100 outline-none"
+                    >
+                      {categories.map((c) => (
+                        <option key={c} value={c}>
+                          {c === "all" ? "All" : c.charAt(0).toUpperCase() + c.slice(1)}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
 
-                <div className="lg:col-span-2">
-                  <label className="block text-[11px] text-slate-500 mb-1">Minimumsvurdering</label>
-                  <select
-                    value={minRating}
-                    onChange={(e) => setMinRating(Number(e.target.value))}
-                    className="w-full rounded-2xl border border-slate-800 bg-slate-950/60 px-3 py-2 text-sm text-slate-100 outline-none"
-                  >
-                    <option value={0}>Any</option>
-                    <option value={4.0}>4.0+</option>
-                    <option value={4.3}>4.3+</option>
-                    <option value={4.5}>4.5+</option>
-                    <option value={4.7}>4.7+</option>
-                  </select>
-                </div>
+                  <div className="lg:col-span-2">
+                    <label className="block text-[11px] text-slate-500 mb-1">Minimumsvurdering</label>
+                    <select
+                      value={minRating}
+                      onChange={(e) => setMinRating(Number(e.target.value))}
+                      className="w-full rounded-2xl border border-slate-800 bg-slate-950/60 px-3 py-2 text-sm text-slate-100 outline-none"
+                    >
+                      <option value={0}>Any</option>
+                      <option value={4.0}>4.0+</option>
+                      <option value={4.3}>4.3+</option>
+                      <option value={4.5}>4.5+</option>
+                      <option value={4.7}>4.7+</option>
+                    </select>
+                  </div>
 
-                <div className="lg:col-span-2">
-                  <label className="block text-[11px] text-slate-500 mb-1">Sortere</label>
-                  <select
-                    value={sortMode}
-                    onChange={(e) => setSortMode(e.target.value)}
-                    className="w-full rounded-2xl border border-slate-800 bg-slate-950/60 px-3 py-2 text-sm text-slate-100 outline-none"
-                  >
-                    <option value="rating_desc">Vurdering (høy → lav)</option>
-                    <option value="name_asc">Navn (A → Å)</option>
-                  </select>
-                </div>
+                  <div className="lg:col-span-2">
+                    <label className="block text-[11px] text-slate-500 mb-1">Sortere</label>
+                    <select
+                      value={sortMode}
+                      onChange={(e) => setSortMode(e.target.value)}
+                      className="w-full rounded-2xl border border-slate-800 bg-slate-950/60 px-3 py-2 text-sm text-slate-100 outline-none"
+                    >
+                      <option value="rating_desc">Vurdering (høy → lav)</option>
+                      <option value="name_asc">Navn (A → Å)</option>
+                    </select>
+                  </div>
 
-                <div className="lg:col-span-12 flex flex-wrap items-center justify-between gap-3 pt-1">
-                  <label className="inline-flex items-center gap-2 text-sm text-slate-300 select-none">
-                    <input
-                      type="checkbox"
-                      checked={onlyTop}
-                      onChange={(e) => setOnlyTop(e.target.checked)}
-                      className="h-4 w-4 rounded border-slate-700 bg-slate-950"
-                    />
-                    Show only Top choice
-                  </label>
+                  <div className="lg:col-span-12 flex flex-wrap items-center justify-between gap-3 pt-1">
+                    <label className="inline-flex items-center gap-2 text-sm text-slate-300 select-none">
+                      <input
+                        type="checkbox"
+                        checked={onlyTop}
+                        onChange={(e) => setOnlyTop(e.target.checked)}
+                        className="h-4 w-4 rounded border-slate-700 bg-slate-950"
+                      />
+                      Show only Top choice
+                    </label>
 
-                  <div className="text-[12px] text-slate-500">
-                    Showing <span className="text-slate-200 font-semibold">{filtered.length}</span>{" "}
-                    {filtered.length === 1 ? "tilby" : "tilbud"}
+                    <div className="text-[12px] text-slate-500">
+                      Showing <span className="text-slate-200 font-semibold">{filtered.length}</span>{" "}
+                      {filtered.length === 1 ? "tilby" : "tilbud"}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -799,37 +881,41 @@ export default function WebcamPage() {
 
         {/* Offers */}
         <section className="mx-auto max-w-6xl px-4 pb-10">
-          <div className="space-y-5">
-            {filtered.map((offer, index) => (
-              <WebcamOfferCard key={offer.name || index} offer={offer} index={index} onOfferGuide={onOfferGuide} />
-            ))}
-          </div>
+          {isMobile ? (
+            <div className="space-y-2">
+              {filtered.map((offer, index) => (
+                <MobileOfferRow key={offer.name || index} offer={offer} index={index} onOfferGuide={onOfferGuide} />
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-5">
+              {filtered.map((offer, index) => (
+                <WebcamOfferCard key={offer.name || index} offer={offer} index={index} onOfferGuide={onOfferGuide} />
+              ))}
+            </div>
+          )}
 
           <div className="mt-8 rounded-3xl border border-slate-800 bg-slate-950/60 backdrop-blur p-6">
             <h2 className="text-base font-bold text-slate-50">Åpenhet &amp; sikkerhetsmerknader</h2>
             <ul className="mt-3 grid gap-2 text-[13px] text-slate-300">
               <li className="flex gap-2">
                 <span className="text-pink-400 mt-0.5">•</span>
-                Lenker åpner eksterne partnernettsteder. Les gjennom hver partners vilkår og personvernregler før du
-                registrerer deg.
+                Lenker åpner eksterne partnernettsteder. Les vilkår og personvern før du registrerer deg.
               </li>
               <li className="flex gap-2">
                 <span className="text-pink-400 mt-0.5">•</span>
-                Vi kan tjene en provisjon når du blir medlem via lenkene våre. Dette bidrar til å vedlikeholde
-                plattformen.
+                Vi kan tjene provisjon når du blir medlem via lenkene våre.
               </li>
               <li className="flex gap-2">
                 <span className="text-pink-400 mt-0.5">•</span>
-                Vurderinger og ikoner er raske indikatorer (ikke en garanti). Sammenlign alltid funksjoner som er
-                viktige for deg.
+                Vurderinger og ikoner er indikatorer (ikke garanti). Sammenlign funksjoner som betyr noe for deg.
               </li>
             </ul>
           </div>
 
-          {/* ✅ Blog / guide content + romantic visual */}
+          {/* ✅ Blog kept at bottom */}
           <article className="mt-6 rounded-3xl border border-slate-800 bg-slate-950/60 backdrop-blur overflow-hidden">
-            {/* Visual header */}
-            <div className="relative h-44 sm:h-56">
+            <div className="relative h-36 sm:h-56">
               {blogImgOk ? (
                 <img
                   src={blogVisualSrc}
@@ -844,7 +930,7 @@ export default function WebcamPage() {
               <div className="absolute inset-0 bg-gradient-to-r from-slate-950/85 via-slate-950/45 to-transparent" />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-transparent to-transparent" />
 
-              <div className="absolute bottom-4 left-6 right-6">
+              <div className="absolute bottom-3 left-4 right-4 sm:bottom-4 sm:left-6 sm:right-6">
                 <div className="inline-flex items-center gap-2 rounded-full border border-slate-800 bg-slate-950/55 px-4 py-2 text-[11px] text-slate-200">
                   <span className="text-[12px]">💞</span>
                   <span className="uppercase tracking-[0.22em] text-slate-300">{COPY.BLOG_KICKER}</span>
@@ -852,7 +938,6 @@ export default function WebcamPage() {
               </div>
             </div>
 
-            {/* Text content */}
             <div className="p-6">
               <h2 className="text-lg sm:text-xl font-extrabold text-slate-50">{COPY.BLOG_TITLE}</h2>
 
@@ -867,11 +952,9 @@ export default function WebcamPage() {
                 <section>
                   <h3 className="text-sm font-bold text-slate-100">1) Start med hva du faktisk vil ha</h3>
                   <p className="mt-1 text-[13px] text-slate-300 leading-relaxed">
-                    Før du registrerer deg, bestem deg for én ting: hva er målet ditt?{" "}
-                    <span className="text-slate-200">Tilfeldig chat</span> passer hvis du vil møte nye personer raskt,{" "}
-                    <span className="text-slate-200">private rom</span> passer hvis du vil ha mer kontroll, og{" "}
-                    <span className="text-slate-200">øyeblikkelig start</span> er best når du vil komme i gang uten mye
-                    oppsett.
+                    Bestem deg for én ting: hva er målet ditt? Tilfeldig chat passer hvis du vil møte nye personer raskt,
+                    private rom passer hvis du vil ha mer kontroll, og øyeblikkelig start er best når du vil komme i gang
+                    uten mye oppsett.
                   </p>
                 </section>
 
@@ -930,8 +1013,8 @@ export default function WebcamPage() {
                 <section>
                   <h3 className="text-sm font-bold text-slate-100">Kort oppsummering</h3>
                   <p className="mt-1 text-[13px] text-slate-300 leading-relaxed">
-                    Velg live chat-plattform etter behov, sjekk kvalitetssignaler, bruk vurderinger smart, og ha
-                    kontroll på personverninnstillinger. Da får du en bedre og tryggere opplevelse.
+                    Velg plattform etter behov, sjekk kvalitetssignaler, bruk vurderinger smart, og ha kontroll på
+                    personverninnstillinger. Da får du en bedre og tryggere opplevelse.
                   </p>
                 </section>
               </div>
@@ -946,7 +1029,7 @@ export default function WebcamPage() {
         </section>
       </main>
 
-      {/* ✅ Popup rendered once; does not block clickout since partner opens in a new tab */}
+      {/* Popup still used, but DOI/SOI is not shown on cards */}
       <OptInPopup
         open={optInPopup.open}
         variant={optInPopup.variant}
