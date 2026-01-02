@@ -4,7 +4,7 @@ const WEBCAM_OFFERS = [
   /* 1️⃣ NABO MATCH */
   {
     name: "Nabo Match",
-    rating: 5.0,
+    rating: 4.9,
     bestFor: "seriøs dating",
     usp: "En ren og fokusert datingplattform designet for langsiktige forbindelser.",
     features: ["Relasjonsfokusert fellesskap", "Enkel onboarding-prosess", "Optimalisert for desktop og mobil"],
