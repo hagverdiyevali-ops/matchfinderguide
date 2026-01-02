@@ -4,7 +4,7 @@ const WEBCAM_OFFERS = [
   /* 1️⃣ NABO MATCH */
   {
     name: "Nabo Match",
-    rating: 4.8,
+    rating: 5.0,
     bestFor: "seriøs dating",
     usp: "En ren og fokusert datingplattform designet for langsiktige forbindelser.",
     features: ["Relasjonsfokusert fellesskap", "Enkel onboarding-prosess", "Optimalisert for desktop og mobil"],
@@ -13,12 +13,10 @@ const WEBCAM_OFFERS = [
     color: "from-rose-400/25 to-pink-700/20",
     preview: "/previews-webcam/nabomatch.png",
 
-    // NEW FLAGS
     randomChat: false,
     freePrivateShows: false,
     instantMatch: false,
 
-    // NEW: opt-in type for popup guidance
     optInType: "doi",
   },
 
@@ -292,7 +290,7 @@ const WEBCAM_OFFERS = [
     optInType: "doi",
   },
 
-  /* 1️⃣5 NABO MATCH */
+  /* 1️⃣5 JessieDates */
   {
     name: "JessieDates",
     rating: 4.8,
@@ -304,7 +302,6 @@ const WEBCAM_OFFERS = [
     color: "from-rose-400/25 to-pink-700/20",
     preview: "/previews-webcam/JessieDates.png",
 
-    // NEW FLAGS
     randomChat: true,
     freePrivateShows: false,
     instantMatch: true,
@@ -323,6 +320,61 @@ const WEBCAM_OFFERS = [
       "https://go.cm-trk6.com/aff_nl?offer_id=10566&aff_id=92400&lands=123&aff_sub1={click_id}&aff_sub2={gclid}&aff_sub3={source}&aff_sub5=search-traffic&source=matchfinderguide.com",
     color: "from-rose-500/25 to-orange-600/20",
     preview: "/previews-webcam/GranniesToMeet.png",
+
+    randomChat: false,
+    freePrivateShows: false,
+    instantMatch: true,
+
+    optInType: "soi",
+  },
+
+  /* 17 FINDLOCALDATE (cdsecure-dt) */
+  {
+    name: "FindLocalDate",
+    rating: 5.0,
+    bestFor: "lokale treff",
+    usp: "Møt lokale single raskt – enkel registrering og fokus på treff i nærheten.",
+    features: ["Lokale profiler i nærheten", "Rask registrering", "Match-baserte forslag", "Mobilvennlig opplevelse"],
+    affiliateUrl: "https://cdsecure-dt.com/?a=289714&c=417727&co=353021&mt=4",
+    color: "from-pink-500/25 to-rose-700/20",
+    preview: "/previews-webcam/findlocaldate.png",
+
+    randomChat: false,
+    freePrivateShows: false,
+    instantMatch: true,
+
+    // unknown yet; set SOI as default (easy to flip to "doi" later)
+    optInType: "soi",
+  },
+
+  /* 18 EROMATCH (cdsecure-dt) */
+  {
+    name: "Eromatch",
+    rating: 4.9,
+    bestFor: "uformell flørting",
+    usp: "Rask vei til nye matcher – designet for chat først og enkel oppstart.",
+    features: ["Chat-først opplevelse", "Enkel onboarding", "Aktive brukere", "Fungerer bra på mobil"],
+    affiliateUrl: "https://cdsecure-dt.com/?a=289714&c=417811&co=353021&mt=4",
+    color: "from-fuchsia-500/25 to-purple-800/20",
+    preview: "/previews-webcam/eromatch.png",
+
+    randomChat: true,
+    freePrivateShows: false,
+    instantMatch: true,
+
+    optInType: "soi",
+  },
+
+  /* 19 MATCH2LOCALS (cdsecure-dt) */
+  {
+    name: "Match2locals",
+    rating: 4.9,
+    bestFor: "lokal dating",
+    usp: "Fokus på lokale forbindelser med rask registrering og matcher basert på område.",
+    features: ["Lokalt fokus", "Rask profiloppsett", "Match-forslag", "Diskré og brukervennlig"],
+    affiliateUrl: "https://cdsecure-dt.com/?a=289714&c=417754&co=353021&mt=4",
+    color: "from-amber-400/20 to-rose-600/20",
+    preview: "/previews-webcam/match2locals.png",
 
     randomChat: false,
     freePrivateShows: false,

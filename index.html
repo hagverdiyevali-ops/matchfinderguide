@@ -1,6 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+
+    <!-- Event snippet for Partner_clickout conversion page
+In your html page, add the snippet and call gtag_report_conversion when someone clicks on the chosen link or button. -->
+<script>
+function gtag_report_conversion(url) {
+  var callback = function () {
+    if (typeof(url) != 'undefined') {
+      window.location = url;
+    }
+  };
+  gtag('event', 'conversion', {
+      'send_to': 'AW-17713734601/xy7mCKGo69obEMnHyP5B',
+      'event_callback': callback
+  });
+  return false;
+}
+</script>
+
     <!-- Google Tag Manager -->
     <script
       async

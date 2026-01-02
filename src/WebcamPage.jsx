@@ -11,6 +11,10 @@ const cn = (...c) => c.filter(Boolean).join(" ");
 const CLICK_ID_KEY = "mfg_click_id";
 const GCLID_KEY = "mfg_gclid";
 
+// optional (safe even if never set)
+const FBCLID_KEY = "mfg_fbclid";
+const TTCLID_KEY = "mfg_ttclid";
+
 /* ---------- COPY (edit freely) ---------- */
 const COPY = {
   HERO_KICKER: "Tilbud på live videochat",
@@ -38,6 +42,13 @@ function getStoredClickId() {
 function getStoredGclid() {
   return getStored(GCLID_KEY);
 }
+function getStoredFbclid() {
+  return getStored(FBCLID_KEY);
+}
+function getStoredTtclid() {
+  return getStored(TTCLID_KEY);
+}
+
 function getTrafficSource() {
   return "matchfinderguide";
 }
@@ -45,10 +56,18 @@ function getSubSource() {
   return "search-traffic";
 }
 
+/**
+ * Supports both:
+ * - {click_id}/{sub1} style macros (your existing partners)
+ * - #leadid#/#s1#/#utm_source# style tokens (new partner token system)
+ *
+ * Replacement is performed BEFORE URL parsing so #...# tokens won't break URL().
+ */
 function replacePartnerMacros(rawUrl, vars) {
   let out = String(rawUrl || "");
   const rep = (k, v) => (out = out.replaceAll(k, encodeURIComponent(v ?? "")));
 
+  // Existing curly macros
   rep("{click_id}", vars.clickId);
   rep("{gclid}", vars.gclid);
   rep("{source}", vars.source);
@@ -73,6 +92,41 @@ function replacePartnerMacros(rawUrl, vars) {
   rep("{token_1}", vars.gclid);
   rep("{token_2}", vars.subSource);
 
+  // Hash token system (complete list you sent)
+  rep("#leadid#", vars.clickId);
+  rep("#affid#", vars.affid || "");
+  rep("#oid#", vars.oid || "");
+  rep("#campid#", vars.campid || vars.utmCampaign || "webcam_offers");
+  rep("#cid#", vars.cid || vars.subSource || "");
+  rep("#tid#", vars.tid || "");
+
+  rep("#s1#", vars.clickId);
+  rep("#s2#", vars.gclid);
+  rep("#s3#", vars.source);
+  rep("#s4#", vars.sub4 || "");
+  rep("#s5#", vars.subSource);
+
+  rep("#price#", vars.price || "");
+  rep("#udid#", vars.udid || "");
+
+  rep("#currency#", vars.currency || "");
+  rep("#price_usd#", vars.priceUsd || "");
+  rep("#disposition#", vars.disposition || "");
+  rep("#utcunixtime#", vars.utcUnixTime || "");
+  rep("#sourcedate#", vars.sourceDate || "");
+
+  rep("#fbclid#", vars.fbclid || "");
+  rep("#ttclid#", vars.ttclid || "");
+  rep("#gclid#", vars.gclid || "");
+  rep("#xclid#", vars.xclid || vars.clickId || "");
+  rep("#action_type#", vars.actionType || "");
+
+  rep("#utm_source#", vars.utmSource || vars.source);
+  rep("#utm_medium#", vars.utmMedium || "site");
+  rep("#utm_campaign#", vars.utmCampaign || "webcam_offers");
+  rep("#utm_term#", vars.utmTerm || "");
+  rep("#utm_content#", vars.utmContent || "");
+
   return out;
 }
 
@@ -81,7 +135,12 @@ function setIfMissing(u, key, value) {
 
   const cur = u.searchParams.get(key);
   const looksPlaceholder =
-    !cur || cur.includes("{") || cur === "FOR_SUB1" || cur === "FOR_SUB2" || cur === "FOR_CLICKID";
+    !cur ||
+    cur.includes("{") ||
+    cur.includes("#") ||
+    cur === "FOR_SUB1" ||
+    cur === "FOR_SUB2" ||
+    cur === "FOR_CLICKID";
 
   if (looksPlaceholder) u.searchParams.set(key, value);
 }
@@ -105,6 +164,7 @@ function detectPartnerScheme(u) {
   if (has("click_id") || has("source")) return "cpamatica";
 
   const host = (u.hostname || "").toLowerCase();
+  if (host.includes("cdsecure-dt.com")) return "cdsecure"; // ✅ NEW partner
   if (host.includes("afftrk06.com")) return "affilitex";
   if (host.includes(".today")) return "vortex_sub";
   if (host.includes("cm-trk6.com")) return "aff_sub";
@@ -117,17 +177,37 @@ function withTracking(url) {
     const vars = {
       clickId: getStoredClickId(),
       gclid: getStoredGclid(),
+      fbclid: getStoredFbclid(),
+      ttclid: getStoredTtclid(),
+      xclid: getStoredClickId(),
+
       source: getTrafficSource(),
       subSource: getSubSource(),
       sub4: "",
+
+      // UTM defaults (also used for #utm_*# tokens if ever needed)
+      utmSource: getTrafficSource(),
+      utmMedium: "site",
+      utmCampaign: "webcam_offers",
+      utmTerm: "",
+      utmContent: "",
+
+      // optional token fields (only used if partner link contains those placeholders)
+      affid: "",
+      oid: "",
+      campid: "",
+      cid: "",
+      tid: "",
     };
 
+    // Replace any macros/tokens BEFORE parsing as URL
     const replaced = replacePartnerMacros(url, vars);
     const u = new URL(replaced);
 
-    if (!u.searchParams.get("utm_source")) u.searchParams.set("utm_source", vars.source);
-    if (!u.searchParams.get("utm_medium")) u.searchParams.set("utm_medium", "site");
-    if (!u.searchParams.get("utm_campaign")) u.searchParams.set("utm_campaign", "webcam_offers");
+    // Standard UTMs for analytics (even if partner ignores them)
+    if (!u.searchParams.get("utm_source")) u.searchParams.set("utm_source", vars.utmSource);
+    if (!u.searchParams.get("utm_medium")) u.searchParams.set("utm_medium", vars.utmMedium);
+    if (!u.searchParams.get("utm_campaign")) u.searchParams.set("utm_campaign", vars.utmCampaign);
 
     const scheme = detectPartnerScheme(u);
 
@@ -160,13 +240,32 @@ function withTracking(url) {
 
       setIfMissing(u, "click_id", vars.clickId);
       setIfMissing(u, "source", `${vars.source}:${vars.subSource}`);
+    } else if (scheme === "cdsecure") {
+      // ✅ cdsecure-dt.com partner: supports Sub IDs + gclid + utm tokens
+      setIfMissing(u, "s1", vars.clickId);
+      setIfMissing(u, "s2", vars.gclid);
+      setIfMissing(u, "s3", vars.source);
+      setIfMissing(u, "s4", vars.sub4);
+      setIfMissing(u, "s5", vars.subSource);
+
+      setIfMissing(u, "gclid", vars.gclid);
+      setIfMissing(u, "xclid", vars.clickId);
+      setIfMissing(u, "fbclid", vars.fbclid);
+      setIfMissing(u, "ttclid", vars.ttclid);
+
+      setIfMissing(u, "utm_source", vars.utmSource);
+      setIfMissing(u, "utm_medium", vars.utmMedium);
+      setIfMissing(u, "utm_campaign", vars.utmCampaign);
+      // optional (only if you want later)
+      // setIfMissing(u, "utm_term", vars.utmTerm);
+      // setIfMissing(u, "utm_content", vars.utmContent);
     } else {
       setIfMissing(u, "click_id", vars.clickId);
       setIfMissing(u, "source", `${vars.source}:${vars.subSource}`);
     }
 
-    if (vars.clickId && !u.searchParams.get("dbg_click_id"))
-      u.searchParams.set("dbg_click_id", vars.clickId);
+    // Debug params (safe)
+    if (vars.clickId && !u.searchParams.get("dbg_click_id")) u.searchParams.set("dbg_click_id", vars.clickId);
     if (vars.gclid && !u.searchParams.get("dbg_gclid")) u.searchParams.set("dbg_gclid", vars.gclid);
 
     return u.toString();
@@ -530,8 +629,7 @@ export default function WebcamPage() {
       });
     }
 
-    if (category !== "all")
-      list = list.filter((o) => String(o?.bestFor || "").toLowerCase() === category);
+    if (category !== "all") list = list.filter((o) => String(o?.bestFor || "").toLowerCase() === category);
     if (minRating > 0) list = list.filter((o) => (Number(o?.rating) || 0) >= minRating);
 
     if (sortMode === "name_asc")
@@ -612,9 +710,7 @@ export default function WebcamPage() {
 
             <div className="relative z-10 p-6 sm:p-8">
               <p className="text-[11px] uppercase tracking-[0.22em] text-pink-400">{COPY.HERO_KICKER}</p>
-              <h1 className="mt-2 text-2xl sm:text-3xl font-extrabold text-slate-50">
-                {COPY.HERO_HEADLINE}
-              </h1>
+              <h1 className="mt-2 text-2xl sm:text-3xl font-extrabold text-slate-50">{COPY.HERO_HEADLINE}</h1>
               <p className="mt-2 text-sm text-slate-300 max-w-2xl leading-relaxed">{COPY.HERO_SUBLINE}</p>
 
               <div className="mt-5 flex flex-wrap gap-2">
