@@ -269,7 +269,30 @@ const WEBCAM_OFFERS = [
     randomChat: true,
     freePrivateShows: false,
     instantMatch: true,
-  }
+  },
+
+  /* 16 GRANNIESTOMEET */
+{
+  name: "GranniesToMeet",
+  rating: 4.6,
+  bestFor: "moden dating & webcam",
+  usp: "Dating- og webcamplattform fokusert på modne kvinner og brukere som søker direkte og uformelle forbindelser.",
+  features: [
+    "Modne profiler (40+)",
+    "Direkte chat og webcam",
+    "Rask registrering",
+    "Private meldinger"
+  ],
+  affiliateUrl:
+    "https://go.cm-trk6.com/aff_nl?offer_id=10566&aff_id=92400&lands=123&aff_sub1={click_id}&aff_sub2={gclid}&aff_sub3={source}&aff_sub5=search-traffic&source=matchfinderguide.com",
+  color: "from-rose-500/25 to-orange-600/20",
+  preview: "/previews-webcam/GranniesToMeet.png",
+
+  randomChat: false,
+  freePrivateShows: false,
+  instantMatch: true,
+}
+
 ];
 
 export default WEBCAM_OFFERS;
