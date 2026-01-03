@@ -4,7 +4,7 @@ const WEBCAM_OFFERS = [
   /* 1️⃣ NABO MATCH */
   {
     name: "Nabo Match",
-    rating: 4.9,
+    rating: 5.0,
     bestFor: "seriøs dating",
     usp: "En ren og fokusert datingplattform designet for langsiktige forbindelser.",
     features: ["Relasjonsfokusert fellesskap", "Enkel onboarding-prosess", "Optimalisert for desktop og mobil"],
@@ -331,7 +331,7 @@ const WEBCAM_OFFERS = [
   /* 17 FINDLOCALDATE (cdsecure-dt) */
   {
     name: "FindLocalDate",
-    rating: 5.0,
+    rating: 4.6,
     bestFor: "lokale treff",
     usp: "Møt lokale single raskt – enkel registrering og fokus på treff i nærheten.",
     features: ["Lokale profiler i nærheten", "Rask registrering", "Match-baserte forslag", "Mobilvennlig opplevelse"],
