@@ -382,6 +382,25 @@ const WEBCAM_OFFERS = [
 
     optInType: "soi",
   },
+
+  /* 20 Orgassme */
+  {
+    name: "Orgassme",
+    rating: 5.0,
+    bestFor: "lokal dating",
+    usp: "Dating- og webcamplattform fokusert på modne kvinner og brukere som søker direkte og uformelle forbindelser.",
+    features: ["Stedsbasert matching", "Rask profiloppsett", "Diskret og brukervennlig"],
+    affiliateUrl:
+      "https://jndabb.afftrk06.com/?utm_source=7b63077bf9a78dc8&s1=235083&s2=230164&s3={click_id}&s5={sub_source}&click_id={click_id}",
+    color: "from-amber-400/20 to-rose-600/20",
+    preview: "/previews-webcam/Orgassme.png",
+
+    randomChat: true,
+    freePrivateShows: true,
+    instantMatch: true,
+
+    optInType: "soi",
+  },
 ];
 
 export default WEBCAM_OFFERS;
